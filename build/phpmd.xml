@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="mig33-web-standard-loose">
+	<rule ref="rulesets/unusedcode.xml/UnusedPrivateMethod">
+		<priority>4</priority>
+	</rule>
+	<rule ref="rulesets/unusedcode.xml/UnusedLocalVariable">
+		<priority>4</priority>
+	</rule>
+	<rule ref="rulesets/unusedcode.xml/UnusedPrivateField">
+		<priority>4</priority>
+	</rule>
+	<rule ref="rulesets/unusedcode.xml/UnusedFormalParameter">
+		<priority>4</priority>
+	</rule>
+</ruleset>

@@ -1,1 +1,10 @@
 /nbproject/private/
+build/api/*
+build/code-browser/*
+build/coverage/*
+build/logs/*
+build/pdepend/*
+build/phpdox/*
+cache.properties
+/.sonar/
+.DS_Store

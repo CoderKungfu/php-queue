@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="mig33-web-standard-loose">
+	<rule ref="Generic.CodeAnalysis.UnusedFunctionParameter.Found">
+		<severity>6</severity>
+	</rule>
+</ruleset>

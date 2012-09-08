@@ -1,0 +1,13 @@
+<phpdox xmlns="http://phpdox.de/config">
+ <project name="mig33_register" source="sites" workdir="build/phpdox">
+  <collector publiconly="false">
+   <include mask="*.php" />
+   <exclude mask="*Autoload.php" />
+   <exclude mask="application/view/*" />
+  </collector>
+
+  <generator output="build">
+   <build engine="html" enabled="true" output="api"/>
+  </generator>
+ </project>
+</phpdox>
