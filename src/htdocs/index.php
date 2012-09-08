@@ -1,0 +1,3 @@
+<?php
+// Home page.
+?>
