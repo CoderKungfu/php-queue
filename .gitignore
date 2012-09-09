@@ -7,5 +7,7 @@ build/logs/*
 build/pdepend/*
 build/phpdox/*
 cache.properties
+src/vendor/*
+src/composer.lock
 /.sonar/
 .DS_Store
