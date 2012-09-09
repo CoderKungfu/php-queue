@@ -3,8 +3,10 @@ namespace PHPQueue;
 class Exception extends \Exception{}
 class Base
 {
-	static public $queuePath;
-	static public $workerPath;
+	static public $queuePath = '';
+	static public $workerPath = '';
+	static private $allQueues = array();
+	static private $allWorkers = array();
 
 	/**
 	 * @param string $queue
@@ -13,33 +15,41 @@ class Base
 	 */
 	static public function getQueue($queue=null, $options=array())
 	{
-		$classFile = self::$queuePath . '/' . $queue . 'Queue.php';
-		if ( !empty($options['classFile']) )
+		if (empty($queue))
 		{
-			$classFile = $options['classFile'];
+			throw new \PHPQueue\Exception("Queue name is empty");
 		}
-		if (file_exists($classFile))
+		if ( empty(self::$allQueues[$queue]) )
 		{
-			require_once $classFile;
-		}
-		else
-		{
-			throw new \PHPQueue\Exception("Worker file does not exist: $classFile");
-		}
+			$classFile = self::$queuePath . '/' . $queue . 'Queue.php';
+			if ( !empty($options['classFile']) )
+			{
+				$classFile = $options['classFile'];
+			}
+			if (file_exists($classFile))
+			{
+				require_once $classFile;
+			}
+			else
+			{
+				throw new \PHPQueue\Exception("Worker file does not exist: $classFile");
+			}
 
-		$className =  "\\" . $queue . 'Queue';
-		if ( !empty($options['className']) )
-		{
-			$className = $options['className'];
+			$className =  "\\" . $queue . 'Queue';
+			if ( !empty($options['className']) )
+			{
+				$className = $options['className'];
+			}
+			if (class_exists($className))
+			{
+				self::$allQueues[$queue] = new $className();
+			}
+			else
+			{
+				throw new \PHPQueue\Exception("Worker class does not exist: $className");
+			}
 		}
-		if (class_exists($className))
-		{
-			return new $className();
-		}
-		else
-		{
-			throw new \PHPQueue\Exception("Worker class does not exist: $className");
-		}
+		return self::$allQueues[$queue];
 	}
 
 	/**
@@ -91,33 +101,41 @@ class Base
 	 */
 	static public function getWorker($workerName=null, $options=array())
 	{
-		$classFile = self::$queuePath . '/' . $workerName . 'Worker.php';
-		if ( !empty($options['classFile']) )
+		if (empty($workerName))
 		{
-			$classFile = $options['classFile'];
+			throw new \PHPQueue\Exception("Worker name is empty");
 		}
-		if ( file_exists($classFile) )
+		if ( empty(self::$allWorkers[$workerName]) )
 		{
-			require_once $classFile;
-		}
-		else
-		{
-			throw new \PHPQueue\Exception("Worker file does not exist: $classFile");
-		}
+			$classFile = self::$queuePath . '/' . $workerName . 'Worker.php';
+			if ( !empty($options['classFile']) )
+			{
+				$classFile = $options['classFile'];
+			}
+			if ( file_exists($classFile) )
+			{
+				require_once $classFile;
+			}
+			else
+			{
+				throw new \PHPQueue\Exception("Worker file does not exist: $classFile");
+			}
 
-		$className = "\\" . $queue . 'Worker';
-		if ( !empty($options['className']) )
-		{
-			$className = $options['className'];
+			$className = "\\" . $queue . 'Worker';
+			if ( !empty($options['className']) )
+			{
+				$className = $options['className'];
+			}
+			if ( class_exists($className) )
+			{
+				self::$allWorkers[$workerName] = new $className();
+			}
+			else
+			{
+				throw new \PHPQueue\Exception("Worker class does not exist: $className");
+			}
 		}
-		if ( class_exists($className) )
-		{
-			return new $className();
-		}
-		else
-		{
-			throw new \PHPQueue\Exception("Worker class does not exist: $className");
-		}
+		return self::$allWorkers[$workerName];
 	}
 
 	/**
