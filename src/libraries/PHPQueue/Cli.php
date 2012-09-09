@@ -24,8 +24,25 @@ class Cli
 
 	public function work()
 	{
+		$newJob = null;
 		$queue = \PHPQueue\Base::getQueue($this->queue, $this->queue_options);
-		$newJob = \PHPQueue\Base::getJob($queue);
+		try
+		{
+			$newJob = \PHPQueue\Base::getJob($queue);
+			echo "===========================================================\n";
+			echo "Next Job:\n";
+			var_dump($newJob);
+		}
+		catch (Exception $ex)
+		{
+			echo "Error: " . $ex->getMessage() . "\n";
+		}
+
+		if ( empty($newJob) )
+		{
+			echo "Notice: No Job found.\n";
+			return;
+		}
 		try
 		{
 			$newWorker = \PHPQueue\Base::getWorker($newJob->worker);

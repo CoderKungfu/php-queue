@@ -9,15 +9,21 @@ $action = $argv[2];
 $options = array('queue'=>$queue_name);
 $c = new PHPQueue\Cli($options);
 
-if ($action == 'add')
+switch ($action)
 {
-	$payload_json = $argv[4];
-	$payload = json_decode($payload_json, true);
-	$c->add($payload);
-}
-else
-{
-	$c->work();
+	case 'add':
+		$payload_json = $argv[4];
+		$payload = json_decode($payload_json, true);
+		$c->add($payload);
+		break;
+	case 'work':
+		$c->work();
+		break;
+	case 'get':
+		break;
+	default:
+		echo "Error: No action declared...\n";
+		break;
 }
 ?>
 Done.
