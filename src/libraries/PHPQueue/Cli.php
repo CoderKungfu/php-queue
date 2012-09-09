@@ -2,14 +2,14 @@
 namespace PHPQueue;
 class Cli
 {
-	public $options;
+	public $queue_options;
 	private $queue;
 	static private $worker_path;
 
 	public function __construct($options=array())
 	{
 		self::$worker_path = dirname(dirname(__DIR__)) . '/workers/';
-		$this->options = $options;
+		$this->queue_options = $options;
 		if ( !empty($options['queue']) )
 		{
 			$this->queue = $options['queue'];
@@ -18,26 +18,25 @@ class Cli
 
 	public function add($payload=array())
 	{
-		$queue = \PHPQueue\Base::getQueue($this->queue, $this->options);
+		$queue = \PHPQueue\Base::getQueue($this->queue, $this->queue_options);
 		return \PHPQueue\Base::addJob($queue, $payload);
 	}
 
 	public function work()
 	{
-		$queue = \PHPQueue\Base::getQueue($this->queue, $this->options);
+		$queue = \PHPQueue\Base::getQueue($this->queue, $this->queue_options);
 		$newJob = \PHPQueue\Base::getJob($queue);
-		$newWorker = $newJob->worker;
-		require_once self::$worker_path . '/' . $newWorker . 'Worker.php';
-		$workerClassName = $newWorker . 'Worker';
-		$workerClass = new $workerClassName($newJob->data);
-		$workerClass->beforeJob();
-		$workerClass->runJob();
-		$workerClass->afterJob();
-
-		$resultData = $workerClass->resultData;
-		$queue->beforeUpdate();
-		$queue->updateJob($resultData);
-		$queue->afterUpdate();
+		try
+		{
+			$newWorker = \PHPQueue\Base::getWorker($newJob->worker);
+			\PHPQueue\Base::workJob($newWorker, $newJob);
+			return \PHPQueue\Base::updateJob($queue, $newJob->jobId, $newWorker->resultData);
+		}
+		catch (Exception $ex)
+		{
+			$queue->releaseJob($newJob->jobId);
+			throw $ex;
+		}
 	}
 }
 ?>

@@ -1,8 +1,10 @@
 <?php
 namespace PHPQueue;
+class Exception extends \Exception{}
 class Base
 {
 	static public $queuePath;
+	static public $workerPath;
 
 	/**
 	 * @param string $queue
@@ -11,31 +13,46 @@ class Base
 	 */
 	static public function getQueue($queue=null, $options=array())
 	{
-		if ( empty($options['classFile']) )
+		$classFile = self::$queuePath . '/' . $queue . 'Queue.php';
+		if ( !empty($options['classFile']) )
 		{
-			require_once self::$queuePath . '/' . $queue . 'Queue.php';
+			$classFile = $options['classFile'];
+		}
+		if (file_exists($classFile))
+		{
+			require_once $classFile;
 		}
 		else
 		{
-			require_once $options['classFile'];
+			throw new \PHPQueue\Exception("Worker file does not exist: $classFile");
 		}
-		if ( empty($options['className']) )
-		{
-			$className = $queue . 'Queue';
-		}
-		else
+
+		$className =  "\\" . $queue . 'Queue';
+		if ( !empty($options['className']) )
 		{
 			$className = $options['className'];
 		}
-		return new $className();
+		if (class_exists($className))
+		{
+			return new $className();
+		}
+		else
+		{
+			throw new \PHPQueue\Exception("Worker class does not exist: $className");
+		}
 	}
 
+	/**
+	 * @param \PHPQueue\JobQueue $queue
+	 * @param array $newJob
+	 * @return boolean
+	 */
 	static public function addJob(\PHPQueue\JobQueue $queue, $newJob=array())
 	{
 		$queue->beforeAdd();
-		$queue->addJob($newJob);
+		$status = $queue->addJob($newJob);
 		$queue->afterAdd();
-		return true;
+		return $status;
 	}
 
 	/**
@@ -51,13 +68,81 @@ class Base
 		return $job;
 	}
 
-	static public function updateJob(\PHPQueue\JobQueue $queue, $jobId=null, $updateData=null)
+	/**
+	 * @param \PHPQueue\JobQueue $queue
+	 * @param string $jobId
+	 * @param mixed $resultData
+	 * @return boolean
+	 */
+	static public function updateJob(\PHPQueue\JobQueue $queue, $jobId=null, $resultData=null)
 	{
 		$queue->beforeUpdate();
-		$queue->updateJob($jobId, $updateData);
+		$queue->updateJob($jobId, $resultData);
+		$status = $queue->clearJob($jobId);
 		$queue->afterUpdate();
-		return true;
+		return $status;
+	}
+
+	/**
+	 * @param string $workerName
+	 * @param array $options
+	 * @return \PHPQueue\Worker
+	 * @throws \PHPQueue\Exception
+	 */
+	static public function getWorker($workerName=null, $options=array())
+	{
+		$classFile = self::$queuePath . '/' . $workerName . 'Worker.php';
+		if ( !empty($options['classFile']) )
+		{
+			$classFile = $options['classFile'];
+		}
+		if ( file_exists($classFile) )
+		{
+			require_once $classFile;
+		}
+		else
+		{
+			throw new \PHPQueue\Exception("Worker file does not exist: $classFile");
+		}
+
+		$className = "\\" . $queue . 'Worker';
+		if ( !empty($options['className']) )
+		{
+			$className = $options['className'];
+		}
+		if ( class_exists($className) )
+		{
+			return new $className();
+		}
+		else
+		{
+			throw new \PHPQueue\Exception("Worker class does not exist: $className");
+		}
+	}
+
+	/**
+	 * @param \PHPQueue\Worker $worker
+	 * @param \PHPQueue\Job $job
+	 * @return \PHPQueue\Worker
+	 * @throws \PHPQueue\Exception
+	 */
+	static public function workJob(\PHPQueue\Worker $worker, \PHPQueue\Job $job)
+	{
+		try
+		{
+			$worker->beforeJob();
+			$worker->runJob($job);
+			$worker->afterJob();
+			$worker->onSuccess();
+		}
+		catch (Exception $ex)
+		{
+			$worker->onError();
+			throw $ex;
+		}
+		return $worker;
 	}
 }
 Base::$queuePath = dirname(dirname(__DIR__)) . '/queues/';
+Base::$workerPath = dirname(dirname(__DIR__)) . '/workers/';
 ?>
