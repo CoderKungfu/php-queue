@@ -1,3 +1,0 @@
-[submodule "src/submodules/restler"]
-	path = src/submodules/restler
-	url = git://github.com/Luracast/Restler.git
