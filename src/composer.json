@@ -1,5 +1,8 @@
 {
     "require": {
         "Respect/Rest": "0.4.*"
+    },
+	"autoload": {
+        "psr-0": {"PHPQueue": "libraries/"}
     }
 }
