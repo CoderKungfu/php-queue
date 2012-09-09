@@ -4,6 +4,7 @@ abstract class JobQueue
 {
 	public $lastJobId;
 	public $lastJob;
+	public $dataSource;
 
 	public function __construct(){}
 	public function getQueueSize(){}
