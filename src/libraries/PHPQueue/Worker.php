@@ -12,6 +12,6 @@ abstract class Worker
 	public function afterJob(){}
 
 	public function onSuccess(){}
-	public function onError(){}
+	public function onError(\Exception $ex){}
 }
 ?>

@@ -59,9 +59,18 @@ class Base
 	 */
 	static public function addJob(\PHPQueue\JobQueue $queue, $newJob=array())
 	{
-		$queue->beforeAdd();
-		$status = $queue->addJob($newJob);
-		$queue->afterAdd();
+		$status = false;
+		try
+		{
+			$queue->beforeAdd();
+			$status = $queue->addJob($newJob);
+			$queue->afterAdd();
+		}
+		catch (Exception $ex)
+		{
+			$queue->onError($ex);
+			throw $ex;
+		}
 		return $status;
 	}
 
@@ -72,9 +81,18 @@ class Base
 	 */
 	static public function getJob(\PHPQueue\JobQueue $queue, $jobId=null)
 	{
-		$queue->beforeGet();
-		$job = $queue->getJob($jobId);
-		$queue->afterGet();
+		$job = null;
+		try
+		{
+			$queue->beforeGet();
+			$job = $queue->getJob($jobId);
+			$queue->afterGet();
+		}
+		catch (Exception $ex)
+		{
+			$queue->onError($ex);
+			throw $ex;
+		}
 		return $job;
 	}
 
@@ -86,10 +104,19 @@ class Base
 	 */
 	static public function updateJob(\PHPQueue\JobQueue $queue, $jobId=null, $resultData=null)
 	{
-		$queue->beforeUpdate();
-		$queue->updateJob($jobId, $resultData);
-		$status = $queue->clearJob($jobId);
-		$queue->afterUpdate();
+		$status = false;
+		try
+		{
+			$queue->beforeUpdate();
+			$queue->updateJob($jobId, $resultData);
+			$status = $queue->clearJob($jobId);
+			$queue->afterUpdate();
+		}
+		catch (Exception $ex)
+		{
+			$queue->onError($ex);
+			throw $ex;
+		}
 		return $status;
 	}
 
@@ -155,7 +182,7 @@ class Base
 		}
 		catch (Exception $ex)
 		{
-			$worker->onError();
+			$worker->onError($ex);
 			throw $ex;
 		}
 		return $worker;

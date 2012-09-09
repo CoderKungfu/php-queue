@@ -23,6 +23,6 @@ abstract class JobQueue
 	public function clearJob($jobId=null){}
 	public function afterUpdate(){}
 
-	public function onError(){}
+	public function onError(\Exception $ex){}
 }
 ?>
