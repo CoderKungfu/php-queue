@@ -88,5 +88,70 @@ class BaseTest extends PHPUnit_Framework_TestCase
 			$this->assertStringStartsWith("No more jobs.", $ex->getMessage());
 		}
 	}
+
+	public function testGetWorker()
+	{
+		try
+		{
+			PHPQueue\Base::getWorker(null);
+			$this->fail("Should not be able to get the Worker");
+		}
+		catch (Exception $ex)
+		{
+			$this->assertEquals("Worker name is empty", $ex->getMessage());
+		}
+		try
+		{
+			PHPQueue\Base::getWorker('NonExistent');
+			$this->fail("Should not be able to get the Worker");
+		}
+		catch (Exception $ex)
+		{
+			$this->assertStringStartsWith("Worker file does not exist:", $ex->getMessage());
+		}
+		try
+		{
+			PHPQueue\Base::getWorker('Sample', array('className'=>'NotSample'));
+			$this->fail("Should not be able to get the Worker");
+		}
+		catch (Exception $ex)
+		{
+			$this->assertStringStartsWith("Worker class does not exist:", $ex->getMessage());
+		}
+		$result = PHPQueue\Base::getWorker('Sample');
+		$this->assertInstanceOf('\\PHPQueue\\Worker', $result);
+	}
+
+	public function testWorkJob()
+	{
+		try
+		{
+			PHPQueue\Base::workJob(null, null);
+			$this->fail("Should not be able to work the Job");
+		}
+		catch (Exception $ex)
+		{
+			$this->assertStringStartsWith("Invalid worker object", $ex->getMessage());
+		}
+
+		$worker = PHPQueue\Base::getWorker('Sample');
+		try
+		{
+			PHPQueue\Base::workJob($worker, null);
+			$this->fail("Should not be able to work the Job");
+		}
+		catch (Exception $ex)
+		{
+			$this->assertStringStartsWith("Invalid job object", $ex->getMessage());
+		}
+
+		$job = new PHPQueue\Job();
+		$job->worker = 'Sample';
+		$job->data = array('var1'=>'Hello, world!');
+		$result = PHPQueue\Base::workJob($worker, $job);
+		$this->assertEquals(array('var1'=>"Hello Back!"), $result->resultData);
+		$this->assertEquals(\PHPQueue\Job::OK, $job->status);
+		$this->assertTrue($job->isSuccessful());
+	}
 }
 ?>
