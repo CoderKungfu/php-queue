@@ -3,6 +3,26 @@ require __DIR__ . '/../vendor/autoload.php';
 class SampleQueue extends PHPQueue\JobQueue
 {
 	private $jobs = array();
+	private $file_path = "/tmp/sample_data.ser";
+
+	public function __construct()
+	{
+		parent::__construct();
+		if (file_exists($this->file_path))
+		{
+			$data = unserialize(file_get_contents($this->file_path));
+			if (is_array($data))
+			{
+				$this->jobs = $data;
+			}
+		}
+	}
+
+	public function __destruct()
+	{
+		@file_put_contents($this->file_path, serialize($this->jobs));
+	}
+
 	public function addJob($newJob)
 	{
 		parent::addJob($newJob);
