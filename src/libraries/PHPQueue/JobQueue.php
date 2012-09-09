@@ -3,14 +3,28 @@ namespace PHPQueue;
 abstract class JobQueue
 {
 	public $lastJobId;
+	public $lastJob;
 
 	public function __construct(){}
+	public function getQueueSize(){}
 
-	public function beforeAdd(){}
-	public function addJob($newJob){}
+	/**
+	 * @param type $newJob
+	 * @throws \PHPQueue\Exception
+	 */
+	public function beforeAdd($newJob=null){}
+	/**
+	 * @param \PHPQueue\Job $newJob
+	 * @throws \PHPQueue\Exception
+	 */
+	public function addJob($newJob=null){}
 	public function afterAdd(){}
 
 	public function beforeGet(){}
+	/**
+	 * @param string $jobId
+	 * @return \PHPQueue\Job
+	 */
 	public function getJob($jobId=null)
 	{
 		return null;

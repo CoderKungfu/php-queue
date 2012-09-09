@@ -32,7 +32,7 @@ class Base
 			}
 			else
 			{
-				throw new \PHPQueue\Exception("Worker file does not exist: $classFile");
+				throw new \PHPQueue\Exception("Queue file does not exist: $classFile");
 			}
 
 			$className =  "\\" . $queue . 'Queue';
@@ -46,7 +46,7 @@ class Base
 			}
 			else
 			{
-				throw new \PHPQueue\Exception("Worker class does not exist: $className");
+				throw new \PHPQueue\Exception("Queue class does not exist: $className");
 			}
 		}
 		return self::$allQueues[$queue];
@@ -57,12 +57,20 @@ class Base
 	 * @param array $newJob
 	 * @return boolean
 	 */
-	static public function addJob(\PHPQueue\JobQueue $queue, $newJob=array())
+	static public function addJob($queue, $newJob=array())
 	{
+		if (!is_a($queue, '\\PHPQueue\\JobQueue'))
+		{
+			throw new \PHPQueue\Exception("Invalid queue object.");
+		}
+		if (empty($newJob))
+		{
+			throw new \PHPQueue\Exception("Invalid job data.");
+		}
 		$status = false;
 		try
 		{
-			$queue->beforeAdd();
+			$queue->beforeAdd($newJob);
 			$status = $queue->addJob($newJob);
 			$queue->afterAdd();
 		}
@@ -75,12 +83,16 @@ class Base
 	}
 
 	/**
-	 * @param JobQueue $queue
+	 * @param \PHPQueue\JobQueue $queue
 	 * @param string $jobId
 	 * @return \PHPQueue\Job
 	 */
-	static public function getJob(\PHPQueue\JobQueue $queue, $jobId=null)
+	static public function getJob($queue, $jobId=null)
 	{
+		if (!is_a($queue, '\\PHPQueue\\JobQueue'))
+		{
+			throw new \PHPQueue\Exception("Invalid queue object.");
+		}
 		$job = null;
 		try
 		{
@@ -102,8 +114,12 @@ class Base
 	 * @param mixed $resultData
 	 * @return boolean
 	 */
-	static public function updateJob(\PHPQueue\JobQueue $queue, $jobId=null, $resultData=null)
+	static public function updateJob($queue, $jobId=null, $resultData=null)
 	{
+		if (!is_a($queue, '\\PHPQueue\\JobQueue'))
+		{
+			throw new \PHPQueue\Exception("Invalid queue object.");
+		}
 		$status = false;
 		try
 		{
@@ -171,8 +187,12 @@ class Base
 	 * @return \PHPQueue\Worker
 	 * @throws \PHPQueue\Exception
 	 */
-	static public function workJob(\PHPQueue\Worker $worker, \PHPQueue\Job $job)
+	static public function workJob( $worker, \PHPQueue\Job $job)
 	{
+		if (!is_a($worker, '\\PHPQueue\\Worker'))
+		{
+			throw new \PHPQueue\Exception("Invalid worker object.");
+		}
 		try
 		{
 			$worker->beforeJob();

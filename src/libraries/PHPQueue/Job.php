@@ -5,12 +5,32 @@ class Job
 	public $worker;
 	public $jobId;
 	public $data;
-	public function __construct($json=null, $jobId=null)
+	public function __construct($data=null, $jobId=null)
 	{
 		$this->jobId = $jobId;
-		$raw_data = json_decode($json, true);
-		$this->worker = $raw_data['worker'];
-		$this->data = $raw_data['data'];
+		if (!empty($data))
+		{
+			if (is_array($data))
+			{
+				$this->worker = $data['worker'];
+				$this->data = $data['data'];
+			}
+			else if (is_object($data))
+			{
+				$this->worker = $data->worker;
+				$this->data = $data->data;
+			}
+			else
+			{
+				try
+				{
+					$data = json_decode($data, true);
+					$this->worker = $data['worker'];
+					$this->data = $data['data'];
+				}
+				catch (Exception $ex){}
+			}
+		}
 	}
 }
 ?>
