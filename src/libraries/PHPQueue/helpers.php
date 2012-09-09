@@ -7,7 +7,7 @@ class Helpers
 		if ( is_array($data) )
 		{
 			$return = array(
-				'code' => $code
+				  'code' => $code
 				, 'data'   => $data
 			);
 			if (!empty($message)) $return['message'] = $message;
