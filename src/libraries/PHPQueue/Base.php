@@ -150,7 +150,7 @@ class Base
 		}
 		if ( empty(self::$allWorkers[$workerName]) )
 		{
-			$classFile = self::$queuePath . '/' . $workerName . 'Worker.php';
+			$classFile = self::$workerPath . '/' . $workerName . 'Worker.php';
 			if ( !empty($options['classFile']) )
 			{
 				$classFile = $options['classFile'];
@@ -164,7 +164,7 @@ class Base
 				throw new \PHPQueue\Exception("Worker file does not exist: $classFile");
 			}
 
-			$className = "\\" . $queue . 'Worker';
+			$className = "\\" . $workerName . 'Worker';
 			if ( !empty($options['className']) )
 			{
 				$className = $options['className'];
@@ -187,15 +187,19 @@ class Base
 	 * @return \PHPQueue\Worker
 	 * @throws \PHPQueue\Exception
 	 */
-	static public function workJob( $worker, \PHPQueue\Job $job)
+	static public function workJob($worker, $job)
 	{
 		if (!is_a($worker, '\\PHPQueue\\Worker'))
 		{
 			throw new \PHPQueue\Exception("Invalid worker object.");
 		}
+		if (!is_a($job, '\\PHPQueue\\Job'))
+		{
+			throw new \PHPQueue\Exception("Invalid job object.");
+		}
 		try
 		{
-			$worker->beforeJob();
+			$worker->beforeJob($job->data);
 			$worker->runJob($job);
 			$worker->afterJob();
 			$worker->onSuccess();

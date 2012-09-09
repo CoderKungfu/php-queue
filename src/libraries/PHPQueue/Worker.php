@@ -7,8 +7,15 @@ abstract class Worker
 
 	public function __construct(){}
 
-	public function beforeJob(){}
-	public function runJob(\PHPQueue\Job $jobData){}
+	public function beforeJob($inputData)
+	{
+		$this->inputData = $inputData;
+		$this->resultData = null;
+	}
+	/**
+	 * @param \PHPQueue\Job $jobObject
+	 */
+	public function runJob($jobObject){}
 	public function afterJob(){}
 
 	public function onSuccess(){}
