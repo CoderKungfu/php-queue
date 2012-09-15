@@ -1,6 +1,9 @@
 {
     "require": {
-        "Respect/Rest": "0.4.*"
+          "Respect/Rest": "0.4.*"
+		, "monolog/monolog": "1.2.*"
+		, "predis/predis": "0.7.*"
+		, "mrpoundsign/pheanstalk-5.3": "dev-master"
     },
 	"autoload": {
         "psr-0": {"PHPQueue": "libraries/"}

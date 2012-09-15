@@ -2,28 +2,22 @@
 namespace PHPQueue;
 abstract class Runner
 {
-	public $queue_options;
-	public $queue_name;
+	const RUN_USLEEP = 1000000;
+	public $queueOptions;
+	public $queueName;
 	private $queue;
-	public $log;
-	static private $worker_path;
+	public $logger;
+	public $logPath;
 
 	public function __construct($queue='', $options=array())
 	{
-		self::$worker_path = dirname(dirname(__DIR__)) . '/workers/';
-		$this->log = array();
 		if (!empty($queue))
 		{
-			$this->queue_name = $queue;
-		}
-		else
-		{
-			$className = __CLASS__;
-			$this->queue_name = str_replace('Runner', '', $className);
+			$this->queueName = $queue;
 		}
 		if (!empty($options))
 		{
-			$this->queue_options = $options;
+			$this->queueOptions = $options;
 		}
 		return $this;
 	}
@@ -38,19 +32,25 @@ abstract class Runner
 		}
 	}
 
-	public function setup(){}
+	public function setup()
+	{
+		$this->logPath = dirname(dirname(__DIR__)) . '/runners/logs/' . $this->queueName . '-' . date('Ymd') . '.log';
+		$this->logger = new \Monolog\Logger($this->queueName);
+		$this->logger->pushHandler(new \Monolog\Handler\StreamHandler($this->logPath, \Monolog\Logger::INFO));
+	}
 
 	protected function beforeLoop()
 	{
-		if (empty($this->queue_name))
+		if (empty($this->queueName))
 		{
 			throw new \PHPQueue\Exception('Queue name is invalid');
 		}
-		$this->queue = \PHPQueue\Base::getQueue($this->queue, $this->queue_options);
+		$this->queue = \PHPQueue\Base::getQueue($this->queueName, $this->queueOptions);
 	}
 
 	protected function loop()
 	{
+		$sleepTime = self::RUN_USLEEP;
 		$newJob = null;
 		try
 		{
@@ -58,24 +58,30 @@ abstract class Runner
 		}
 		catch (Exception $ex)
 		{
-			$this->log[] = "Error: " . $ex->getMessage();
+			$this->logger->addError($ex->getMessage());
+			$sleepTime = self::RUN_USLEEP * 5;
 		}
-		if ( empty($newJob) )
+		if (empty($newJob))
 		{
-			$this->log[] = "Notice: No Job found.";
-			return;
+			$this->logger->addNotice("No Job found.");
+			$sleepTime = self::RUN_USLEEP * 10;
 		}
-		try
+		else
 		{
-			$worker = \PHPQueue\Base::getWorker($newJob->worker);
-			\PHPQueue\Base::workJob($worker, $newJob);
-			return \PHPQueue\Base::updateJob($queue, $newJob->jobId, $worker->resultData);
+			try
+			{
+				$worker = \PHPQueue\Base::getWorker($newJob->worker);
+				\PHPQueue\Base::workJob($worker, $newJob);
+				return \PHPQueue\Base::updateJob($this->queue, $newJob->jobId, $worker->resultData);
+			}
+			catch (Exception $ex)
+			{
+				$this->queue->releaseJob($newJob->jobId);
+				throw $ex;
+			}
 		}
-		catch (Exception $ex)
-		{
-			$this->queue->releaseJob($newJob->jobId);
-			throw $ex;
-		}
+		$this->logger->addInfo('Sleeping ' . ceil($sleepTime / 1000000) . ' seconds.');
+		usleep($sleepTime);
 	}
 }
 ?>

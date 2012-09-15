@@ -1,13 +1,6 @@
 <?php
-require __DIR__ . '/../vendor/autoload.php';
-class SampleRunner extends PHPQueue\Runner
-{
-	public function setup()
-	{
-		$this->queue_name = 'Sample';
-		$this->queue_options = array();
-	}
-}
-$runner = new SampleRunner();
+require __DIR__ . '/../config.php';
+class SampleRunner extends PHPQueue\Runner{}
+$runner = new SampleRunner('Sample');
 $runner->run();
 ?>
