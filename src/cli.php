@@ -2,7 +2,7 @@
 // Usage:
 // php cli.php <queuename> add --data '{"boo":"bar","foo":"car"}'
 // php cli.php <queuename> work
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/config.php';
 
 $queue_name = $argv[1];
 $action = $argv[2];
