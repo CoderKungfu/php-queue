@@ -8,8 +8,9 @@ class SampleWorker extends PHPQueue\Worker
 	public function runJob($jobObject)
 	{
 		parent::runJob($jobObject);
-		$jobObject->onSuccessful();
-		$this->resultData = array('var1'=>"Hello Back!");
+		$jobData = $jobObject->data;
+		$jobData['var2'] = "Welcome back!";
+		$this->resultData = $jobData;
 	}
 }
 ?>

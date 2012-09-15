@@ -201,12 +201,14 @@ class Base
 		{
 			$worker->beforeJob($job->data);
 			$worker->runJob($job);
+			$job->onSuccessful();
 			$worker->afterJob();
 			$worker->onSuccess();
 		}
 		catch (Exception $ex)
 		{
 			$worker->onError($ex);
+			$job->onError();
 			throw $ex;
 		}
 		return $worker;

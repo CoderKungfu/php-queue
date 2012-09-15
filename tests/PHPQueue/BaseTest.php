@@ -149,7 +149,7 @@ class BaseTest extends PHPUnit_Framework_TestCase
 		$job->worker = 'Sample';
 		$job->data = array('var1'=>'Hello, world!');
 		$result = PHPQueue\Base::workJob($worker, $job);
-		$this->assertEquals(array('var1'=>"Hello Back!"), $result->resultData);
+		$this->assertEquals(array('var1'=>'Hello, world!', 'var2'=>"Welcome back!"), $result->resultData);
 		$this->assertEquals(\PHPQueue\Job::OK, $job->status);
 		$this->assertTrue($job->isSuccessful());
 	}
