@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../config.php';
 
 $r3 = new Respect\Rest\Router;
 

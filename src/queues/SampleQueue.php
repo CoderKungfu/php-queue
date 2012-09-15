@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../config.php';
 class SampleQueue extends PHPQueue\JobQueue
 {
 	private $jobs = array();

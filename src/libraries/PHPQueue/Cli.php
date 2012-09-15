@@ -38,7 +38,7 @@ class Cli
 			echo "Error: " . $ex->getMessage() . "\n";
 		}
 
-		if ( empty($newJob) )
+		if (empty($newJob))
 		{
 			echo "Notice: No Job found.\n";
 			return;
