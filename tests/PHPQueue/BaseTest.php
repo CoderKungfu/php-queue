@@ -1,6 +1,15 @@
 <?php
 class BaseTest extends PHPUnit_Framework_TestCase
 {
+	public function __construct($name = NULL, array $data = array(), $dataName = '')
+	{
+		parent::__construct($name, $data, $dataName);
+		if (file_exists('/tmp/sample_data.ser'))
+		{
+			@unlink('/tmp/sample_data.ser');
+		}
+	}
+
     public function testGetQueue()
     {
 		try
