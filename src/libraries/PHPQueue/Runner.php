@@ -34,9 +34,21 @@ abstract class Runner
 
 	public function setup()
 	{
-		$this->logPath = dirname(dirname(__DIR__)) . '/runners/logs/' . $this->queueName . '-' . date('Ymd') . '.log';
-		$this->logger = new \Monolog\Logger($this->queueName);
-		$this->logger->pushHandler(new \Monolog\Handler\StreamHandler($this->logPath, \Monolog\Logger::INFO));
+		if (empty($this->logPath))
+		{
+			$baseFolder = dirname(dirname(__DIR__));
+			$this->logPath = sprintf(
+								  '%s/runners/logs/%s-%s.log'
+								, $baseFolder
+								, $this->queueName
+								, date('Ymd')
+							);
+		}
+		$this->logger = \PHPQueue\Logger::startLogger(
+							  $this->queueName
+							, Logger::INFO
+							, $this->logPath
+						);
 	}
 
 	protected function beforeLoop()
@@ -68,14 +80,18 @@ abstract class Runner
 		}
 		else
 		{
+			$this->logger->addInfo("Running new job with worker: " . $newJob->worker);
 			try
 			{
 				$worker = \PHPQueue\Base::getWorker($newJob->worker);
 				\PHPQueue\Base::workJob($worker, $newJob);
+				$this->logger->addInfo('Job done. Updating job.');
 				return \PHPQueue\Base::updateJob($this->queue, $newJob->jobId, $worker->resultData);
 			}
 			catch (Exception $ex)
 			{
+				$this->logger->addError($ex->getMessage());
+				$this->logger->addInfo('Releasing job.');
 				$this->queue->releaseJob($newJob->jobId);
 				throw $ex;
 			}

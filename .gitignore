@@ -9,5 +9,6 @@ build/phpdox/*
 cache.properties
 src/vendor/*
 src/composer.lock
+src/runners/logs/*.log
 /.sonar/
 .DS_Store
