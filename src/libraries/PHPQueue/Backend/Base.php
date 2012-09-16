@@ -4,11 +4,19 @@ abstract class Base
 {
 	public $last_job;
 	public $last_job_id;
-	private $open_items = array();
+	protected $open_items = array();
+	protected $connection;
 
 	public function __construct(){}
+	public function connect(){}
 
-	public function beforeAdd($data=null){}
+	public function beforeAdd($data=null)
+	{
+		if (is_null($this->connection))
+		{
+			$this->connect();
+		}
+	}
 	public function add($data=null){}
 	public function afterAdd(){}
 
@@ -18,6 +26,10 @@ abstract class Base
 		{
 			$this->last_job_id = $jobId;
 		}
+		if (is_null($this->connection))
+		{
+			$this->connect();
+		}
 	}
 	public function get($jobId=null){}
 	public function afterGet()
@@ -26,20 +38,31 @@ abstract class Base
 		$this->open_items[$id] = $this->last_job;
 	}
 
-	public function clear($jobId=null)
+	public function  beforeClear()
 	{
+		if (is_null($this->connection))
+		{
+			$this->connect();
+		}
 		if (!empty($jobId))
 		{
 			$this->last_job_id = $jobId;
 		}
 	}
-	public function release($jobId=null)
+	public function clear($jobId=null){}
+
+	public function beforeRelease()
 	{
+		if (is_null($this->connection))
+		{
+			$this->connect();
+		}
 		if (!empty($jobId))
 		{
 			$this->last_job_id = $jobId;
 		}
 	}
+	public function release($jobId=null){}
 	public function afterClearRelease()
 	{
 		$id = $this->last_job_id;
