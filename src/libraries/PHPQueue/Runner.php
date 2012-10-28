@@ -8,6 +8,7 @@ abstract class Runner
 	private $queue;
 	public $logger;
 	public $logPath;
+	public $logLevel;
 
 	public function __construct($queue='', $options=array())
 	{
@@ -18,6 +19,21 @@ abstract class Runner
 		if (!empty($options))
 		{
 			$this->queueOptions = $options;
+		}
+		if (
+			   !empty($this->queueOptions['logPath'])
+			&& is_writable($this->queueOptions['logPath'])
+		)
+		{
+			$this->logPath = $this->queueOptions['logPath'];
+		}
+		if ( !empty($this->queueOptions['logLevel']) )
+		{
+			$this->logLevel = $this->queueOptions['logLevel'];
+		}
+		else
+		{
+			$this->logLevel = Logger::INFO;
 		}
 		return $this;
 	}
@@ -46,7 +62,7 @@ abstract class Runner
 		}
 		$this->logger = \PHPQueue\Logger::startLogger(
 							  $this->queueName
-							, Logger::INFO
+							, $this->logLevel
 							, $this->logPath
 						);
 	}
