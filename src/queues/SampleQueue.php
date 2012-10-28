@@ -1,5 +1,5 @@
 <?php
-require dirname(__DIR__) . '/config.php';
+require_once dirname(__DIR__) . '/config.php';
 class SampleQueue extends PHPQueue\JobQueue
 {
 	private $jobs = array();
