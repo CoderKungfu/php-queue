@@ -4,6 +4,7 @@
 		, "monolog/monolog": "1.2.*"
 		, "predis/predis": "0.7.*"
 		, "mrpoundsign/pheanstalk-5.3": "dev-master"
+		, "shaneharter/php-daemon": "dev-master"
     },
 	"autoload": {
         "psr-0": {"PHPQueue": "libraries/"}
