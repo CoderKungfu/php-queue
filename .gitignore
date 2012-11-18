@@ -1,5 +1,4 @@
 /nbproject/private/
-src/submodules/*
 build/api/*
 build/code-browser/*
 build/coverage/*
@@ -9,7 +8,7 @@ build/phpdox/*
 cache.properties
 src/vendor/*
 src/composer.lock
-src/runners/logs/*.log
-src/queues/logs/*.log
+src/demo/runners/logs/*.log
+src/demo/queues/logs/*.log
 /.sonar/
 .DS_Store
