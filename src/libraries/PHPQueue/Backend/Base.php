@@ -2,8 +2,8 @@
 namespace PHPQueue\Backend;
 abstract class Base
 {
-	public $last_job;
-	public $last_job_id;
+	public $lastJob;
+	public $lastJobId;
 	protected $open_items = array();
 	protected $connection;
 
@@ -24,7 +24,7 @@ abstract class Base
 	{
 		if (!empty($jobId))
 		{
-			$this->last_job_id = $jobId;
+			$this->lastJobId = $jobId;
 		}
 		if (is_null($this->connection))
 		{
@@ -34,8 +34,8 @@ abstract class Base
 	public function get($jobId=null){}
 	public function afterGet()
 	{
-		$id = $this->last_job_id;
-		$this->open_items[$id] = $this->last_job;
+		$id = $this->lastJobId;
+		$this->open_items[$id] = $this->lastJob;
 	}
 
 	public function  beforeClear()
@@ -46,7 +46,7 @@ abstract class Base
 		}
 		if (!empty($jobId))
 		{
-			$this->last_job_id = $jobId;
+			$this->lastJobId = $jobId;
 		}
 	}
 	public function clear($jobId=null){}
@@ -59,16 +59,24 @@ abstract class Base
 		}
 		if (!empty($jobId))
 		{
-			$this->last_job_id = $jobId;
+			$this->lastJobId = $jobId;
 		}
 	}
 	public function release($jobId=null){}
 	public function afterClearRelease()
 	{
-		$id = $this->last_job_id;
+		$id = $this->lastJobId;
 		unset($this->open_items[$id]);
 	}
 
 	public function onError($ex){}
+
+	public function isJobOpen($jobId)
+	{
+		if (empty($this->open_items[$jobId]))
+		{
+			throw new \PHPQueue\Exception("Job was not previously retrieved.");
+		}
+	}
 }
 ?>
