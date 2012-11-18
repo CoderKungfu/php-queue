@@ -54,16 +54,15 @@ abstract class Runner
 		{
 			$baseFolder = dirname(dirname(__DIR__));
 			$this->logPath = sprintf(
-								  '%s/runners/logs/%s-%s.log'
+								  '%s/demo/runners/logs/'
 								, $baseFolder
-								, $this->queueName
-								, date('Ymd')
 							);
 		}
+		$logFileName = sprintf('%s-%s.log', $this->queueName, date('Ymd'));
 		$this->logger = \PHPQueue\Logger::startLogger(
 							  $this->queueName
 							, $this->logLevel
-							, $this->logPath
+							, $this->logPath . $logFileName
 						);
 	}
 
