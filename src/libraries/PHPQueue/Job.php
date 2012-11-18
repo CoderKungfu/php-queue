@@ -9,6 +9,11 @@ class Job
 	public $jobId;
 	public $data;
 	public $status;
+
+	/**
+	 * @param array $data
+	 * @param mixed $jobId
+	 */
 	public function __construct($data=null, $jobId=null)
 	{
 		$this->jobId = $jobId;
