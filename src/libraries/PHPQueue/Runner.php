@@ -96,18 +96,18 @@ abstract class Runner
 		}
 		else
 		{
-			$this->logger->addInfo("Running new job with worker: " . $newJob->worker);
+			$this->logger->addInfo(sprintf("Running new job (%s) with worker: %s", $newJob->jobId, $newJob->worker));
 			try
 			{
 				$worker = \PHPQueue\Base::getWorker($newJob->worker);
 				\PHPQueue\Base::workJob($worker, $newJob);
-				$this->logger->addInfo('Job done. Updating job.');
+				$this->logger->addInfo(sprintf('Worker is done. Updating job (%s). Result:', $newJob->jobId), $worker->resultData);
 				return \PHPQueue\Base::updateJob($this->queue, $newJob->jobId, $worker->resultData);
 			}
 			catch (Exception $ex)
 			{
 				$this->logger->addError($ex->getMessage());
-				$this->logger->addInfo('Releasing job.');
+				$this->logger->addInfo(sprintf('Releasing job (%s).', $newJob->jobId));
 				$this->queue->releaseJob($newJob->jobId);
 				throw $ex;
 			}
