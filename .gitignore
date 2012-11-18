@@ -10,5 +10,6 @@ cache.properties
 src/vendor/*
 src/composer.lock
 src/runners/logs/*.log
+src/queues/logs/*.log
 /.sonar/
 .DS_Store
