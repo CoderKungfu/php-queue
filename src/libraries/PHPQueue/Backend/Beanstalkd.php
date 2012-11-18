@@ -20,15 +20,22 @@ class Beanstalkd extends Base
 
 	public function connect()
 	{
-		$this->connection = new \Pheanstalk($this->server_uri);
+		$this->connection = new \Pheanstalk\Pheanstalk($this->server_uri);
 	}
 
+	/**
+	 * @param array $data
+	 * @return boolean Status of saving
+	 */
 	public function add($data=array())
 	{
 		$this->beforeAdd();
 		return $this->connection->useTube($this->tube)->put(json_encode($data));
 	}
 
+	/**
+	 * @return array
+	 */
 	public function get()
 	{
 		$this->beforeGet();
@@ -36,7 +43,7 @@ class Beanstalkd extends Base
 		$this->last_job = $newJob;
 		$this->last_job_id = $newJob->getId();
 		$this->afterGet();
-		return $newJob;
+		return json_decode($newJob->getData(), true);
 	}
 
 	public function clear($jobId=null)
