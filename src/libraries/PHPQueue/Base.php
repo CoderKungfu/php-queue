@@ -214,6 +214,4 @@ class Base
 		return $worker;
 	}
 }
-Base::$queuePath = dirname(dirname(__DIR__)) . '/queues/';
-Base::$workerPath = dirname(dirname(__DIR__)) . '/workers/';
 ?>
