@@ -214,5 +214,26 @@ class Base
 		}
 		return $worker;
 	}
+
+	/**
+	 * Factory method to instantiate a copy of a backend class.
+	 * @param string $type Case-sensitive class name.
+	 * @param array $options Constuctor options.
+	 * @return \PHPQueue\backend_classname
+	 * @throws \PHPQueue\Exception
+	 */
+	static public function getBackend($type=null, $options=array())
+	{
+		$backend_classname = '\\PHPQueue\\Backend\\' . $type;
+		$obj = new $backend_classname($options);
+		if (is_a($obj, $backend_classname))
+		{
+			return $obj;
+		}
+		else
+		{
+			throw new \PHPQueue\Exception("Invalid Backend object.");
+		}
+	}
 }
 ?>
