@@ -1,9 +1,19 @@
 {
+	"name": "miccheng/php-queue",
+    "description": "Unified REST front-end for different queuing backends.",
+    "keywords": ["queue", "transaction"],
+    "homepage": "http://github.com/miccheng/php-queue",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michael Cheng",
+            "email": "mcheng.work@gmail.com"
+        }
+	],
     "require": {
-          "Respect/Rest": "0.4.*"
-		, "monolog/monolog": "1.2.*"
-		, "predis/predis": "0.7.*"
-		, "mrpoundsign/pheanstalk-5.3": "dev-master"
+        "Respect/Rest": "0.4.*",
+		"monolog/monolog": "1.2.*"
     },
 	"suggest": {
         "predis/predis": "For Redis backend support",
