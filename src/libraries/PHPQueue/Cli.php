@@ -18,8 +18,21 @@ class Cli
 
 	public function add($payload=array())
 	{
-		$queue = \PHPQueue\Base::getQueue($this->queue, $this->queue_options);
-		return \PHPQueue\Base::addJob($queue, $payload);
+		fwrite(STDOUT, "===========================================================\n");
+		fwrite(STDOUT, "Adding Job...");
+		$status = false;
+		try
+		{
+			$queue = \PHPQueue\Base::getQueue($this->queue, $this->queue_options);
+			$status = \PHPQueue\Base::addJob($queue, $payload);
+			fwrite(STDOUT, "Done.\n");
+		}
+		catch (Exception $ex)
+		{
+			fwrite(STDOUT, sprintf("Error: %s\n", $ex->getMessage()));
+			throw $ex;
+		}
+		return $status;
 	}
 
 	public function work()
@@ -29,28 +42,32 @@ class Cli
 		try
 		{
 			$newJob = \PHPQueue\Base::getJob($queue);
-			echo "===========================================================\n";
-			echo "Next Job:\n";
+			fwrite(STDOUT, "===========================================================\n");
+			fwrite(STDOUT, "Next Job:\n");
 			var_dump($newJob);
 		}
 		catch (Exception $ex)
 		{
-			echo "Error: " . $ex->getMessage() . "\n";
+			fwrite(STDOUT, "Error: " . $ex->getMessage() . "\n");
 		}
 
 		if (empty($newJob))
 		{
-			echo "Notice: No Job found.\n";
+			fwrite(STDOUT, "Notice: No Job found.\n");
 			return;
 		}
 		try
 		{
+			fwrite(STDOUT, sprintf("Running worker (%s) now... ", $newJob->worker));
 			$newWorker = \PHPQueue\Base::getWorker($newJob->worker);
 			\PHPQueue\Base::workJob($newWorker, $newJob);
+			fwrite(STDOUT, "Done.\n");
+			fwrite(STDOUT, "Updating job... \n");
 			return \PHPQueue\Base::updateJob($queue, $newJob->jobId, $newWorker->resultData);
 		}
 		catch (Exception $ex)
 		{
+			fwrite(STDOUT, sprintf("\nError occured: %s\n", $ex->getMessage()));
 			$queue->releaseJob($newJob->jobId);
 			throw $ex;
 		}
