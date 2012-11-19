@@ -6,8 +6,8 @@ build/logs/*
 build/pdepend/*
 build/phpdox/*
 cache.properties
-src/vendor/*
-src/composer.lock
+vendor/*
+composer.lock
 src/demo/runners/logs/*.log
 src/demo/queues/logs/*.log
 /.sonar/
