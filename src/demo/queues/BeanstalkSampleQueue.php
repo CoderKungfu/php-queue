@@ -43,5 +43,10 @@ class BeanstalkSampleQueue extends PHPQueue\JobQueue
 	{
 		$this->dataSource->clear($jobId);
 	}
+
+	public function releaseJob($jobId = null)
+	{
+		$this->dataSource->release($jobId);
+	}
 }
 ?>
