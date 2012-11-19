@@ -1,6 +1,4 @@
 <?php
-require_once dirname(__DIR__) . '/config.php';
-
 class BeanstalkSampleQueue extends PHPQueue\JobQueue
 {
 	private $dataSource;

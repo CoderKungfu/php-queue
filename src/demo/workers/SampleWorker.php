@@ -1,5 +1,4 @@
 <?php
-require_once dirname(__DIR__) . '/config.php';
 class SampleWorker extends PHPQueue\Worker
 {
 	/**
