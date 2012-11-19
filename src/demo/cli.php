@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 // Usage:
 // php cli.php <queuename> add --data '{"boo":"bar","foo":"car"}'
@@ -26,4 +27,3 @@ switch ($action)
 		break;
 }
 ?>
-Done.
