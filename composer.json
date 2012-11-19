@@ -1,0 +1,15 @@
+{
+    "require": {
+          "Respect/Rest": "0.4.*"
+		, "monolog/monolog": "1.2.*"
+		, "predis/predis": "0.7.*"
+		, "mrpoundsign/pheanstalk-5.3": "dev-master"
+    },
+	"suggest": {
+        "predis/predis": "For Redis backend support",
+        "mrpoundsign/pheanstalk-5.3": "For Beanstalkd backend support"
+    },
+	"autoload": {
+        "psr-0": {"PHPQueue": "src/libraries/"}
+    }
+}
