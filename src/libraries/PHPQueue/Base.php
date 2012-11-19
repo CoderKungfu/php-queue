@@ -131,6 +131,7 @@ class Base
 		catch (Exception $ex)
 		{
 			$queue->onError($ex);
+			$queue->releaseJob($jobId);
 			throw $ex;
 		}
 		return $status;
