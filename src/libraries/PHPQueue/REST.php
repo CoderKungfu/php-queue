@@ -17,7 +17,7 @@ class REST
 							'application/json' => 'json_encode'
 						)
 				)
-				->any('/*/*', function($queue=null, $jobId=null)
+				->any('/*/**', function($queue=null, $jobId=null)
 				{
 					return \PHPQueue\REST::route($queue, $jobId);
 				});
@@ -39,10 +39,10 @@ class REST
 	/**
 	 * Specify how a routed URL should be handled.
 	 * @param string $queue
-	 * @param string $action
+	 * @param array $actions
 	 * @return stdClass
 	 */
-	static public function route($queue=null, $action=null)
+	static public function route($queue=null, $actions=array())
 	{
 		$method = $_SERVER['REQUEST_METHOD'];
 		switch($method)
@@ -51,7 +51,7 @@ class REST
 				return self::post($queue);
 				break;
 			case 'GET':
-				return self::get($queue, $action);
+				return self::get($queue, $actions);
 				break;
 			default:
 				return self::failed(404, "Method not supported.");
@@ -62,15 +62,15 @@ class REST
 	/**
 	 * Handles a GET method
 	 * @param string $queueName
-	 * @param string $action
+	 * @param array $actions
 	 * @return stdClass
 	 */
-	protected static function get($queueName=null, $action=null)
+	protected static function get($queueName=null, $actions=array())
 	{
+		$action = $actions[0];
 		switch($action)
 		{
 			case 'work':
-			case 'work/':
 				return self::work($queueName);
 				break;
 			default:
@@ -139,7 +139,7 @@ class REST
 		}
 		catch (Exception $ex)
 		{
-			return self::failed($ex->getCode(), $ex->getMessage());
+			return self::failed(405, $ex->getMessage());
 		}
 
 		if (empty($newJob))
