@@ -1,25 +1,26 @@
 {
 	"name": "miccheng/php-queue",
-    "description": "Unified REST front-end for different queuing backends.",
-    "keywords": ["queue", "transaction"],
-    "homepage": "http://github.com/miccheng/php-queue",
-    "type": "library",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Michael Cheng",
-            "email": "mcheng.work@gmail.com"
-        }
+	"description": "Unified REST front-end for different queuing backends.",
+	"keywords": ["queue", "transaction"],
+	"homepage": "http://github.com/miccheng/php-queue",
+	"type": "library",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Michael Cheng",
+			"email": "mcheng.work@gmail.com"
+		}
 	],
-    "require": {
-        "Respect/Rest": "0.4.*",
+	"require": {
+		"Respect/Rest": "0.4.*",
 		"monolog/monolog": "1.2.*"
-    },
+	},
 	"suggest": {
-        "predis/predis": "For Redis backend support",
-        "mrpoundsign/pheanstalk-5.3": "For Beanstalkd backend support"
-    },
+		"predis/predis": "For Redis backend support",
+		"mrpoundsign/pheanstalk-5.3": "For Beanstalkd backend support",
+		"amazonwebservices/aws-sdk-for-php": "For AWS SQS backend support"
+	},
 	"autoload": {
-        "psr-0": {"PHPQueue": "src/libraries/"}
-    }
+		"psr-0": {"PHPQueue": "src/libraries/"}
+	}
 }
