@@ -25,7 +25,7 @@ class Helpers
 			$return->code = $code;
 			if (!empty($message)) $return->message = $message;
 		}
-		echo json_encode($return);
+		return $return;
 	}
 }
 ?>
