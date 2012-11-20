@@ -11,7 +11,7 @@ class BeanstalkSampleQueue extends PHPQueue\JobQueue
 
 	public function __construct()
 	{
-		$this->dataSource = \PHPQueue\Base::getBackend('Beanstalkd', $this->sourceConfig);
+		$this->dataSource = \PHPQueue\Base::backendFactory('Beanstalkd', $this->sourceConfig);
 		$this->resultLog = \PHPQueue\Logger::startLogger(
 							  'BeanstalkSampleLogger'
 							, PHPQueue\Logger::INFO
