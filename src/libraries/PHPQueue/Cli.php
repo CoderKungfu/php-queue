@@ -2,17 +2,18 @@
 namespace PHPQueue;
 class Cli
 {
-	public $queue_options;
-	private $queue;
-	static private $worker_path;
+	public $queueOptions = array();
+	public $queueName;
 
 	public function __construct($options=array())
 	{
-		self::$worker_path = dirname(dirname(__DIR__)) . '/workers/';
-		$this->queue_options = $options;
+		if ( !empty($options) )
+		{
+			$this->queueOptions = array_merge($this->queueOptions, $options);
+		}
 		if ( !empty($options['queue']) )
 		{
-			$this->queue = $options['queue'];
+			$this->queueName = $options['queue'];
 		}
 	}
 
@@ -23,7 +24,7 @@ class Cli
 		$status = false;
 		try
 		{
-			$queue = \PHPQueue\Base::getQueue($this->queue, $this->queue_options);
+			$queue = \PHPQueue\Base::getQueue($this->queueName, $this->queueOptions);
 			$status = \PHPQueue\Base::addJob($queue, $payload);
 			fwrite(STDOUT, "Done.\n");
 		}
@@ -38,7 +39,7 @@ class Cli
 	public function work()
 	{
 		$newJob = null;
-		$queue = \PHPQueue\Base::getQueue($this->queue, $this->queue_options);
+		$queue = \PHPQueue\Base::getQueue($this->queueName, $this->queueOptions);
 		try
 		{
 			$newJob = \PHPQueue\Base::getJob($queue);
