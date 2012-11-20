@@ -4,6 +4,7 @@ class Beanstalkd extends Base
 {
 	public $server_uri;
 	public $tube;
+	static $reserve_timeout = 1;
 
 	public function __construct($options=array())
 	{
@@ -39,7 +40,11 @@ class Beanstalkd extends Base
 	public function get()
 	{
 		$this->beforeGet();
-		$newJob = $this->connection->watch($this->tube)->reserve();
+		$newJob = $this->connection->watch($this->tube)->reserve(self::$reserve_timeout);
+		if ($newJob == false)
+		{
+			throw new \PHPQueue\Exception("No job found.");
+		}
 		$this->lastJob = $newJob;
 		$this->lastJobId = $newJob->getId();
 		$this->afterGet();
