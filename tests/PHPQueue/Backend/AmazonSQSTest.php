@@ -1,0 +1,61 @@
+<?php
+class AmazonSQSTest extends PHPUnit_Framework_TestCase
+{
+	private $object;
+
+	public function setUp()
+	{
+		parent::setUp();
+		$options = array(
+			  'region'      => \AmazonSQS::REGION_APAC_SE1
+			, 'queue'       => 'https://sqs.ap-southeast-1.amazonaws.com/524787626913/testqueue'
+//			, 'sqs_options' => array(
+//								  'key'    => 'xxx'
+//								, 'secret' => 'xxx'
+//							)
+			, 'receiving_options' => array('VisibilityTimeout' => 0)
+		);
+		$this->object = new PHPQueue\Backend\AmazonSQS($options);
+	}
+
+	public function testAdd()
+    {
+		$data = array('1','Willy','Wonka');
+		$result = $this->object->add($data);
+		$this->assertTrue($result);
+	}
+
+	/**
+	 * @depends testAdd
+	 */
+	public function testGet()
+    {
+		$result = $this->object->get();
+		$this->assertNotEmpty($result);
+		$this->assertEquals(array('1','Willy','Wonka'), $result);
+	}
+
+	/**
+	 * @depends testAdd
+	 */
+	public function testClear()
+    {
+		try
+		{
+			$jobId = 'xxx';
+			$this->object->clear($jobId);
+			$this->fail("Should not be able to delete.");
+		}
+		catch(Exception $ex)
+		{
+			$this->assertTrue(true);
+		}
+
+		$result = $this->object->get();
+		$this->assertNotEmpty($result);
+		$jobId = $this->object->lastJobId;
+		$result = $this->object->clear($jobId);
+		$this->assertTrue($result);
+	}
+}
+?>
