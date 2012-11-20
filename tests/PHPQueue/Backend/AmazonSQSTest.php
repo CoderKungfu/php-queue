@@ -53,7 +53,7 @@ class AmazonSQSTest extends PHPUnit_Framework_TestCase
 
 		$result = $this->object->get();
 		$this->assertNotEmpty($result);
-		$jobId = $this->object->lastJobId;
+		$jobId = $this->object->last_job_id;
 		$result = $this->object->clear($jobId);
 		$this->assertTrue($result);
 	}
