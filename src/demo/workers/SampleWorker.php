@@ -9,7 +9,7 @@ class SampleWorker extends PHPQueue\Worker
 		parent::runJob($jobObject);
 		$jobData = $jobObject->data;
 		$jobData['var2'] = "Welcome back!";
-		$this->resultData = $jobData;
+		$this->result_data = $jobData;
 	}
 }
 ?>

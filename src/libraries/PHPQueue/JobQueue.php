@@ -2,8 +2,8 @@
 namespace PHPQueue;
 abstract class JobQueue
 {
-	public $lastJobId;
-	public $lastJob;
+	public $last_job_id;
+	public $last_job;
 
 	public function __construct(){}
 	public function getQueueSize(){}

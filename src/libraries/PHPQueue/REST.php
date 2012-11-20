@@ -150,12 +150,12 @@ class REST
 		{
 			$newWorker = \PHPQueue\Base::getWorker($newJob->worker);
 			\PHPQueue\Base::workJob($newWorker, $newJob);
-			\PHPQueue\Base::updateJob($queue, $newJob->jobId, $newWorker->resultData);
+			\PHPQueue\Base::updateJob($queue, $newJob->job_id, $newWorker->result_data);
 			return self::successful();
 		}
 		catch (Exception $ex)
 		{
-			$queue->releaseJob($newJob->jobId);
+			$queue->releaseJob($newJob->job_id);
 			return self::failed($ex->getCode(), $ex->getMessage());
 		}
 	}

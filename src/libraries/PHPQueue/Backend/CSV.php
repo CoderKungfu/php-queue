@@ -2,9 +2,9 @@
 namespace PHPQueue\Backend;
 class CSV extends Base
 {
-	public $filePath;
-	public $putHandle;
-	public $getHandle;
+	public $file_path;
+	public $put_handle;
+	public $get_handle;
 
 	public function __construct($options=array())
 	{
@@ -17,20 +17,20 @@ class CSV extends Base
 
 		if ( !empty($options['filePath']) )
 		{
-			$this->filePath = $options['filePath'];
+			$this->file_path = $options['filePath'];
 		}
-		if ( !file_exists($this->filePath) )
+		if ( !file_exists($this->file_path) )
 		{
-			file_put_contents($this->filePath, '');
+			file_put_contents($this->file_path, '');
 		}
-		if (is_writable($this->filePath))
+		if (is_writable($this->file_path))
 		{
-			$this->putHandle = fopen($this->filePath, 'a');
-			$this->getHandle = fopen($this->filePath, 'r+');
+			$this->put_handle = fopen($this->file_path, 'a');
+			$this->get_handle = fopen($this->file_path, 'r+');
 		}
 		else
 		{
-			throw new \PHPQueue\Exception(sprintf("File is not writable: %s", $this->filePath));
+			throw new \PHPQueue\Exception(sprintf("File is not writable: %s", $this->file_path));
 		}
 	}
 
@@ -38,9 +38,9 @@ class CSV extends Base
 	{
 		if (!is_null($jobId))
 		{
-			$curPos = ftell($this->getHandle);
-			rewind($this->getHandle);
-			while ($lineJob = fgetcsv($this->getHandle))
+			$curPos = ftell($this->get_handle);
+			rewind($this->get_handle);
+			while ($lineJob = fgetcsv($this->get_handle))
 			{
 				if ($lineJob[0] == $jobId)
 				{
@@ -48,11 +48,11 @@ class CSV extends Base
 					break;
 				}
 			}
-			fseek($this->getHandle, $curPos);
+			fseek($this->get_handle, $curPos);
 		}
 		else
 		{
-			$lineData = fgetcsv($this->getHandle);
+			$lineData = fgetcsv($this->get_handle);
 		}
 		return $lineData;
 	}
@@ -63,7 +63,7 @@ class CSV extends Base
 		{
 			throw new \PHPQueue\Exception("Data is not an array.");
 		}
-		$written_bytes = fputcsv($this->putHandle, $data);
+		$written_bytes = fputcsv($this->put_handle, $data);
 		return ($written_bytes > 0);
 	}
 }

@@ -2,15 +2,15 @@
 namespace PHPQueue;
 abstract class Worker
 {
-	public $inputData;
-	public $resultData;
+	public $input_data;
+	public $result_data;
 
 	public function __construct(){}
 
 	public function beforeJob($inputData)
 	{
-		$this->inputData = $inputData;
-		$this->resultData = null;
+		$this->input_data = $inputData;
+		$this->result_data = null;
 	}
 	/**
 	 * @param \PHPQueue\Job $jobObject

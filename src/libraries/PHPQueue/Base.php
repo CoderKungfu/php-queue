@@ -3,10 +3,10 @@ namespace PHPQueue;
 class Exception extends \Exception{}
 class Base
 {
-	static public $queuePath = '';
-	static public $workerPath = '';
-	static private $allQueues = array();
-	static private $allWorkers = array();
+	static public $queue_path = '';
+	static public $worker_path = '';
+	static private $all_queues = array();
+	static private $all_workers = array();
 
 	/**
 	 * @param string $queue
@@ -19,9 +19,9 @@ class Base
 		{
 			throw new \PHPQueue\Exception("Queue name is empty");
 		}
-		if ( empty(self::$allQueues[$queue]) )
+		if ( empty(self::$all_queues[$queue]) )
 		{
-			$classFile = self::$queuePath . '/' . $queue . 'Queue.php';
+			$classFile = self::$queue_path . '/' . $queue . 'Queue.php';
 			if ( !empty($options['classFile']) )
 			{
 				$classFile = $options['classFile'];
@@ -42,14 +42,14 @@ class Base
 			}
 			if (class_exists($className))
 			{
-				self::$allQueues[$queue] = new $className();
+				self::$all_queues[$queue] = new $className();
 			}
 			else
 			{
 				throw new \PHPQueue\Exception("Queue class does not exist: $className");
 			}
 		}
-		return self::$allQueues[$queue];
+		return self::$all_queues[$queue];
 	}
 
 	/**
@@ -149,9 +149,9 @@ class Base
 		{
 			throw new \PHPQueue\Exception("Worker name is empty");
 		}
-		if ( empty(self::$allWorkers[$workerName]) )
+		if ( empty(self::$all_workers[$workerName]) )
 		{
-			$classFile = self::$workerPath . '/' . $workerName . 'Worker.php';
+			$classFile = self::$worker_path . '/' . $workerName . 'Worker.php';
 			if ( !empty($options['classFile']) )
 			{
 				$classFile = $options['classFile'];
@@ -172,14 +172,14 @@ class Base
 			}
 			if ( class_exists($className) )
 			{
-				self::$allWorkers[$workerName] = new $className();
+				self::$all_workers[$workerName] = new $className();
 			}
 			else
 			{
 				throw new \PHPQueue\Exception("Worker class does not exist: $className");
 			}
 		}
-		return self::$allWorkers[$workerName];
+		return self::$all_workers[$workerName];
 	}
 
 	/**

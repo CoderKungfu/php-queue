@@ -12,7 +12,7 @@ class BeanstalkSampleQueue extends PHPQueue\JobQueue
 	public function __construct()
 	{
 		$this->dataSource = \PHPQueue\Base::backendFactory('Beanstalkd', $this->sourceConfig);
-		$this->resultLog = \PHPQueue\Logger::startLogger(
+		$this->resultLog = \PHPQueue\Logger::createLogger(
 							  'BeanstalkSampleLogger'
 							, PHPQueue\Logger::INFO
 							, __DIR__ . '/logs/results.log'
@@ -29,8 +29,8 @@ class BeanstalkSampleQueue extends PHPQueue\JobQueue
 	public function getJob()
 	{
 		$data = $this->dataSource->get();
-		$nextJob = new \PHPQueue\Job($data, $this->dataSource->lastJobId);
-		$this->lastJobId = $this->dataSource->lastJobId;
+		$nextJob = new \PHPQueue\Job($data, $this->dataSource->last_job_id);
+		$this->last_job_id = $this->dataSource->last_job_id;
 		return $nextJob;
 	}
 

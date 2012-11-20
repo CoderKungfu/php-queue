@@ -45,8 +45,8 @@ class Beanstalkd extends Base
 		{
 			throw new \PHPQueue\Exception("No job found.");
 		}
-		$this->lastJob = $newJob;
-		$this->lastJobId = $newJob->getId();
+		$this->last_job = $newJob;
+		$this->last_job_id = $newJob->getId();
 		$this->afterGet();
 		return json_decode($newJob->getData(), true);
 	}
@@ -57,7 +57,7 @@ class Beanstalkd extends Base
 		$this->isJobOpen($jobId);
 		$theJob = $this->open_items[$jobId];
 		$this->connection->delete($theJob);
-		$this->lastJobId = $jobId;
+		$this->last_job_id = $jobId;
 		$this->afterClearRelease();
 	}
 
@@ -67,7 +67,7 @@ class Beanstalkd extends Base
 		$this->isJobOpen($jobId);
 		$theJob = $this->open_items[$jobId];
 		$this->connection->release($theJob);
-		$this->lastJobId = $jobId;
+		$this->last_job_id = $jobId;
 		$this->afterClearRelease();
 	}
 }

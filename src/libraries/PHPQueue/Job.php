@@ -6,7 +6,7 @@ class Job
 	const NOT_OK = 'failed';
 
 	public $worker;
-	public $jobId;
+	public $job_id;
 	public $data;
 	public $status;
 
@@ -16,7 +16,7 @@ class Job
 	 */
 	public function __construct($data=null, $jobId=null)
 	{
-		$this->jobId = $jobId;
+		$this->job_id = $jobId;
 		if (!empty($data))
 		{
 			if (is_array($data))

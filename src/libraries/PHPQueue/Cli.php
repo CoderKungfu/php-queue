@@ -2,14 +2,14 @@
 namespace PHPQueue;
 class Cli
 {
-	public $queueOptions = array();
+	public $queue_options = array();
 	public $queueName;
 
 	public function __construct($options=array())
 	{
 		if ( !empty($options) )
 		{
-			$this->queueOptions = array_merge($this->queueOptions, $options);
+			$this->queue_options = array_merge($this->queue_options, $options);
 		}
 		if ( !empty($options['queue']) )
 		{
@@ -24,7 +24,7 @@ class Cli
 		$status = false;
 		try
 		{
-			$queue = \PHPQueue\Base::getQueue($this->queueName, $this->queueOptions);
+			$queue = \PHPQueue\Base::getQueue($this->queueName, $this->queue_options);
 			$status = \PHPQueue\Base::addJob($queue, $payload);
 			fwrite(STDOUT, "Done.\n");
 		}
@@ -39,7 +39,7 @@ class Cli
 	public function work()
 	{
 		$newJob = null;
-		$queue = \PHPQueue\Base::getQueue($this->queueName, $this->queueOptions);
+		$queue = \PHPQueue\Base::getQueue($this->queueName, $this->queue_options);
 		try
 		{
 			$newJob = \PHPQueue\Base::getJob($queue);
@@ -64,12 +64,12 @@ class Cli
 			\PHPQueue\Base::workJob($newWorker, $newJob);
 			fwrite(STDOUT, "Done.\n");
 			fwrite(STDOUT, "Updating job... \n");
-			return \PHPQueue\Base::updateJob($queue, $newJob->jobId, $newWorker->resultData);
+			return \PHPQueue\Base::updateJob($queue, $newJob->job_id, $newWorker->result_data);
 		}
 		catch (Exception $ex)
 		{
 			fwrite(STDOUT, sprintf("\nError occured: %s\n", $ex->getMessage()));
-			$queue->releaseJob($newJob->jobId);
+			$queue->releaseJob($newJob->job_id);
 			throw $ex;
 		}
 	}

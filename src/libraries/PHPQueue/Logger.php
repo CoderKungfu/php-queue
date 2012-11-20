@@ -2,7 +2,7 @@
 namespace PHPQueue;
 class Logger extends \Monolog\Logger
 {
-	static public $logJobs = array();
+	static public $all_logs = array();
 
 	/**
 	 * @param string $logName
@@ -10,15 +10,15 @@ class Logger extends \Monolog\Logger
 	 * @param string $logPath
 	 * @return \PHPQueue\Logger
 	 */
-	static public function startLogger($logName=null, $logLevel = Logger::WARNING, $logPath=null)
+	static public function createLogger($logName=null, $logLevel = Logger::WARNING, $logPath=null)
 	{
-		if (empty(self::$logJobs[$logName]))
+		if (empty(self::$all_logs[$logName]))
 		{
 			$logger = new Logger($logName);
 			$logger->pushHandler(new \Monolog\Handler\StreamHandler($logPath, $logLevel));
-			self::$logJobs[$logName] = $logger;
+			self::$all_logs[$logName] = $logger;
 		}
-		return self::$logJobs[$logName];
+		return self::$all_logs[$logName];
 	}
 }
 ?>

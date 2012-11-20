@@ -75,8 +75,8 @@ class AmazonSQS extends Base
 				return null;
 			}
 			$message = $response->body->ReceiveMessageResult->Message;
-			$this->lastJob = $response;
-			$this->lastJobId = (string)$message->ReceiptHandle;
+			$this->last_job = $response;
+			$this->last_job_id = (string)$message->ReceiptHandle;
 			$this->afterGet();
 			return json_decode((string)$message->Body, TRUE);
 		}
@@ -97,7 +97,7 @@ class AmazonSQS extends Base
 			$error = $response->body->Error;
 			throw new \PHPQueue\Exception((string)$error->Message, (int)$error->Code);
 		}
-		$this->lastJobId = $jobId;
+		$this->last_job_id = $jobId;
 		$this->afterClearRelease();
 		return true;
 	}
@@ -111,7 +111,7 @@ class AmazonSQS extends Base
 	{
 		$this->beforeRelease();
 		$this->isJobOpen($jobId);
-		$this->lastJobId = $jobId;
+		$this->last_job_id = $jobId;
 		$this->afterClearRelease();
 		return true;
 	}

@@ -2,8 +2,8 @@
 namespace PHPQueue\Backend;
 abstract class Base
 {
-	public $lastJob;
-	public $lastJobId;
+	public $last_job;
+	public $last_job_id;
 	protected $open_items = array();
 	protected $connection;
 
@@ -24,7 +24,7 @@ abstract class Base
 	{
 		if (!empty($jobId))
 		{
-			$this->lastJobId = $jobId;
+			$this->last_job_id = $jobId;
 		}
 		if (is_null($this->connection))
 		{
@@ -34,8 +34,8 @@ abstract class Base
 	public function get($jobId=null){}
 	public function afterGet()
 	{
-		$id = $this->lastJobId;
-		$this->open_items[$id] = $this->lastJob;
+		$id = $this->last_job_id;
+		$this->open_items[$id] = $this->last_job;
 	}
 
 	public function  beforeClear()
@@ -46,7 +46,7 @@ abstract class Base
 		}
 		if (!empty($jobId))
 		{
-			$this->lastJobId = $jobId;
+			$this->last_job_id = $jobId;
 		}
 	}
 	public function clear($jobId=null){}
@@ -59,13 +59,13 @@ abstract class Base
 		}
 		if (!empty($jobId))
 		{
-			$this->lastJobId = $jobId;
+			$this->last_job_id = $jobId;
 		}
 	}
 	public function release($jobId=null){}
 	public function afterClearRelease()
 	{
-		$id = $this->lastJobId;
+		$id = $this->last_job_id;
 		unset($this->open_items[$id]);
 	}
 

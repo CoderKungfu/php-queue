@@ -100,7 +100,7 @@ class Memcache extends Base
 	{
 		$this->beforeClear();
 		$this->connection->delete($key);
-		$this->lastJobId = $key;
+		$this->last_job_id = $key;
 		return true;
 	}
 }

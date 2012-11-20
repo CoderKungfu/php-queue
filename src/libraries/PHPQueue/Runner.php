@@ -3,37 +3,37 @@ namespace PHPQueue;
 abstract class Runner
 {
 	const RUN_USLEEP = 1000000;
-	public $queueOptions;
-	public $queueName;
+	public $queue_options;
+	public $queue_name;
 	private $queue;
 	public $logger;
-	public $logPath;
-	public $logLevel;
+	public $log_path;
+	public $log_level;
 
 	public function __construct($queue='', $options=array())
 	{
 		if (!empty($queue))
 		{
-			$this->queueName = $queue;
+			$this->queue_name = $queue;
 		}
 		if (!empty($options))
 		{
-			$this->queueOptions = $options;
+			$this->queue_options = $options;
 		}
 		if (
-			   !empty($this->queueOptions['logPath'])
-			&& is_writable($this->queueOptions['logPath'])
+			   !empty($this->queue_options['logPath'])
+			&& is_writable($this->queue_options['logPath'])
 		)
 		{
-			$this->logPath = $this->queueOptions['logPath'];
+			$this->log_path = $this->queue_options['logPath'];
 		}
-		if ( !empty($this->queueOptions['logLevel']) )
+		if ( !empty($this->queue_options['logLevel']) )
 		{
-			$this->logLevel = $this->queueOptions['logLevel'];
+			$this->log_level = $this->queue_options['logLevel'];
 		}
 		else
 		{
-			$this->logLevel = Logger::INFO;
+			$this->log_level = Logger::INFO;
 		}
 		return $this;
 	}
@@ -50,29 +50,29 @@ abstract class Runner
 
 	public function setup()
 	{
-		if (empty($this->logPath))
+		if (empty($this->log_path))
 		{
 			$baseFolder = dirname(dirname(__DIR__));
-			$this->logPath = sprintf(
+			$this->log_path = sprintf(
 								  '%s/demo/runners/logs/'
 								, $baseFolder
 							);
 		}
-		$logFileName = sprintf('%s-%s.log', $this->queueName, date('Ymd'));
-		$this->logger = \PHPQueue\Logger::startLogger(
-							  $this->queueName
-							, $this->logLevel
-							, $this->logPath . $logFileName
+		$logFileName = sprintf('%s-%s.log', $this->queue_name, date('Ymd'));
+		$this->logger = \PHPQueue\Logger::createLogger(
+							  $this->queue_name
+							, $this->log_level
+							, $this->log_path . $logFileName
 						);
 	}
 
 	protected function beforeLoop()
 	{
-		if (empty($this->queueName))
+		if (empty($this->queue_name))
 		{
 			throw new \PHPQueue\Exception('Queue name is invalid');
 		}
-		$this->queue = \PHPQueue\Base::getQueue($this->queueName, $this->queueOptions);
+		$this->queue = \PHPQueue\Base::getQueue($this->queue_name, $this->queue_options);
 	}
 
 	protected function loop()
@@ -95,19 +95,19 @@ abstract class Runner
 		}
 		else
 		{
-			$this->logger->addInfo(sprintf("Running new job (%s) with worker: %s", $newJob->jobId, $newJob->worker));
+			$this->logger->addInfo(sprintf("Running new job (%s) with worker: %s", $newJob->job_id, $newJob->worker));
 			try
 			{
 				$worker = \PHPQueue\Base::getWorker($newJob->worker);
 				\PHPQueue\Base::workJob($worker, $newJob);
-				$this->logger->addInfo(sprintf('Worker is done. Updating job (%s). Result:', $newJob->jobId), $worker->resultData);
-				return \PHPQueue\Base::updateJob($this->queue, $newJob->jobId, $worker->resultData);
+				$this->logger->addInfo(sprintf('Worker is done. Updating job (%s). Result:', $newJob->job_id), $worker->result_data);
+				return \PHPQueue\Base::updateJob($this->queue, $newJob->job_id, $worker->result_data);
 			}
 			catch (Exception $ex)
 			{
 				$this->logger->addError($ex->getMessage());
-				$this->logger->addInfo(sprintf('Releasing job (%s).', $newJob->jobId));
-				$this->queue->releaseJob($newJob->jobId);
+				$this->logger->addInfo(sprintf('Releasing job (%s).', $newJob->job_id));
+				$this->queue->releaseJob($newJob->job_id);
 				throw $ex;
 			}
 		}
