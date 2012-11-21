@@ -1,5 +1,5 @@
 {
-	"name": "miccheng/php-queue",
+	"name": "coderkungfu/php-queue",
 	"description": "Unified REST front-end for different queuing backends.",
 	"keywords": ["queue", "transaction"],
 	"homepage": "http://github.com/miccheng/php-queue",
@@ -19,7 +19,8 @@
 		"predis/predis": "For Redis backend support",
 		"mrpoundsign/pheanstalk-5.3": "For Beanstalkd backend support",
 		"amazonwebservices/aws-sdk-for-php": "For AWS SQS backend support",
-		"predis/predis": "For Redis backend support"
+		"predis/predis": "For Redis backend support",
+		"pecl-mongodb": "For MongoDB backend support"
 	},
 	"autoload": {
 		"psr-0": {"PHPQueue": "src/libraries/"}
