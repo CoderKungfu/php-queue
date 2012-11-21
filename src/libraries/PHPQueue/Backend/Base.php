@@ -12,23 +12,17 @@ abstract class Base
 
 	public function beforeAdd($data=null)
 	{
-		if (is_null($this->connection))
-		{
-			$this->connect();
-		}
+		$this->checkConnection();
 	}
 	public function add($data=null){}
 	public function afterAdd(){}
 
 	public function beforeGet($jobId=null)
 	{
+		$this->checkConnection();
 		if (!empty($jobId))
 		{
 			$this->last_job_id = $jobId;
-		}
-		if (is_null($this->connection))
-		{
-			$this->connect();
 		}
 	}
 	public function get($jobId=null){}
@@ -38,12 +32,9 @@ abstract class Base
 		$this->open_items[$id] = $this->last_job;
 	}
 
-	public function  beforeClear()
+	public function  beforeClear($jobId=null)
 	{
-		if (is_null($this->connection))
-		{
-			$this->connect();
-		}
+		$this->checkConnection();
 		if (!empty($jobId))
 		{
 			$this->last_job_id = $jobId;
@@ -51,12 +42,9 @@ abstract class Base
 	}
 	public function clear($jobId=null){}
 
-	public function beforeRelease()
+	public function beforeRelease($jobId=null)
 	{
-		if (is_null($this->connection))
-		{
-			$this->connect();
-		}
+		$this->checkConnection();
 		if (!empty($jobId))
 		{
 			$this->last_job_id = $jobId;
@@ -76,6 +64,20 @@ abstract class Base
 		if (empty($this->open_items[$jobId]))
 		{
 			throw new \PHPQueue\Exception("Job was not previously retrieved.");
+		}
+	}
+
+	public function getConnection()
+	{
+		$this->checkConnection();
+		return $this->connection;
+	}
+
+	protected function checkConnection()
+	{
+		if (is_null($this->connection))
+		{
+			$this->connect();
 		}
 	}
 }
