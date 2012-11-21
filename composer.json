@@ -12,7 +12,7 @@
 		}
 	],
 	"require": {
-		"Respect/Rest": "0.4.*",
+		"Respect/Rest": "0.5.*",
 		"monolog/monolog": "1.2.*"
 	},
 	"suggest": {
