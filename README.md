@@ -52,7 +52,7 @@ php composer.phar install
 
 5. Require Composer's autoloader.
 
-	```
+	```php
 <?php
 require_once '/path/to/sdk/vendor/autoload.php';
 ?>
@@ -74,7 +74,7 @@ I would also recommend putting the autoloader statement and your app configs ins
 
 **Recommended `config.php` file content:**
 
-```
+```php
 <?php
 require_once '/path/to/sdk/vendor/autoload.php';
 PHPQueue\Base::$queue_path = __DIR__ . '/queues/';
@@ -85,7 +85,7 @@ PHPQueue\Base::$worker_path = __DIR__ . '/workers/';
 
 You can also declare your application's namespace for loading the Queues and Workers.
 
-```
+```php
 <?php
 require_once '/path/to/sdk/vendor/autoload.php';
 PHPQueue\Base::$queue_namespace = '\MyFabulousApp\Queues';
