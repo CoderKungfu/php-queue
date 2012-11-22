@@ -49,7 +49,7 @@ class Predis extends Base
 			throw new \PHPQueue\Exception("No queue specified.");
 		}
 		$encoded_data = json_encode($data);
-		$this->connection->rpush($this->queue_name, $encoded_data);
+		$this->getConnection()->rpush($this->queue_name, $encoded_data);
 		return true;
 	}
 
@@ -60,11 +60,11 @@ class Predis extends Base
 		{
 			throw new \PHPQueue\Exception("No queue specified.");
 		}
-		if (!$this->keyExists($this->queue_name) || $this->connection->llen($this->queue_name) == 0)
+		if (!$this->keyExists($this->queue_name) || $this->getConnection()->llen($this->queue_name) == 0)
 		{
 			return null;
 		}
-		$data = $this->connection->lpop($this->queue_name);
+		$data = $this->getConnection()->lpop($this->queue_name);
 		$this->last_job = $data;
 		$this->last_job_id = time();
 		$this->afterGet();
@@ -79,7 +79,7 @@ class Predis extends Base
 			throw new \PHPQueue\Exception("No queue specified.");
 		}
 		$job_data = $this->open_items[$jobId];
-		$status = $this->connection->rpush($this->queue_name, $job_data);
+		$status = $this->getConnection()->rpush($this->queue_name, $job_data);
 		if (!$status)
 		{
 			throw new \PHPQueue\Exception("Unable to save data.");
@@ -117,11 +117,11 @@ class Predis extends Base
 			$status = false;
 			if (is_array($data))
 			{
-				$status = $this->connection->hmset($key, $data);
+				$status = $this->getConnection()->hmset($key, $data);
 			}
 			else if (is_string($data) || is_numeric($data))
 			{
-				$status = $this->connection->set($key, $data);
+				$status = $this->getConnection()->set($key, $data);
 			}
 			if (!$status)
 			{
@@ -145,21 +145,22 @@ class Predis extends Base
 		{
 			return null;
 		}
-		$type = $this->connection->type($key);
+		$this->beforeGet($key);
+		$type = $this->getConnection()->type($key);
 		switch($type)
 		{
 			case self::TYPE_STRING:
-				$data = $this->connection->get($key);
+				$data = $this->getConnection()->get($key);
 				break;
 			case self::TYPE_HASH:
 				if (func_num_args() > 2)
 				{
 					$field = func_get_arg(2);
-					$data = $this->connection->hmget($key, $field);
+					$data = $this->getConnection()->hmget($key, $field);
 				}
 				else
 				{
-					$data = $this->connection->hgetall($key);
+					$data = $this->getConnection()->hgetall($key);
 				}
 				break;
 			default:
@@ -171,9 +172,8 @@ class Predis extends Base
 
 	public function clearKey($key=null)
 	{
-		$this->beforeClear();
-		$this->connection->del($key);
-		$this->last_job_id = $key;
+		$this->beforeClear($key);
+		$this->getConnection()->del($key);
 		return true;
 	}
 
@@ -185,11 +185,11 @@ class Predis extends Base
 		}
 		if ($count > 1)
 		{
-			$status = $this->connection->incr($key);
+			$status = $this->getConnection()->incr($key);
 		}
 		else
 		{
-			$status = $this->connection->incrby($key, $count);
+			$status = $this->getConnection()->incrby($key, $count);
 		}
 		return $status;
 	}
@@ -202,11 +202,11 @@ class Predis extends Base
 		}
 		if ($count > 1)
 		{
-			$status = $this->connection->decr($key);
+			$status = $this->getConnection()->decr($key);
 		}
 		else
 		{
-			$status = $this->connection->decrby($key, $count);
+			$status = $this->getConnection()->decrby($key, $count);
 		}
 		return $status;
 	}
@@ -214,7 +214,7 @@ class Predis extends Base
 	public function keyExists($key)
 	{
 		$this->beforeGet();
-		if (!$this->connection->exists($key))
+		if (!$this->getConnection()->exists($key))
 		{
 			return false;
 		}

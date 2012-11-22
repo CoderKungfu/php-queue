@@ -46,7 +46,7 @@ class AmazonSQS extends Base
 	public function add($data=array())
 	{
 		$this->beforeAdd();
-		$response = $this->connection->send_message($this->queue_url, json_encode($data));
+		$response = $this->getConnection()->send_message($this->queue_url, json_encode($data));
 		if (!$response->isOK())
 		{
 			$error = $response->body->Error;
@@ -62,7 +62,7 @@ class AmazonSQS extends Base
 	public function get()
 	{
 		$this->beforeGet();
-		$response = $this->connection->receive_message($this->queue_url, $this->receiving_options);
+		$response = $this->getConnection()->receive_message($this->queue_url, $this->receiving_options);
 		if (!$response->isOk())
 		{
 			$error = $response->body->Error;
@@ -89,9 +89,9 @@ class AmazonSQS extends Base
 	 */
 	public function clear($jobId=null)
 	{
-		$this->beforeClear();
+		$this->beforeClear($jobId);
 		$this->isJobOpen($jobId);
-		$response = $this->connection->delete_message($this->queue_url, $jobId);
+		$response = $this->getConnection()->delete_message($this->queue_url, $jobId);
 		if (!$response->isOk())
 		{
 			$error = $response->body->Error;
@@ -109,7 +109,7 @@ class AmazonSQS extends Base
 	 */
 	public function release($jobId=null)
 	{
-		$this->beforeRelease();
+		$this->beforeRelease($jobId);
 		$this->isJobOpen($jobId);
 		$this->last_job_id = $jobId;
 		$this->afterClearRelease();

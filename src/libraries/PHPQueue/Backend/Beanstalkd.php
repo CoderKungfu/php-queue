@@ -31,7 +31,7 @@ class Beanstalkd extends Base
 	public function add($data=array())
 	{
 		$this->beforeAdd();
-		return $this->connection->useTube($this->tube)->put(json_encode($data));
+		return $this->getConnection()->useTube($this->tube)->put(json_encode($data));
 	}
 
 	/**
@@ -40,7 +40,7 @@ class Beanstalkd extends Base
 	public function get()
 	{
 		$this->beforeGet();
-		$newJob = $this->connection->watch($this->tube)->reserve(self::$reserve_timeout);
+		$newJob = $this->getConnection()->watch($this->tube)->reserve(self::$reserve_timeout);
 		if ($newJob == false)
 		{
 			throw new \PHPQueue\Exception("No job found.");
@@ -53,20 +53,20 @@ class Beanstalkd extends Base
 
 	public function clear($jobId=null)
 	{
-		$this->beforeClear();
+		$this->beforeClear($jobId);
 		$this->isJobOpen($jobId);
 		$theJob = $this->open_items[$jobId];
-		$this->connection->delete($theJob);
+		$this->getConnection()->delete($theJob);
 		$this->last_job_id = $jobId;
 		$this->afterClearRelease();
 	}
 
 	public function release($jobId=null)
 	{
-		$this->beforeRelease();
+		$this->beforeRelease($jobId);
 		$this->isJobOpen($jobId);
 		$theJob = $this->open_items[$jobId];
-		$this->connection->release($theJob);
+		$this->getConnection()->release($theJob);
 		$this->last_job_id = $jobId;
 		$this->afterClearRelease();
 	}

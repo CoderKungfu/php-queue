@@ -10,16 +10,12 @@ abstract class Base
 	public function __construct(){}
 	public function connect(){}
 
-	public function beforeAdd($data=null)
-	{
-		$this->checkConnection();
-	}
+	public function beforeAdd($data=null){}
 	public function add($data=null){}
 	public function afterAdd(){}
 
 	public function beforeGet($jobId=null)
 	{
-		$this->checkConnection();
 		if (!empty($jobId))
 		{
 			$this->last_job_id = $jobId;
@@ -32,9 +28,8 @@ abstract class Base
 		$this->open_items[$id] = $this->last_job;
 	}
 
-	public function  beforeClear($jobId=null)
+	public function beforeClear($jobId=null)
 	{
-		$this->checkConnection();
 		if (!empty($jobId))
 		{
 			$this->last_job_id = $jobId;
@@ -44,7 +39,6 @@ abstract class Base
 
 	public function beforeRelease($jobId=null)
 	{
-		$this->checkConnection();
 		if (!empty($jobId))
 		{
 			$this->last_job_id = $jobId;
@@ -69,16 +63,11 @@ abstract class Base
 
 	public function getConnection()
 	{
-		$this->checkConnection();
-		return $this->connection;
-	}
-
-	protected function checkConnection()
-	{
 		if (is_null($this->connection))
 		{
 			$this->connect();
 		}
+		return $this->connection;
 	}
 }
 ?>

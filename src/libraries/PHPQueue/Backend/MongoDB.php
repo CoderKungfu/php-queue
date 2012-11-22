@@ -85,7 +85,7 @@ class MongoDB extends Base
 	 */
 	public function get($key=null)
 	{
-		$this->beforeGet();
+		$this->beforeGet($key);
 		$cursor = $this->getCollection()->find(array('_id' => $key));
 		if ($cursor->count() < 1)
 		{
@@ -99,7 +99,7 @@ class MongoDB extends Base
 
 	public function clear($key=null)
 	{
-		$this->beforeClear();
+		$this->beforeClear($key);
 		$data = $this->get($key);
 		if (is_null($data))
 		{

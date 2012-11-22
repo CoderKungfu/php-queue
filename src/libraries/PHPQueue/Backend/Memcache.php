@@ -74,10 +74,10 @@ class Memcache extends Base
 		{
 			$expiry = $this->expiry;
 		}
-		$status = $this->connection->replace($key, $data, $this->use_compression, $expiry);
+		$status = $this->getConnection()->replace($key, $data, $this->use_compression, $expiry);
 		if( $status == false )
 		{
-			$status = $this->connection->set($key, $data, $this->use_compression, $expiry);
+			$status = $this->getConnection()->set($key, $data, $this->use_compression, $expiry);
 		}
 		if (!$status)
 		{
@@ -92,14 +92,14 @@ class Memcache extends Base
 	 */
 	public function get($key=null)
 	{
-		$this->beforeGet();
-		return $this->connection->get($key);
+		$this->beforeGet($key);
+		return $this->getConnection()->get($key);
 	}
 
 	public function clear($key=null)
 	{
-		$this->beforeClear();
-		$this->connection->delete($key);
+		$this->beforeClear($key);
+		$this->getConnection()->delete($key);
 		$this->last_job_id = $key;
 		return true;
 	}
