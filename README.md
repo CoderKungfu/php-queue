@@ -72,13 +72,14 @@ require_once '/path/to/sdk/vendor/autoload.php';
 
 You can have a look at the **Demo App** inside `.\vendor\coderkungfu\phpqueue\src\demo\` folder for a recommended folder structure.
 
-* htdocs
+* `htdocs` folder
 	* .htaccess
 	* index.php
-* queues
+* `queues` folder
 	* \<QueueNameInCamelCase\>Queue.php
-* workers
+* `workers` folder
 	* \<WorkerNameInCamelCase\>Worker.php
+* `config.php` file
 
 I would also recommend putting the autoloader statement and your app configs inside a separate `config.php` file.
 
@@ -113,7 +114,7 @@ It might be advisable to use [Composer's Custom Autoloader](http://getcomposer.o
 
 The default REST server can be used to interface directly with the queues and workers.
 
-Copy the `htdocs` folder in the **Demo App** into your installation. The `index.php` calls the `\PHPQueue\REST::defaultRoutes()` method - which prepares an instance of the `Respect\Rest` REST server.
+Copy the `htdocs` folder in the **Demo App** into your installation. The `index.php` calls the `\PHPQueue\REST::defaultRoutes()` method - which prepares an instance of the `Respect\Rest` REST server. You might need to modify the path of `config.php` within the `index.php` file.
 
 **Recomended installation:** _use a new virtual host and map the `htdocs` as the webroot._
 
@@ -139,18 +140,18 @@ Read the [full documentation](https://github.com/Respect/Rest) on `Respect\Rest`
 
 ### Command Line Interface (CLI) ###
 
-Copy the `cli.php` file from the **Demo App** into your installation. This file implements the `\PHPQueue\Cli` class.
+Copy the `cli.php` file from the **Demo App** into your installation. This file implements the `\PHPQueue\Cli` class. You might need to modify the path of `config.php` within the `cli.php` file.
 
 1. Add new job.
 
 	```
-$ php cli.php <queuename> add --data '{"boo":"bar","foo":"car"}'
+$ php cli.php <QueueName> add --data '{"boo":"bar","foo":"car"}'
 ```
 
 2. Trigger next job.
 
 	```
-$ php cli.php <queuename> work
+$ php cli.php <QueueName> work
 ```
 
 You can extend the `PHPQueue\Cli` class to customize your own CLI batch jobs (eg. import data from a MySQL DB into a queue).
