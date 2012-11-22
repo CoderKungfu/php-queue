@@ -32,12 +32,12 @@ class BaseTest extends PHPUnit_Framework_TestCase
 		}
 		try
 		{
-			PHPQueue\Base::getQueue('Sample', array('className'=>'NotSample'));
+			PHPQueue\Base::getQueue('SampleNotThere');
 			$this->fail("Should not be able to get the Queue");
 		}
 		catch (Exception $ex)
 		{
-			$this->assertStringStartsWith("Queue class does not exist:", $ex->getMessage());
+			$this->assertStringStartsWith("Queue file does not exist:", $ex->getMessage());
 		}
 		$result = PHPQueue\Base::getQueue('Sample');
 		$this->assertInstanceOf('\\PHPQueue\\JobQueue', $result);
@@ -120,12 +120,12 @@ class BaseTest extends PHPUnit_Framework_TestCase
 		}
 		try
 		{
-			PHPQueue\Base::getWorker('Sample', array('className'=>'NotSample'));
+			PHPQueue\Base::getWorker('SampleNotThere');
 			$this->fail("Should not be able to get the Worker");
 		}
 		catch (Exception $ex)
 		{
-			$this->assertStringStartsWith("Worker class does not exist:", $ex->getMessage());
+			$this->assertStringStartsWith("Worker file does not exist:", $ex->getMessage());
 		}
 		$result = PHPQueue\Base::getWorker('Sample');
 		$this->assertInstanceOf('\\PHPQueue\\Worker', $result);
