@@ -60,15 +60,15 @@ require_once '/path/to/sdk/vendor/autoload.php';
 
 ## Getting Started ##
 
-You can have a look at the **Demo App** folder inside `.\vendor\coderkungfu\phpqueue\src\demo` folder for a recommended folder structure.
+You can have a look at the **Demo App** inside `.\vendor\coderkungfu\phpqueue\src\demo\` folder for a recommended folder structure.
 
 * htdocs
 	* .htaccess
 	* index.php
 * queues
-	* *QueueNameInCamelCase*Queue.php
+	* \<QueueNameInCamelCase\>Queue.php
 * workers
-	* *WrorkerNameInCamelCase*Worker.php
+	* \<WorkerNameInCamelCase\>Worker.php
 
 I would also recommend putting the autoloader statement and your app configs inside a separate `config.php` file.
 
