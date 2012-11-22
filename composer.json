@@ -1,6 +1,6 @@
 {
 	"name": "coderkungfu/php-queue",
-	"description": "Unified REST front-end for different queuing backends.",
+	"description": "A unified front-end for different queuing backends. Includes a REST server, CLI interface and daemon runners.",
 	"keywords": ["queue", "transaction"],
 	"homepage": "http://github.com/miccheng/php-queue",
 	"type": "library",
