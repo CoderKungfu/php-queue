@@ -6,11 +6,11 @@ A unified front-end for different queuing backends. Includes a REST server, CLI 
 
 The pains of implementing a queueing system (eg. Beanstalk, Amazon SQS, RabbitMQ) for your applciation:
 
-* Which one is most effecient?
-* Learning curve to learn and effectively implement the queue backend.
+* Which one is most efficient? Performant?
+* Learning curve to effectively implement the queue backend & the libraries.
 * Time taken to develop the application codes.
 * Vendor locked in, making it impossible to switch.
-* Not flexible when use case for the queue changes.
+* Requires massive code change (ie. not flexible) when use case for the queue changes.
 
 PHP-Queue hopes to serve as an abstract layer between your application code and the implementation of the queue.
 
@@ -27,6 +27,16 @@ PHP-Queue hopes to serve as an abstract layer between your application code and 
 * **Independent Workers**
 
 	Workers are independent of Job Queues. All it needs to worry about is processing the input data and return the resulting data. The queue despatcher will handle the rest. Workers will also be chainable.
+
+* **Powerful**
+
+	The framework is deliberately open-ended and can be adapted to your implementation. It doesn't get in the way of your queue system.
+	
+	We've build a simple REST server to let you post job data to your queue easily. We also included a CLI interface for adding and triggering workers. All of which you can sub-class and overwrite.
+	
+	You can also include our core library files into your application and do some powerful heavy lifting.
+	
+	We also added a bunch of convenience Backend libraries such as Memcache, Redis, MongoDB, CSV to let you tap on ancillary data sources outside of your queue Job.
 
 ---
 ## Installation ##
