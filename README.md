@@ -140,7 +140,7 @@ curl -XGET http://localhost/<QueueName>/work
 
 Read the [full documentation](https://github.com/Respect/Rest) on `Respect\Rest` to further customize to your application needs (eg. Basic Auth).
 
-### Command Line Interface (CLI) ###
+## Command Line Interface (CLI) ##
 
 Copy the `cli.php` file from the **Demo App** into your installation. This file implements the `\PHPQueue\Cli` class. You might need to modify the path of `config.php` within the `cli.php` file.
 
