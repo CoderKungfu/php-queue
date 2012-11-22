@@ -6,16 +6,23 @@ class AmazonSQSTest extends PHPUnit_Framework_TestCase
 	public function setUp()
 	{
 		parent::setUp();
-		$options = array(
-			  'region'      => \AmazonSQS::REGION_APAC_SE1
-			, 'queue'       => 'https://sqs.ap-southeast-1.amazonaws.com/524787626913/testqueue'
-//			, 'sqs_options' => array(
-//								  'key'    => 'xxx'
-//								, 'secret' => 'xxx'
-//							)
-			, 'receiving_options' => array('VisibilityTimeout' => 0)
-		);
-		$this->object = new PHPQueue\Backend\AmazonSQS($options);
+		if (!class_exists('\AmazonSQS'))
+		{
+			$this->markTestSkipped('Amazon PHP SDK not installed');
+		}
+		else
+		{
+			$options = array(
+				  'region'      => \AmazonSQS::REGION_APAC_SE1
+				, 'queue'       => 'https://sqs.ap-southeast-1.amazonaws.com/524787626913/testqueue'
+//				, 'sqs_options' => array(
+//									  'key'    => 'xxx'
+//									, 'secret' => 'xxx'
+//								)
+				, 'receiving_options' => array('VisibilityTimeout' => 0)
+			);
+			$this->object = new PHPQueue\Backend\AmazonSQS($options);
+		}
 	}
 
 	public function testAdd()

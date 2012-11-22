@@ -6,13 +6,20 @@ class MemcacheTest extends PHPUnit_Framework_TestCase
 	public function setUp()
 	{
 		parent::setUp();
-		$options = array(
-			  'servers' => array(
-								array('localhost', 11211)
-						  )
-			, 'expiry'  => 600
-		);
-		$this->object = new PHPQueue\Backend\Memcache($options);
+		if (!class_exists('\Memcache'))
+		{
+			$this->markTestSkipped('Memcache not installed');
+		}
+		else
+		{
+			$options = array(
+				'servers' => array(
+									array('localhost', 11211)
+							)
+				, 'expiry'  => 600
+			);
+			$this->object = new PHPQueue\Backend\Memcache($options);
+		}
 	}
 
 	public function testAdd()

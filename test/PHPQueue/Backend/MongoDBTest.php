@@ -7,12 +7,19 @@ class MongoDBTest extends PHPUnit_Framework_TestCase
 	public function setUp()
 	{
 		parent::setUp();
-		$options = array(
-			  'server' => 'mongodb://localhost'
-			, 'db'  => 'testdb'
-			, 'collection' => 'things'
-		);
-		$this->object = new PHPQueue\Backend\MongoDB($options);
+		if (!class_exists('\Mongo'))
+		{
+			$this->markTestSkipped('Mongo extension is not installed');
+		}
+		else
+		{
+			$options = array(
+				'server' => 'mongodb://localhost'
+				, 'db'  => 'testdb'
+				, 'collection' => 'things'
+			);
+			$this->object = new PHPQueue\Backend\MongoDB($options);
+		}
 	}
 
 	public function testAddGet()

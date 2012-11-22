@@ -6,11 +6,18 @@ class PredisTest extends PHPUnit_Framework_TestCase
 	public function setUp()
 	{
 		parent::setUp();
-		$options = array(
-			  'servers' => array('host' => '127.0.0.1', 'port' => 6379)
-			, 'queue' => 'testqueue'
-		);
-		$this->object = new PHPQueue\Backend\Predis($options);
+		if (!class_exists('\Predis\Client'))
+		{
+			$this->markTestSkipped('Predis not installed');
+		}
+		else
+		{
+			$options = array(
+				'servers' => array('host' => '127.0.0.1', 'port' => 6379)
+				, 'queue' => 'testqueue'
+			);
+			$this->object = new PHPQueue\Backend\Predis($options);
+		}
 	}
 
 	public function testQueue()
