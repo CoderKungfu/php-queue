@@ -41,7 +41,7 @@ PHP-Queue hopes to serve as an abstract layer between your application code and 
 ---
 ## Installation ##
 
-**Installating via Composer**
+**Installing via Composer**
 
 [Composer](http://getcomposer.org) is a dependency management tool for PHP that allows you to declare the dependencies your project needs and installs them into your project. In order to use the [**PHP-Queue**](https://packagist.org/packages/coderkungfu/php-queue) through Composer, you must do the following:
 
