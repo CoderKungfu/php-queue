@@ -81,6 +81,25 @@ PHPQueue\Base::$queue_path = __DIR__ . '/queues/';
 PHPQueue\Base::$worker_path = __DIR__ . '/workers/';
 ?>
 ```
+**Altenative `config.php` file:**
+
+You can also declare your application's namespace for loading the Queues and Workers.
+
+```
+<?php
+require_once '/path/to/sdk/vendor/autoload.php';
+PHPQueue\Base::$queue_namespace = '\MyFabulousApp\Queues';
+PHPQueue\Base::$worker_namespace = '\MyFabulousApp\Workers';
+?>
+```
+PHP-Queue will attempt to instantiate the `PHPQueue\JobQueue` and `PHPQueue\Worker` classes using your namespace - appended with the queue/worker name. (ie. `\MyFabulousApp\Queues\Facebook`). 
+
+It might be advisable to use [Composer's Custom Autoloader](http://getcomposer.org/doc/01-basic-usage.md#autoloading) for this.
+
+**Note:**<br/>
+*If you declared `PHPQueue\Base::$queue_path` and/or `PHPQueue\Base::$worker_path` together with the namespace, the files will be loaded with `require_once` from those folder path **AND** instantiated with the namespaced class names.*
+
+
 ---
 ## License ##
 
