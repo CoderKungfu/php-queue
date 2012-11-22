@@ -109,6 +109,51 @@ It might be advisable to use [Composer's Custom Autoloader](http://getcomposer.o
 **Note:**<br/>
 *If you declared `PHPQueue\Base::$queue_path` and/or `PHPQueue\Base::$worker_path` together with the namespace, the files will be loaded with `require_once` from those folder path __AND__ instantiated with the namespaced class names.*
 
+## REST Server ##
+
+The default REST server can be used to interface directly with the queues and workers.
+
+Copy the `htdocs` folder in the **Demo App** into your installation. The `index.php` calls the `\PHPQueue\REST::defaultRoutes()` method - which prepares an instance of the `Respect\Rest` REST server.
+
+**Recomended installation:** _use a new virtual host and map the `htdocs` as the webroot._
+
+1. Add new job.
+
+	```
+# Form post
+curl -XPOST http://localhost/<QueueName>/ -d "var1=foo&var2=bar"
+```
+
+	```
+# JSON post
+curl -XPOST http://localhost/<QueueName>/ -H "Content-Type: application/json" -d '{"var1":"foo","var2":"bar"}'
+```
+
+2. Trigger next job.
+
+	```
+curl -XGET http://localhost/<QueueName>/work
+```
+
+Read the [full documentation](https://github.com/Respect/Rest) on `Respect\Rest` to further customize to your application needs (eg. Basic Auth).
+
+### Command Line Interface (CLI) ###
+
+Copy the `cli.php` file from the **Demo App** into your installation. This file implements the `\PHPQueue\Cli` class.
+
+1. Add new job.
+
+	```
+$ php cli.php <queuename> add --data '{"boo":"bar","foo":"car"}'
+```
+
+2. Trigger next job.
+
+	```
+$ php cli.php <queuename> work
+```
+
+You can extend the `PHPQueue\Cli` class to customize your own CLI batch jobs (eg. import data from a MySQL DB into a queue).
 
 ---
 ## License ##
