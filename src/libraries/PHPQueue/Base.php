@@ -3,8 +3,10 @@ namespace PHPQueue;
 class Exception extends \Exception{}
 class Base
 {
-	static public $queue_path = '';
-	static public $worker_path = '';
+	static public $queue_path = null;
+	static public $worker_path = null;
+	static public $queue_namespace = null;
+	static public $worker_namespace = null;
 	static private $all_queues = array();
 	static private $all_workers = array();
 
@@ -21,11 +23,25 @@ class Base
 		}
 		if ( empty(self::$all_queues[$queue]) )
 		{
-			$classFile = self::$queue_path . '/' . $queue . 'Queue.php';
-			if ( !empty($options['classFile']) )
+			$className = self::loadAndGetQueueClassName($queue);
+			try
 			{
-				$classFile = $options['classFile'];
+				self::$all_queues[$queue] = new $className($options);
 			}
+			catch (Exception $ex)
+			{
+				throw new \PHPQueue\Exception($ex->getMessage(), $ex->getCode());
+			}
+		}
+		return self::$all_queues[$queue];
+	}
+
+	static protected function loadAndGetQueueClassName($queue_name=null)
+	{
+		$class_name = '';
+		if (!is_null(self::$queue_path))
+		{
+			$classFile = self::$queue_path . '/' . $queue_name . 'Queue.php';
 			if (file_exists($classFile))
 			{
 				require_once $classFile;
@@ -34,22 +50,17 @@ class Base
 			{
 				throw new \PHPQueue\Exception("Queue file does not exist: $classFile");
 			}
-
-			$className =  "\\" . $queue . 'Queue';
-			if ( !empty($options['className']) )
-			{
-				$className = $options['className'];
-			}
-			if (class_exists($className))
-			{
-				self::$all_queues[$queue] = new $className();
-			}
-			else
-			{
-				throw new \PHPQueue\Exception("Queue class does not exist: $className");
-			}
+			$class_name =  "\\" . $queue_name . 'Queue';
 		}
-		return self::$all_queues[$queue];
+		if (!is_null(self::$queue_namespace))
+		{
+			if (!(strpos(self::$queue_namespace, "\\") === 0))
+			{
+				$class_name = "\\";
+			}
+			$class_name .= self::$queue_namespace . "\\" . $queue_name;
+		}
+		return $class_name;
 	}
 
 	/**
@@ -138,25 +149,39 @@ class Base
 	}
 
 	/**
-	 * @param string $workerName
+	 * @param string $worker_name
 	 * @param array $options
 	 * @return \PHPQueue\Worker
 	 * @throws \PHPQueue\Exception
 	 */
-	static public function getWorker($workerName=null, $options=array())
+	static public function getWorker($worker_name=null, $options=array())
 	{
-		if (empty($workerName))
+		if (empty($worker_name))
 		{
 			throw new \PHPQueue\Exception("Worker name is empty");
 		}
-		if ( empty(self::$all_workers[$workerName]) )
+		if ( empty(self::$all_workers[$worker_name]) )
 		{
-			$classFile = self::$worker_path . '/' . $workerName . 'Worker.php';
-			if ( !empty($options['classFile']) )
+			$className = self::loadAndGetWorkerClassName($worker_name);
+			try
 			{
-				$classFile = $options['classFile'];
+				self::$all_workers[$worker_name] = new $className($options);
 			}
-			if ( file_exists($classFile) )
+			catch (Exception $ex)
+			{
+				throw new \PHPQueue\Exception($ex->getMessage(), $ex->getCode());
+			}
+		}
+		return self::$all_workers[$worker_name];
+	}
+
+	static protected function loadAndGetWorkerClassName($worker_name=null)
+	{
+		$class_name = '';
+		if (!is_null(self::$worker_path))
+		{
+			$classFile = self::$worker_path . '/' . $worker_name . 'Worker.php';
+			if (file_exists($classFile))
 			{
 				require_once $classFile;
 			}
@@ -164,22 +189,17 @@ class Base
 			{
 				throw new \PHPQueue\Exception("Worker file does not exist: $classFile");
 			}
-
-			$className = "\\" . $workerName . 'Worker';
-			if ( !empty($options['className']) )
-			{
-				$className = $options['className'];
-			}
-			if ( class_exists($className) )
-			{
-				self::$all_workers[$workerName] = new $className();
-			}
-			else
-			{
-				throw new \PHPQueue\Exception("Worker class does not exist: $className");
-			}
+			$class_name =  "\\" . $worker_name . 'Worker';
 		}
-		return self::$all_workers[$workerName];
+		if (!is_null(self::$worker_namespace))
+		{
+			if (!(strpos(self::$worker_namespace, "\\") === 0))
+			{
+				$class_name = "\\";
+			}
+			$class_name .= self::$worker_namespace . "\\" . $worker_name;
+		}
+		return $class_name;
 	}
 
 	/**
