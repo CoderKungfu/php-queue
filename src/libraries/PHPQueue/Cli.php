@@ -54,12 +54,24 @@ class Cli
 		}
 		try
 		{
-			fwrite(STDOUT, sprintf("Running worker (%s) now... ", $newJob->worker));
-			$newWorker = \PHPQueue\Base::getWorker($newJob->worker);
-			\PHPQueue\Base::workJob($newWorker, $newJob);
-			fwrite(STDOUT, "Done.\n");
+			if (empty($newJob->worker))
+			{
+				throw new \PHPQueue\Exception("No worker declared.");
+			}
+			if (is_string($newJob->worker))
+			{
+				$result_data = $this->processWorker($newJob->worker, $newJob);
+			}
+			else if (is_array($newJob->worker))
+			{
+				foreach($newJob->worker as $worker_name)
+				{
+					$result_data = $this->processWorker($worker_name, $newJob);
+					$newJob->data = $result_data;
+				}
+			}
 			fwrite(STDOUT, "Updating job... \n");
-			return \PHPQueue\Base::updateJob($queue, $newJob->job_id, $newWorker->result_data);
+			return \PHPQueue\Base::updateJob($queue, $newJob->job_id, $result_data);
 		}
 		catch (Exception $ex)
 		{
@@ -67,6 +79,15 @@ class Cli
 			$queue->releaseJob($newJob->job_id);
 			throw $ex;
 		}
+	}
+
+	protected function processWorker($worker_name, $new_job)
+	{
+		fwrite(STDOUT, sprintf("Running worker (%s) now... ", $worker_name));
+		$newWorker = \PHPQueue\Base::getWorker($worker_name);
+		\PHPQueue\Base::workJob($newWorker, $new_job);
+		fwrite(STDOUT, "Done.\n");
+		return $newWorker->result_data;
 	}
 }
 ?>

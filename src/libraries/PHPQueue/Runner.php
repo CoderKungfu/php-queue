@@ -90,13 +90,26 @@ abstract class Runner
 		}
 		else
 		{
-			$this->logger->addInfo(sprintf("Running new job (%s) with worker: %s", $newJob->job_id, $newJob->worker));
 			try
 			{
-				$worker = \PHPQueue\Base::getWorker($newJob->worker);
-				\PHPQueue\Base::workJob($worker, $newJob);
-				$this->logger->addInfo(sprintf('Worker is done. Updating job (%s). Result:', $newJob->job_id), $worker->result_data);
-				return \PHPQueue\Base::updateJob($this->queue, $newJob->job_id, $worker->result_data);
+				if (empty($newJob->worker))
+				{
+					throw new \PHPQueue\Exception("No worker declared.");
+				}
+				if (is_string($newJob->worker))
+				{
+					$result_data = $this->processWorker($newJob->worker, $newJob);
+				}
+				else if (is_array($newJob->worker))
+				{
+					$this->logger->addInfo(sprintf("Running chained new job (%s) with workers", $new_job->job_id), $newJob->worker);
+					foreach($newJob->worker as $worker_name)
+					{
+						$result_data = $this->processWorker($worker_name, $newJob);
+						$newJob->data = $result_data;
+					}
+				}
+				return \PHPQueue\Base::updateJob($this->queue, $newJob->job_id, $result_data);
 			}
 			catch (Exception $ex)
 			{
@@ -108,6 +121,15 @@ abstract class Runner
 		}
 		$this->logger->addInfo('Sleeping ' . ceil($sleepTime / 1000000) . ' seconds.');
 		usleep($sleepTime);
+	}
+
+	protected function processWorker($worker_name, $new_job)
+	{
+		$this->logger->addInfo(sprintf("Running new job (%s) with worker: %s", $new_job->job_id, $worker_name));
+		$worker = \PHPQueue\Base::getWorker($worker_name);
+		\PHPQueue\Base::workJob($worker, $new_job);
+		$this->logger->addInfo(sprintf('Worker is done. Updating job (%s). Result:', $new_job->job_id), $worker->result_data);
+		return $worker->result_data;
 	}
 }
 ?>

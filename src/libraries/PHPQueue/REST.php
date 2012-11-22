@@ -148,9 +148,23 @@ class REST
 		}
 		try
 		{
-			$newWorker = \PHPQueue\Base::getWorker($newJob->worker);
-			\PHPQueue\Base::workJob($newWorker, $newJob);
-			\PHPQueue\Base::updateJob($queue, $newJob->job_id, $newWorker->result_data);
+			if (empty($newJob->worker))
+			{
+				throw new \PHPQueue\Exception("No worker declared.");
+			}
+			if (is_string($newJob->worker))
+			{
+				$result_data = $this->processWorker($newJob->worker, $newJob);
+			}
+			else if (is_array($newJob->worker))
+			{
+				foreach($newJob->worker as $worker_name)
+				{
+					$result_data = $this->processWorker($worker_name, $newJob);
+					$newJob->data = $result_data;
+				}
+			}
+			\PHPQueue\Base::updateJob($queue, $newJob->job_id, $result_data);
 			return self::successful();
 		}
 		catch (Exception $ex)
@@ -158,6 +172,13 @@ class REST
 			$queue->releaseJob($newJob->job_id);
 			return self::failed($ex->getCode(), $ex->getMessage());
 		}
+	}
+
+	protected function processWorker($worker_name, $new_job)
+	{
+		$newWorker = \PHPQueue\Base::getWorker($worker_name);
+		\PHPQueue\Base::workJob($newWorker, $new_job);
+		return $newWorker->result_data;
 	}
 
 	/**
