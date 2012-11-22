@@ -64,7 +64,7 @@ php composer.phar install
 
 	```php
 <?php
-require_once '/path/to/sdk/vendor/autoload.php';
+require_once '/path/to/vendor/autoload.php';
 ?>
 ```
 
@@ -89,7 +89,7 @@ I would also recommend putting the autoloader statement and your app configs ins
 
 ```php
 <?php
-require_once '/path/to/sdk/vendor/autoload.php';
+require_once '/path/to/vendor/autoload.php';
 PHPQueue\Base::$queue_path = __DIR__ . '/queues/';
 PHPQueue\Base::$worker_path = __DIR__ . '/workers/';
 ?>
@@ -100,7 +100,7 @@ You can also declare your application's namespace for loading the Queues and Wor
 
 ```php
 <?php
-require_once '/path/to/sdk/vendor/autoload.php';
+require_once '/path/to/vendor/autoload.php';
 PHPQueue\Base::$queue_namespace = '\MyFabulousApp\Queues';
 PHPQueue\Base::$worker_namespace = '\MyFabulousApp\Workers';
 ?>
