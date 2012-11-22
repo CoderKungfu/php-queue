@@ -15,7 +15,7 @@ class Base
 	 * @param array $options
 	 * @return \PHPQueue\JobQueue
 	 */
-	static public function getQueue($queue=null, $options=array())
+	static public function getQueue($queue=null)
 	{
 		if (empty($queue))
 		{
@@ -26,7 +26,7 @@ class Base
 			$className = self::loadAndGetQueueClassName($queue);
 			try
 			{
-				self::$all_queues[$queue] = new $className($options);
+				self::$all_queues[$queue] = new $className();
 			}
 			catch (Exception $ex)
 			{
@@ -154,7 +154,7 @@ class Base
 	 * @return \PHPQueue\Worker
 	 * @throws \PHPQueue\Exception
 	 */
-	static public function getWorker($worker_name=null, $options=array())
+	static public function getWorker($worker_name=null)
 	{
 		if (empty($worker_name))
 		{
@@ -165,7 +165,7 @@ class Base
 			$className = self::loadAndGetWorkerClassName($worker_name);
 			try
 			{
-				self::$all_workers[$worker_name] = new $className($options);
+				self::$all_workers[$worker_name] = new $className();
 			}
 			catch (Exception $ex)
 			{

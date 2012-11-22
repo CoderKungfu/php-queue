@@ -3,7 +3,6 @@ namespace PHPQueue;
 abstract class Runner
 {
 	const RUN_USLEEP = 1000000;
-	public $queue_options;
 	public $queue_name;
 	private $queue;
 	public $logger;
@@ -16,20 +15,16 @@ abstract class Runner
 		{
 			$this->queue_name = $queue;
 		}
-		if (!empty($options))
-		{
-			$this->queue_options = $options;
-		}
 		if (
-			   !empty($this->queue_options['logPath'])
-			&& is_writable($this->queue_options['logPath'])
+			   !empty($options['logPath'])
+			&& is_writable($options['logPath'])
 		)
 		{
-			$this->log_path = $this->queue_options['logPath'];
+			$this->log_path = $options['logPath'];
 		}
-		if ( !empty($this->queue_options['logLevel']) )
+		if ( !empty($options['logLevel']) )
 		{
-			$this->log_level = $this->queue_options['logLevel'];
+			$this->log_level = $options['logLevel'];
 		}
 		else
 		{
@@ -72,7 +67,7 @@ abstract class Runner
 		{
 			throw new \PHPQueue\Exception('Queue name is invalid');
 		}
-		$this->queue = \PHPQueue\Base::getQueue($this->queue_name, $this->queue_options);
+		$this->queue = \PHPQueue\Base::getQueue($this->queue_name);
 	}
 
 	protected function loop()
