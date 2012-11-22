@@ -79,6 +79,8 @@ You can have a look at the **Demo App** inside `.\vendor\coderkungfu\phpqueue\sr
 	* \<QueueNameInCamelCase\>Queue.php
 * `workers` folder
 	* \<WorkerNameInCamelCase\>Worker.php
+* `runners` folder
+* `cli.php` file
 * `config.php` file
 
 I would also recommend putting the autoloader statement and your app configs inside a separate `config.php` file.
