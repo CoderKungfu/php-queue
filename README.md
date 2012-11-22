@@ -70,7 +70,7 @@ require_once '/path/to/vendor/autoload.php';
 
 ## Getting Started ##
 
-You can have a look at the **Demo App** inside `.\vendor\coderkungfu\phpqueue\src\demo\` folder for a recommended folder structure.
+You can have a look at the **Demo App** inside `.\vendor\coderkungfu\php-queue\src\demo\` folder for a recommended folder structure.
 
 * `htdocs` folder
 	* .htaccess
