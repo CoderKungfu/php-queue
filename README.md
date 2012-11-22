@@ -97,7 +97,7 @@ PHP-Queue will attempt to instantiate the `PHPQueue\JobQueue` and `PHPQueue\Work
 It might be advisable to use [Composer's Custom Autoloader](http://getcomposer.org/doc/01-basic-usage.md#autoloading) for this.
 
 **Note:**<br/>
-*If you declared `PHPQueue\Base::$queue_path` and/or `PHPQueue\Base::$worker_path` together with the namespace, the files will be loaded with `require_once` from those folder path **AND** instantiated with the namespaced class names.*
+*If you declared `PHPQueue\Base::$queue_path` and/or `PHPQueue\Base::$worker_path` together with the namespace, the files will be loaded with `require_once` from those folder path __AND__ instantiated with the namespaced class names.*
 
 
 ---
