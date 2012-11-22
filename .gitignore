@@ -4,4 +4,5 @@ cache.properties
 composer.lock
 src/demo/queues/logs/*.log
 src/demo/runners/logs/*.log
+test/phpunit.xml
 vendor/*
