@@ -105,8 +105,7 @@ class MongoDB extends Base
 		{
 			throw new \PHPQueue\Exception("Record not found.");
 		}
-		$response = $this->getCollection()->remove(array('_id' => $key));
-		var_dump($response);
+		$this->getCollection()->remove(array('_id' => $key));
 		$this->last_job_id = $key;
 		return true;
 	}
