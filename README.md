@@ -2,7 +2,7 @@
 
 A unified front-end for different queuing backends. Includes a REST server, CLI interface and daemon runners.
 
-### Why PHP-Queue? ###
+## Why PHP-Queue? ##
 
 The pains of implementing a queueing system (eg. Beanstalk, Amazon SQS, RabbitMQ) for your applciation:
 
@@ -14,7 +14,7 @@ The pains of implementing a queueing system (eg. Beanstalk, Amazon SQS, RabbitMQ
 
 PHP-Queue hopes to serve as an abstract layer between your application code and the implementation of the queue.
 
-### Benefits ###
+## Benefits ##
 
 * **Job Queue is Backend agnostic**
 
@@ -29,7 +29,7 @@ PHP-Queue hopes to serve as an abstract layer between your application code and 
 	Workers are independent of Job Queues. All it needs to worry about is processing the input data and return the resulting data. The queue despatcher will handle the rest. Workers will also be chainable.
 
 ---
-### Installation ###
+## Installation ##
 
 **Installating via Composer**
 
@@ -58,7 +58,7 @@ require_once '/path/to/sdk/vendor/autoload.php';
 ?>
 ```
 
-### Getting Started ###
+## Getting Started ##
 
 You can have a look at the **Demo App** folder inside `.\vendor\coderkungfu\phpqueue\src\demo` folder for a recommended folder structure.
 
@@ -82,6 +82,6 @@ PHPQueue\Base::$worker_path = __DIR__ . '/workers/';
 ?>
 ```
 ---
-### License ###
+## License ##
 
 MIT
