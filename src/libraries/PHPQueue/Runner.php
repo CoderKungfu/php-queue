@@ -37,10 +37,7 @@ abstract class Runner
 	{
 		$this->setup();
 		$this->beforeLoop();
-		while (true)
-		{
-			$this->loop();
-		}
+		$this->loop();
 	}
 
 	public function setup()
@@ -71,6 +68,14 @@ abstract class Runner
 	}
 
 	protected function loop()
+	{
+		while (true)
+		{
+			$this->workJob();
+		}
+	}
+
+	public function workJob()
 	{
 		$sleepTime = self::RUN_USLEEP;
 		$newJob = null;
