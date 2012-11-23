@@ -21,7 +21,7 @@
 		"amazonwebservices/aws-sdk-for-php": "For AWS SQS backend support",
 		"predis/predis": "For Redis backend support",
 		"pecl-mongodb": "For MongoDB backend support",
-		"clio/clio": "Support for daemonizing PHP CLI runner",
+		"clio/clio": "Support for daemonizing PHP CLI runner"
 	},
 	"autoload": {
 		"psr-0": {"PHPQueue": "src/libraries/"}
