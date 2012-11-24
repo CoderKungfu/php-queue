@@ -15,6 +15,12 @@
 		"Respect/Rest": "0.5.*",
 		"monolog/monolog": "1.2.*"
 	},
+	"require-dev": {
+		"clio/clio": "@stable",
+		"mrpoundsign/pheanstalk-5.3": "dev-master",
+		"amazonwebservices/aws-sdk-for-php": "dev-master",
+		"predis/predis": "v0.8.0"
+	},
 	"suggest": {
 		"predis/predis": "For Redis backend support",
 		"mrpoundsign/pheanstalk-5.3": "For Beanstalkd backend support",
