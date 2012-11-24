@@ -1,4 +1,13 @@
+#!/usr/bin/php
 <?php
+#
+# BeanstalkSampleDaemon    Starts the PHP-Queue runner for BeanstalkSample
+#
+# chkconfig:    - 91 91
+# description:    Runner for PHP-Queue
+#
+
+#require_once '/absolute/path/to/php-queue/src/demo/config.php';
 require_once dirname(__DIR__) . '/config.php';
 $pid_file = __DIR__ . '/process.pid';
 if (empty($argv[1]))
