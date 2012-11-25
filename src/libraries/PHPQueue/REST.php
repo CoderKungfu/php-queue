@@ -11,16 +11,16 @@ class REST
 	 * curl -XPOST http://<server>/<queueName> -H "Content-Type: application/json" -d '{"var1":"foo","var2":"bar"}'
 	 * curl -XPUT http://<server>/<queueName>
 	 */
-	static public function defaultRoutes()
+	static public function defaultRoutes($options=array())
 	{
 		self::startServer()
 				->always('Accept', array(
 							'application/json' => 'json_encode'
 						)
 				)
-				->any('/*/**', function($queue=null, $jobId=null)
+				->any('/*/**', function($queue=null, $actions=array()) use ($options)
 				{
-					return \PHPQueue\REST::route($queue, $jobId);
+					return \PHPQueue\REST::route($queue, $actions, $options);
 				});
 	}
 
@@ -41,10 +41,19 @@ class REST
 	 * Specify how a routed URL should be handled.
 	 * @param string $queue
 	 * @param array $actions
+	 * @param array $options array('auth'=>Object)
 	 * @return stdClass
 	 */
-	static public function route($queue=null, $actions=array())
+	static public function route($queue=null, $actions=array(), $options=array())
 	{
+		if (!empty($options['auth']) && is_object($options['auth']))
+		{
+			$auth_class = $options['auth'];
+			if ( !$auth_class->isAuth() )
+			{
+				return self::failed(401, "Not authorized.");
+			}
+		}
 		$method = $_SERVER['REQUEST_METHOD'];
 		switch($method)
 		{
