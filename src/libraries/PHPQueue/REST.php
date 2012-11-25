@@ -9,6 +9,7 @@ class REST
 	 * Starts a Respect/REST server with default routes:
 	 * curl -XPOST http://<server>/<queueName> -d "var1=foo&var2=bar"
 	 * curl -XPOST http://<server>/<queueName> -H "Content-Type: application/json" -d '{"var1":"foo","var2":"bar"}'
+	 * curl -XPUT http://<server>/<queueName>
 	 */
 	static public function defaultRoutes()
 	{
@@ -50,31 +51,11 @@ class REST
 			case 'POST':
 				return self::post($queue);
 				break;
-			case 'GET':
-				return self::get($queue, $actions);
+			case 'PUT':
+				return self::work($queue);
 				break;
 			default:
 				return self::failed(404, "Method not supported.");
-				break;
-		}
-	}
-
-	/**
-	 * Handles a GET method
-	 * @param string $queueName
-	 * @param array $actions
-	 * @return stdClass
-	 */
-	protected static function get($queueName=null, $actions=array())
-	{
-		$action = $actions[0];
-		switch($action)
-		{
-			case 'work':
-				return self::work($queueName);
-				break;
-			default:
-				return self::failed(404, "Action not supported.");
 				break;
 		}
 	}
@@ -154,13 +135,13 @@ class REST
 			}
 			if (is_string($newJob->worker))
 			{
-				$result_data = $this->processWorker($newJob->worker, $newJob);
+				$result_data = self::processWorker($newJob->worker, $newJob);
 			}
 			else if (is_array($newJob->worker))
 			{
 				foreach($newJob->worker as $worker_name)
 				{
-					$result_data = $this->processWorker($worker_name, $newJob);
+					$result_data = self::processWorker($worker_name, $newJob);
 					$newJob->data = $result_data;
 				}
 			}
@@ -174,7 +155,7 @@ class REST
 		}
 	}
 
-	protected function processWorker($worker_name, $new_job)
+	protected static function processWorker($worker_name, $new_job)
 	{
 		$newWorker = \PHPQueue\Base::getWorker($worker_name);
 		\PHPQueue\Base::workJob($newWorker, $new_job);

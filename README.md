@@ -135,7 +135,7 @@ curl -XPOST http://localhost/<QueueName>/ -H "Content-Type: application/json" -d
 2. Trigger next job.
 
 	```
-curl -XGET http://localhost/<QueueName>/work
+curl -XPUT http://localhost/<QueueName>/
 ```
 
 Read the [full documentation](https://github.com/Respect/Rest) on `Respect\Rest` to further customize to your application needs (eg. Basic Auth).
