@@ -12,32 +12,46 @@ require_once dirname(__DIR__) . '/config.php';
 $pid_file = __DIR__ . '/process.pid';
 if (empty($argv[1]))
 {
-	fwrite(STDOUT, "Unknown action." . PHP_EOL);
+	Clio\Console::output("Unknown action.");
 	die();
 }
 switch($argv[1])
 {
 	case 'start':
-		fwrite(STDOUT, "Starting... ");
-		Clio\Daemon::work(array(
-				'pid' => $pid_file,
-			),
-			function($stdin, $stdout, $sterr)
-			{
-				class BeanstalkSample extends PHPQueue\Runner{}
-				$runner = new BeanstalkSample('BeanstalkSample', array('logPath'=>__DIR__ . '/logs/'));
-				$runner->run();
-			}
-		);
-		fwrite(STDOUT, "[OK]" . PHP_EOL);
+		Clio\Console::stdout('Starting... ');
+		try
+		{
+			Clio\Daemon::work(array(
+					'pid' => $pid_file,
+				),
+				function($stdin, $stdout, $sterr)
+				{
+					class BeanstalkSample extends PHPQueue\Runner{}
+					$runner = new BeanstalkSample('BeanstalkSample', array('logPath'=>__DIR__ . '/logs/'));
+					$runner->run();
+				}
+			);
+			Clio\Console::output('%g[OK]%n');
+		}
+		catch (Exception $ex)
+		{
+			Clio\Console::output('%r[FAILED]%n');
+		}
 		break;
 	case 'stop':
-		fwrite(STDOUT, "Stopping... ");
-		Clio\Daemon::kill($pid_file, true);
-		fwrite(STDOUT, "[OK]" . PHP_EOL);
+		Clio\Console::stdout('Stopping... ');
+		try
+		{
+			Clio\Daemon::kill($pid_file, true);
+			Clio\Console::output('%g[OK]%n');
+		}
+		catch (Exception $ex)
+		{
+			Clio\Console::output('%r[FAILED]%n');
+		}
 		break;
 	default:
-		fwrite(STDOUT, "Unknown action." . PHP_EOL);
+		Clio\Console::output("Unknown action.");
 		break;
 }
 ?>
