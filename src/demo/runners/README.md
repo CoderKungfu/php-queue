@@ -196,7 +196,7 @@ To make it into a service that starts on boot-up.
 ...
 ```
 
-	***Note:** Customize to your specific script.*
+	*__Note:__ Customize to your specific script.*
 
 2. Run this to add this to the boot up process:
 
