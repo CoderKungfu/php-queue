@@ -145,7 +145,7 @@ switch($argv[1])
 ?>
 ```
 
-	***Note:** Some `echo` statements were added to provide some on-screen feedback.*
+	*__Note:__ Some `echo` statements were added to provide some on-screen feedback.*
 
 2. Make your runner executable by adding this to the first line of the PHP script:
 
