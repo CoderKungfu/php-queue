@@ -10,7 +10,7 @@
  *
  */
 require_once dirname(__DIR__) . '/config.php';
-class SecuredREST
+class SecuredREST implements \PHPQueue\Interfaces\Auth
 {
 	static public $valid_token = 'ki*ksjdu^GDjc\nk';
 
