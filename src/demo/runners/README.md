@@ -103,7 +103,7 @@ All Linux background daemons run like this:
 $ /etc/init.d/httpd start
 ```
 
-So you should make your PHP-Queue runner start the same way.
+You can make your PHP-Queue runner start the same way.
 
 #### CentOS ####
 
