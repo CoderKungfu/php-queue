@@ -35,7 +35,7 @@ require_once '/path/to/your/config.php';
 	```php
 class SampleRunner extends PHPQueue\Runner
 {
-	public $queue_name = 'Sample';
+    public $queue_name = 'Sample';
 }
 ```
 
@@ -56,7 +56,7 @@ $ php SimpleRunner.php
 
 Here's a basic script to start a PHP Daemon (using [`Clio\Clio`](https://packagist.org/packages/clio/clio)).
 
-```
+```php
 # BeanstalkSampleStart.php
 require_once '/path/to/your/config.php';
 Clio\Daemon::work(
@@ -76,16 +76,19 @@ Clio\Daemon::work(
 
 Here's a bsic script to stop a PHP Daemon (using [`Clio\Clio`](https://packagist.org/packages/clio/clio)).
 
-```
+```php
 # BeanstalkSampleStop.php
 require_once '/path/to/your/config.php';
 Clio\Daemon::kill($pid_file, true);
 ```
+
 To start/stop the daemon:
 
 ```
 $ php BeanstalkSampleStart.php
+```
 
+```
 $ php BeanstalkSampleStop.php
 ```
 
@@ -109,11 +112,13 @@ So you should make your PHP-Queue runner start the same way.
 	```php
 require_once '/path/to/your/config.php';
 $pid_file = '/path/to/process.pid';
+
 if (empty($argv[1]))
 {
 	fwrite(STDOUT, "Unknown action." . PHP_EOL);
 	die();
 }
+
 switch($argv[1])
 {
 	case 'start':
