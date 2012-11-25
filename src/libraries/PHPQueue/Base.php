@@ -1,6 +1,5 @@
 <?php
 namespace PHPQueue;
-class Exception extends \Exception{}
 class Base
 {
 	static public $queue_path = null;
