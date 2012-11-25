@@ -112,13 +112,11 @@ So you should make your PHP-Queue runner start the same way.
 	```php
 require_once '/path/to/your/config.php';
 $pid_file = '/path/to/process.pid';
-
 if (empty($argv[1]))
 {
 	fwrite(STDOUT, "Unknown action." . PHP_EOL);
 	die();
 }
-
 switch($argv[1])
 {
 	case 'start':
