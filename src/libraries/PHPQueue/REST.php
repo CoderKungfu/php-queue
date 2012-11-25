@@ -1,26 +1,58 @@
 <?php
+/**
+ * PHPQueue\REST class
+ *
+ * Example:
+ *   curl -XPOST http://<server>/<queueName> -d "var1=foo&var2=bar"
+ *   curl -XPOST http://<server>/<queueName> -H "Content-Type: application/json" -d '{"var1":"foo","var2":"bar"}'
+ *   curl -XPUT http://<server>/<queueName>
+ */
 namespace PHPQueue;
 class REST
 {
 	static public $json_payload_key = null;
 	static public $rest_server;
+	static public $response_content = array(
+							'application/json' => 'json_encode'
+						);
+	public $auth_class = null;
+
+	public function __construct($options=array())
+	{
+		if ( !empty($options['auth']) )
+		{
+			$auth_class = $options['auth'];
+			if (is_string($auth_class))
+			{
+				if (!(strpos($auth_class, "\\") === 0))
+				{
+					$auth_class = '\\' . $auth_class;
+				}
+				$auth_class = new $auth_class($options);
+			}
+			$this->auth_class = $auth_class;
+		}
+	}
 
 	/**
 	 * Starts a Respect/REST server with default routes:
-	 * curl -XPOST http://<server>/<queueName> -d "var1=foo&var2=bar"
-	 * curl -XPOST http://<server>/<queueName> -H "Content-Type: application/json" -d '{"var1":"foo","var2":"bar"}'
-	 * curl -XPUT http://<server>/<queueName>
 	 */
 	static public function defaultRoutes($options=array())
 	{
+		$router = !empty($options['router']) ? $options['router'] : '\PHPQueue\REST';
+		if (is_string($router))
+		{
+			$router = new $router($options);
+		}
+		$response_format = !empty($options['format'])
+							? array_merge(self::$response_content, $options['format'])
+							: self::$response_content;
+
 		self::startServer()
-				->always('Accept', array(
-							'application/json' => 'json_encode'
-						)
-				)
-				->any('/*/**', function($queue=null, $actions=array()) use ($options)
+				->always('Accept', $response_format)
+				->any('/*/**', function($queue=null, $actions=array()) use ($router, $options)
 				{
-					return \PHPQueue\REST::route($queue, $actions, $options);
+					return $router->route($queue, $actions, $options);
 				});
 	}
 
@@ -44,29 +76,46 @@ class REST
 	 * @param array $options array('auth'=>Object)
 	 * @return stdClass
 	 */
-	static public function route($queue=null, $actions=array(), $options=array())
+	public function route($queue=null, $actions=array(), $options=array())
 	{
-		if (!empty($options['auth']) && is_object($options['auth']))
+		try
 		{
-			$auth_class = $options['auth'];
-			if ( !$auth_class->isAuth() )
-			{
-				return self::failed(401, "Not authorized.");
-			}
+			$this->isAuth();
 		}
+		catch (Exception $ex)
+		{
+			return $this->failed(401, $ex->getMessage());
+		}
+
 		$method = $_SERVER['REQUEST_METHOD'];
 		switch($method)
 		{
 			case 'POST':
-				return self::post($queue);
+				return $this->post($queue);
 				break;
 			case 'PUT':
-				return self::work($queue);
+				return $this->work($queue);
 				break;
 			default:
-				return self::failed(404, "Method not supported.");
+				return $this->failed(404, "Method not supported.");
 				break;
 		}
+	}
+
+	protected function isAuth()
+	{
+		if ( !is_null($this->auth_class) )
+		{
+			if ( !is_a($this->auth_class, '\PHPQueue\Interfaces\Auth') )
+			{
+				throw new Exception("Invalid Auth Object.");
+			}
+			if (!$this->auth_class->isAuth())
+			{
+				throw new Exception("Not Authorized");
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -74,25 +123,25 @@ class REST
 	 * @param string $queueName
 	 * @return stdClass
 	 */
-	protected static function post($queueName=null)
+	protected function post($queueName=null)
 	{
-		$payload = self::getPayload();
+		$payload = $this->getPayload();
 		try
 		{
 			$queue = \PHPQueue\Base::getQueue($queueName);
 			\PHPQueue\Base::addJob($queue, $payload);
-			return self::successful();
+			return $this->successful();
 		}
 		catch (Exception $ex)
 		{
-			return self::failed($ex->getCode(), $ex->getMessage());
+			return $this->failed($ex->getCode(), $ex->getMessage());
 		}
 	}
 
 	/**
 	 * @return array
 	 */
-	protected static function getPayload()
+	protected function getPayload()
 	{
 		$payload = array();
 		switch($_SERVER['CONTENT_TYPE'])
@@ -120,7 +169,7 @@ class REST
 	 * @param string $queueName
 	 * @return stdClass
 	 */
-	protected static function work($queueName=null)
+	protected function work($queueName=null)
 	{
 		$queue = \PHPQueue\Base::getQueue($queueName);
 		try
@@ -129,12 +178,12 @@ class REST
 		}
 		catch (Exception $ex)
 		{
-			return self::failed(405, $ex->getMessage());
+			return $this->failed(405, $ex->getMessage());
 		}
 
 		if (empty($newJob))
 		{
-			return self::failed(404, "No Job in queue.");
+			return $this->failed(404, "No Job in queue.");
 		}
 		try
 		{
@@ -144,27 +193,27 @@ class REST
 			}
 			if (is_string($newJob->worker))
 			{
-				$result_data = self::processWorker($newJob->worker, $newJob);
+				$result_data = $this->processWorker($newJob->worker, $newJob);
 			}
 			else if (is_array($newJob->worker))
 			{
 				foreach($newJob->worker as $worker_name)
 				{
-					$result_data = self::processWorker($worker_name, $newJob);
+					$result_data = $this->processWorker($worker_name, $newJob);
 					$newJob->data = $result_data;
 				}
 			}
 			\PHPQueue\Base::updateJob($queue, $newJob->job_id, $result_data);
-			return self::successful();
+			return $this->successful();
 		}
 		catch (Exception $ex)
 		{
 			$queue->releaseJob($newJob->job_id);
-			return self::failed($ex->getCode(), $ex->getMessage());
+			return $this->failed($ex->getCode(), $ex->getMessage());
 		}
 	}
 
-	protected static function processWorker($worker_name, $new_job)
+	protected function processWorker($worker_name, $new_job)
 	{
 		$newWorker = \PHPQueue\Base::getWorker($worker_name);
 		\PHPQueue\Base::workJob($newWorker, $new_job);
@@ -175,7 +224,7 @@ class REST
 	 * Convenience method for Successful call.
 	 * @return stdClass
 	 */
-	protected static function successful()
+	protected function successful()
 	{
 		return self::respond(null, 200, "OK");
 	}
@@ -184,7 +233,7 @@ class REST
 	 * Convenience method for Failed call.
 	 * @return stdClass
 	 */
-	protected static function failed($code=501, $reason="")
+	protected function failed($code=501, $reason="")
 	{
 		return self::respond(null, $code, $reason);
 	}
@@ -193,7 +242,7 @@ class REST
 	 * Convenience method for a Data call.
 	 * @return stdClass
 	 */
-	protected static function showData($data=null)
+	protected function showData($data=null)
 	{
 		return self::respond($data, 200, "OK");
 	}
@@ -202,7 +251,7 @@ class REST
 	 * Main method for generating response stdClass.
 	 * @return stdClass
 	 */
-	protected static function respond($data=null, $code=200, $message="")
+	protected function respond($data=null, $code=200, $message="")
 	{
 		return Helpers::output($data, $code, $message);
 	}
