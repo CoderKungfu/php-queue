@@ -19,7 +19,8 @@
 		"clio/clio": "@stable",
 		"mrpoundsign/pheanstalk-5.3": "dev-master",
 		"amazonwebservices/aws-sdk-for-php": "dev-master",
-		"predis/predis": "v0.8.0"
+		"predis/predis": "v0.8.0",
+		"iron-io/iron_mq": "dev-master"
 	},
 	"suggest": {
 		"predis/predis": "For Redis backend support",
@@ -27,7 +28,8 @@
 		"amazonwebservices/aws-sdk-for-php": "For AWS SQS backend support",
 		"predis/predis": "For Redis backend support",
 		"pecl-mongodb": "For MongoDB backend support",
-		"clio/clio": "Support for daemonizing PHP CLI runner"
+		"clio/clio": "Support for daemonizing PHP CLI runner",
+		"iron-io/iron_mq": "For IronMQ backend support"
 	},
 	"autoload": {
 		"psr-0": {"PHPQueue": "src/libraries/"}
