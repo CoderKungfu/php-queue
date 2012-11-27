@@ -4,66 +4,66 @@
  */
 class IronMQTest extends PHPUnit_Framework_TestCase
 {
-	private $object;
+    private $object;
 
-	public function setUp()
-	{
-		parent::setUp();
-		if (!class_exists('\IronMQ'))
-		{
-			$this->markTestSkipped('Iron MQ library not installed');
-		}
-		else
-		{
-			$options = array(
-				'queue' => 'test_queue',
-				'msg_options' => array('timeout'=>1)
-			);
-			$this->object = new PHPQueue\Backend\IronMQ($options);
-		}
-	}
-
-	public function testAdd()
+    public function setUp()
     {
-		$this->object->getConnection()->clearQueue($this->object->queue_name);
+        parent::setUp();
+        if (!class_exists('\IronMQ'))
+        {
+            $this->markTestSkipped('Iron MQ library not installed');
+        }
+        else
+        {
+            $options = array(
+                'queue' => 'test_queue',
+                'msg_options' => array('timeout'=>1)
+            );
+            $this->object = new PHPQueue\Backend\IronMQ($options);
+        }
+    }
 
-		$data = array('1','Willy','Wonka');
-		$result = $this->object->add($data);
-		$this->assertTrue($result);
-	}
-
-	/**
-	 * @depends testAdd
-	 */
-	public function testGet()
+    public function testAdd()
     {
-		$result = $this->object->get();
-		$this->assertNotEmpty($result);
-		$this->assertEquals(array('1','Willy','Wonka'), $result);
-		sleep(1);
-	}
+        $this->object->getConnection()->clearQueue($this->object->queue_name);
 
-	/**
-	 * @depends testAdd
-	 */
-	public function testClear()
+        $data = array('1','Willy','Wonka');
+        $result = $this->object->add($data);
+        $this->assertTrue($result);
+    }
+
+    /**
+     * @depends testAdd
+     */
+    public function testGet()
     {
-		try
-		{
-			$jobId = 'xxx';
-			$this->object->clear($jobId);
-			$this->fail("Should not be able to delete.");
-		}
-		catch(Exception $ex)
-		{
-			$this->assertNotEquals("Should not be able to delete.", $ex->getMessage());
-		}
+        $result = $this->object->get();
+        $this->assertNotEmpty($result);
+        $this->assertEquals(array('1','Willy','Wonka'), $result);
+        sleep(1);
+    }
 
-		$result = $this->object->get();
-		$this->assertNotEmpty($result);
-		$jobId = $this->object->last_job_id;
-		$result = $this->object->clear($jobId);
-		$this->assertTrue($result);
-	}
+    /**
+     * @depends testAdd
+     */
+    public function testClear()
+    {
+        try
+        {
+            $jobId = 'xxx';
+            $this->object->clear($jobId);
+            $this->fail("Should not be able to delete.");
+        }
+        catch(Exception $ex)
+        {
+            $this->assertNotEquals("Should not be able to delete.", $ex->getMessage());
+        }
+
+        $result = $this->object->get();
+        $this->assertNotEmpty($result);
+        $jobId = $this->object->last_job_id;
+        $result = $this->object->clear($jobId);
+        $this->assertTrue($result);
+    }
 }
 ?>
