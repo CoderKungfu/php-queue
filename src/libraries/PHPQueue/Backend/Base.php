@@ -8,10 +8,10 @@ abstract class Base
     protected $connection;
 
     public function __construct(){}
-    public function connect(){}
+    abstract public function connect();
 
     public function beforeAdd($data=null){}
-    public function add($data=null){}
+    abstract public function add($data=null);
     public function afterAdd(){}
 
     public function beforeGet($jobId=null)
@@ -21,7 +21,7 @@ abstract class Base
             $this->last_job_id = $jobId;
         }
     }
-    public function get($jobId=null){}
+    abstract public function get($jobId=null);
     public function afterGet()
     {
         $id = $this->last_job_id;
@@ -35,7 +35,7 @@ abstract class Base
             $this->last_job_id = $jobId;
         }
     }
-    public function clear($jobId=null){}
+    abstract public function clear($jobId=null);
 
     public function beforeRelease($jobId=null)
     {
