@@ -69,7 +69,7 @@ class Base
      */
     static public function addJob($queue, $newJob=array())
     {
-        if (!is_a($queue, '\\PHPQueue\\JobQueue'))
+        if (! ($queue instanceof \PHPQueue\JobQueue))
         {
             throw new \PHPQueue\Exception("Invalid queue object.");
         }
@@ -99,7 +99,7 @@ class Base
      */
     static public function getJob($queue, $jobId=null)
     {
-        if (!is_a($queue, '\\PHPQueue\\JobQueue'))
+        if (! ($queue instanceof \PHPQueue\JobQueue))
         {
             throw new \PHPQueue\Exception("Invalid queue object.");
         }
@@ -126,7 +126,7 @@ class Base
      */
     static public function updateJob($queue, $jobId=null, $resultData=null)
     {
-        if (!is_a($queue, '\\PHPQueue\\JobQueue'))
+        if (! ($queue instanceof \PHPQueue\JobQueue))
         {
             throw new \PHPQueue\Exception("Invalid queue object.");
         }
@@ -209,11 +209,11 @@ class Base
      */
     static public function workJob($worker, $job)
     {
-        if (!is_a($worker, '\\PHPQueue\\Worker'))
+        if (! ($worker instanceof \PHPQueue\Worker))
         {
             throw new \PHPQueue\Exception("Invalid worker object.");
         }
-        if (!is_a($job, '\\PHPQueue\\Job'))
+        if (! ($job instanceof \PHPQueue\Job))
         {
             throw new \PHPQueue\Exception("Invalid job object.");
         }
@@ -245,7 +245,7 @@ class Base
     {
         $backend_classname = '\\PHPQueue\\Backend\\' . $type;
         $obj = new $backend_classname($options);
-        if (is_a($obj, $backend_classname))
+        if ($obj instanceof $backend_classname)
         {
             return $obj;
         }
