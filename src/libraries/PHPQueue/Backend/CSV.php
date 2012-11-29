@@ -34,6 +34,14 @@ class CSV extends Base
         }
     }
 
+    public function connect()
+    {
+    }
+
+    public function clear($jobId=null)
+    {
+    }
+
     public function get($jobId=null)
     {
         if (!is_null($jobId))
