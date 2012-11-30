@@ -46,16 +46,6 @@ class BaseTest extends \PHPUnit_Framework_TestCase
 
     public function testAddJob()
     {
-        try
-        {
-            Base::addJob(null);
-            $this->fail("Should not be able to add to Queue");
-        }
-        catch (\Exception $ex)
-        {
-            $this->assertStringStartsWith("Invalid queue object.", $ex->getMessage());
-        }
-
         $queue = Base::getQueue('Sample');
         try
         {
@@ -73,16 +63,6 @@ class BaseTest extends \PHPUnit_Framework_TestCase
 
     public function testGetJob()
     {
-        try
-        {
-            Base::getJob(null);
-            $this->fail("Should not be able to get job from Queue");
-        }
-        catch (\Exception $ex)
-        {
-            $this->assertStringStartsWith("Invalid queue object.", $ex->getMessage());
-        }
-
         $queue = Base::getQueue('Sample');
         $result = Base::getJob($queue);
         $this->assertInstanceOf('\\PHPQueue\\Job', $result);
@@ -134,27 +114,7 @@ class BaseTest extends \PHPUnit_Framework_TestCase
 
     public function testWorkJob()
     {
-        try
-        {
-            Base::workJob(null, null);
-            $this->fail("Should not be able to work the Job");
-        }
-        catch (\Exception $ex)
-        {
-            $this->assertStringStartsWith("Invalid worker object", $ex->getMessage());
-        }
-
         $worker = Base::getWorker('Sample');
-        try
-        {
-            Base::workJob($worker, null);
-            $this->fail("Should not be able to work the Job");
-        }
-        catch (\Exception $ex)
-        {
-            $this->assertStringStartsWith("Invalid job object", $ex->getMessage());
-        }
-
         $job = new Job();
         $job->worker = 'Sample';
         $job->data = array('var1'=>'Hello, world!');

@@ -14,7 +14,7 @@ class Base
      * @param array $options
      * @return \PHPQueue\JobQueue
      */
-    static public function getQueue($queue)
+    static public function getQueue($queue=null)
     {
         if (empty($queue))
         {
@@ -35,7 +35,7 @@ class Base
         return self::$all_queues[$queue];
     }
 
-    static protected function loadAndGetQueueClassName($queue_name)
+    static protected function loadAndGetQueueClassName($queue_name=null)
     {
         $class_name = '';
         if (!is_null(self::$queue_path))
@@ -67,12 +67,8 @@ class Base
      * @param array $newJob
      * @return boolean
      */
-    static public function addJob($queue, $newJob=array())
+    static public function addJob(JobQueue $queue, $newJob=array())
     {
-        if (! ($queue instanceof JobQueue))
-        {
-            throw new Exception("Invalid queue object.");
-        }
         if (empty($newJob))
         {
             throw new Exception("Invalid job data.");
@@ -97,12 +93,8 @@ class Base
      * @param string $jobId
      * @return \PHPQueue\Job
      */
-    static public function getJob($queue, $jobId=null)
+    static public function getJob(JobQueue $queue, $jobId=null)
     {
-        if (! ($queue instanceof JobQueue))
-        {
-            throw new Exception("Invalid queue object.");
-        }
         $job = null;
         try
         {
@@ -124,12 +116,8 @@ class Base
      * @param mixed $resultData
      * @return boolean
      */
-    static public function updateJob($queue, $jobId=null, $resultData=null)
+    static public function updateJob(JobQueue $queue, $jobId=null, $resultData=null)
     {
-        if (! ($queue instanceof JobQueue))
-        {
-            throw new Exception("Invalid queue object.");
-        }
         $status = false;
         try
         {
@@ -153,7 +141,7 @@ class Base
      * @return \PHPQueue\Worker
      * @throws \PHPQueue\Exception
      */
-    static public function getWorker($worker_name)
+    static public function getWorker($worker_name=null)
     {
         if (empty($worker_name))
         {
@@ -174,7 +162,7 @@ class Base
         return self::$all_workers[$worker_name];
     }
 
-    static protected function loadAndGetWorkerClassName($worker_name)
+    static protected function loadAndGetWorkerClassName($worker_name=null)
     {
         $class_name = '';
         if (!is_null(self::$worker_path))
@@ -207,16 +195,8 @@ class Base
      * @return \PHPQueue\Worker
      * @throws \PHPQueue\Exception
      */
-    static public function workJob($worker, $job)
-    {
-        if (! ($worker instanceof Worker))
-        {
-            throw new Exception("Invalid worker object.");
-        }
-        if (! ($job instanceof Job))
-        {
-            throw new Exception("Invalid job object.");
-        }
+    static public function workJob(Worker $worker, Job $job)
+    { 
         try
         {
             $worker->beforeJob($job->data);
