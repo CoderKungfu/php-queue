@@ -29,7 +29,7 @@ class SampleQueue extends PHPQueue\JobQueue
         return true;
     }
 
-    public function getJob()
+    public function getJob($jobId=null)
     {
         parent::getJob();
         if ( empty($this->jobs) )

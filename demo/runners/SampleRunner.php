@@ -6,4 +6,3 @@ class SampleRunner extends PHPQueue\Runner
 }
 $runner = new SampleRunner();
 $runner->run();
-?>

@@ -53,4 +53,3 @@ class SecuredREST implements \PHPQueue\Interfaces\Auth
 }
 $options = array('auth'=>new SecuredREST);
 PHPQueue\REST::defaultRoutes($options);
-?>

@@ -12,4 +12,3 @@ class SampleWorker extends PHPQueue\Worker
         $this->result_data = $jobData;
     }
 }
-?>

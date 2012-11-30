@@ -54,4 +54,3 @@ switch($argv[1])
         Clio\Console::output("Unknown action.");
         break;
 }
-?>

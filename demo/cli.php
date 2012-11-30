@@ -26,4 +26,3 @@ switch ($action)
         echo "Error: No action declared...\n";
         break;
 }
-?>
