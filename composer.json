@@ -21,7 +21,8 @@
         "mrpoundsign/pheanstalk-5.3": "dev-master",
         "amazonwebservices/aws-sdk-for-php": "dev-master",
         "predis/predis": "v0.8.0",
-        "iron-io/iron_mq": "dev-master"
+        "iron-io/iron_mq": "dev-master",
+        "ext-memcache": "*"
     },
     "suggest": {
         "predis/predis": "For Redis backend support",
