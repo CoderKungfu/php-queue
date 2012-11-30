@@ -21,7 +21,7 @@ abstract class Base
             $this->last_job_id = $jobId;
         }
     }
-    abstract public function get($jobId=null);
+    abstract public function get();
     public function afterGet()
     {
         $id = $this->last_job_id;

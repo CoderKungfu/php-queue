@@ -37,7 +37,7 @@ class Predis extends Base
         $this->connection = new \Predis\Client($this->servers, $this->redis_options);
     }
 
-    public function add($data)
+    public function add($data=array())
     {
         $this->beforeAdd();
         if (empty($data))
