@@ -221,7 +221,7 @@ class Base
      * @return \PHPQueue\backend_classname
      * @throws \PHPQueue\Exception
      */
-    static public function backendFactory($type=null, $options=array())
+    static public function backendFactory($type, $options=array())
     {
         $backend_classname = '\\PHPQueue\\Backend\\' . $type;
         $obj = new $backend_classname($options);
