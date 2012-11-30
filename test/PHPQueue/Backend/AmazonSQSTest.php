@@ -1,5 +1,6 @@
 <?php
-class AmazonSQSTest extends PHPUnit_Framework_TestCase
+namespace PHPQueue\Backend;
+class AmazonSQSTest extends \PHPUnit_Framework_TestCase
 {
     private $object;
 
@@ -21,7 +22,7 @@ class AmazonSQSTest extends PHPUnit_Framework_TestCase
 //                                )
                 , 'receiving_options' => array('VisibilityTimeout' => 0)
             );
-            $this->object = new PHPQueue\Backend\AmazonSQS($options);
+            $this->object = new AmazonSQS($options);
         }
     }
 
@@ -65,4 +66,3 @@ class AmazonSQSTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($result);
     }
 }
-?>

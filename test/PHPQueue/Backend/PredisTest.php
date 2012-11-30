@@ -1,5 +1,6 @@
 <?php
-class PredisTest extends PHPUnit_Framework_TestCase
+namespace PHPQueue\Backend;
+class PredisTest extends \PHPUnit_Framework_TestCase
 {
     private $object;
 
@@ -16,7 +17,7 @@ class PredisTest extends PHPUnit_Framework_TestCase
                 'servers' => array('host' => '127.0.0.1', 'port' => 6379)
                 , 'queue' => 'testqueue'
             );
-            $this->object = new PHPQueue\Backend\Predis($options);
+            $this->object = new Predis($options);
         }
     }
 
@@ -168,4 +169,3 @@ class PredisTest extends PHPUnit_Framework_TestCase
         $this->object->getConnection()->flushall();
     }
 }
-?>

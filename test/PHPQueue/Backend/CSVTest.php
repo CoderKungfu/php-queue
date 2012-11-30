@@ -1,15 +1,16 @@
 <?php
-class CSVTest extends PHPUnit_Framework_TestCase
+namespace PHPQueue\Backend;
+class CSVTest extends \PHPUnit_Framework_TestCase
 {
     private $object;
 
     public function __construct()
     {
         parent::__construct();
-        $filename = '/tmp/test.csv';
+        $filename = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'test.csv';
         file_put_contents($filename, '');
         $opt = array('filePath'=>$filename);
-        $this->object = new PHPQueue\Backend\CSV($opt);
+        $this->object = new CSV($opt);
     }
 
     public function testAdd()
@@ -57,4 +58,3 @@ class CSVTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array('4','Cherian','George'), $result);
     }
 }
-?>
