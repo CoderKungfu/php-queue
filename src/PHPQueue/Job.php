@@ -37,7 +37,7 @@ class Job
                     $this->worker = $data['worker'];
                     $this->data = $data['data'];
                 }
-                catch (Exception $ex){}
+                catch (\Exception $ex){}
             }
         }
     }

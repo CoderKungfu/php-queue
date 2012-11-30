@@ -51,7 +51,7 @@ abstract class Runner
                             );
         }
         $logFileName = sprintf('%s-%s.log', $this->queue_name, date('Ymd'));
-        $this->logger = \PHPQueue\Logger::createLogger(
+        $this->logger = Logger::createLogger(
                               $this->queue_name
                             , $this->log_level
                             , $this->log_path . $logFileName
@@ -62,9 +62,9 @@ abstract class Runner
     {
         if (empty($this->queue_name))
         {
-            throw new \PHPQueue\Exception('Queue name is invalid');
+            throw new Exception('Queue name is invalid');
         }
-        $this->queue = \PHPQueue\Base::getQueue($this->queue_name);
+        $this->queue = Base::getQueue($this->queue_name);
     }
 
     protected function loop()
@@ -81,9 +81,9 @@ abstract class Runner
         $newJob = null;
         try
         {
-            $newJob = \PHPQueue\Base::getJob($this->queue);
+            $newJob = Base::getJob($this->queue);
         }
-        catch (Exception $ex)
+        catch (\Exception $ex)
         {
             $this->logger->addError($ex->getMessage());
             $sleepTime = self::RUN_USLEEP * 5;
@@ -99,7 +99,7 @@ abstract class Runner
             {
                 if (empty($newJob->worker))
                 {
-                    throw new \PHPQueue\Exception("No worker declared.");
+                    throw new Exception("No worker declared.");
                 }
                 if (is_string($newJob->worker))
                 {
@@ -114,9 +114,9 @@ abstract class Runner
                         $newJob->data = $result_data;
                     }
                 }
-                return \PHPQueue\Base::updateJob($this->queue, $newJob->job_id, $result_data);
+                return Base::updateJob($this->queue, $newJob->job_id, $result_data);
             }
-            catch (Exception $ex)
+            catch (\Exception $ex)
             {
                 $this->logger->addError($ex->getMessage());
                 $this->logger->addInfo(sprintf('Releasing job (%s).', $newJob->job_id));
@@ -131,8 +131,8 @@ abstract class Runner
     protected function processWorker($worker_name, $new_job)
     {
         $this->logger->addInfo(sprintf("Running new job (%s) with worker: %s", $new_job->job_id, $worker_name));
-        $worker = \PHPQueue\Base::getWorker($worker_name);
-        \PHPQueue\Base::workJob($worker, $new_job);
+        $worker = Base::getWorker($worker_name);
+        Base::workJob($worker, $new_job);
         $this->logger->addInfo(sprintf('Worker is done. Updating job (%s). Result:', $new_job->job_id), $worker->result_data);
         return $worker->result_data;
     }

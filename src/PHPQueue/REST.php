@@ -82,7 +82,7 @@ class REST
         {
             $this->isAuth();
         }
-        catch (Exception $ex)
+        catch (\Exception $ex)
         {
             return $this->failed(401, $ex->getMessage());
         }
@@ -128,11 +128,11 @@ class REST
         $payload = $this->getPayload();
         try
         {
-            $queue = \PHPQueue\Base::getQueue($queueName);
-            \PHPQueue\Base::addJob($queue, $payload);
+            $queue = Base::getQueue($queueName);
+            Base::addJob($queue, $payload);
             return $this->successful();
         }
-        catch (Exception $ex)
+        catch (\Exception $ex)
         {
             return $this->failed($ex->getCode(), $ex->getMessage());
         }
@@ -171,10 +171,10 @@ class REST
      */
     protected function work($queueName=null)
     {
-        $queue = \PHPQueue\Base::getQueue($queueName);
+        $queue = Base::getQueue($queueName);
         try
         {
-            $newJob = \PHPQueue\Base::getJob($queue);
+            $newJob = Base::getJob($queue);
         }
         catch (Exception $ex)
         {
@@ -189,7 +189,7 @@ class REST
         {
             if (empty($newJob->worker))
             {
-                throw new \PHPQueue\Exception("No worker declared.");
+                throw new Exception("No worker declared.");
             }
             if (is_string($newJob->worker))
             {
@@ -203,7 +203,7 @@ class REST
                     $newJob->data = $result_data;
                 }
             }
-            \PHPQueue\Base::updateJob($queue, $newJob->job_id, $result_data);
+            Base::updateJob($queue, $newJob->job_id, $result_data);
             return $this->successful();
         }
         catch (Exception $ex)
@@ -215,8 +215,8 @@ class REST
 
     protected function processWorker($worker_name, $new_job)
     {
-        $newWorker = \PHPQueue\Base::getWorker($worker_name);
-        \PHPQueue\Base::workJob($newWorker, $new_job);
+        $newWorker = Base::getWorker($worker_name);
+        Base::workJob($newWorker, $new_job);
         return $newWorker->result_data;
     }
 

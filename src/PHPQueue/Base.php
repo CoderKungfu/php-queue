@@ -18,7 +18,7 @@ class Base
     {
         if (empty($queue))
         {
-            throw new \PHPQueue\Exception("Queue name is empty");
+            throw new Exception("Queue name is empty");
         }
         if ( empty(self::$all_queues[$queue]) )
         {
@@ -27,9 +27,9 @@ class Base
             {
                 self::$all_queues[$queue] = new $className();
             }
-            catch (Exception $ex)
+            catch (\Exception $ex)
             {
-                throw new \PHPQueue\Exception($ex->getMessage(), $ex->getCode());
+                throw new Exception($ex->getMessage(), $ex->getCode());
             }
         }
         return self::$all_queues[$queue];
@@ -47,7 +47,7 @@ class Base
             }
             else
             {
-                throw new \PHPQueue\Exception("Queue file does not exist: $classFile");
+                throw new Exception("Queue file does not exist: $classFile");
             }
             $class_name =  "\\" . $queue_name . 'Queue';
         }
@@ -69,13 +69,13 @@ class Base
      */
     static public function addJob($queue, $newJob=array())
     {
-        if (! ($queue instanceof \PHPQueue\JobQueue))
+        if (! ($queue instanceof JobQueue))
         {
-            throw new \PHPQueue\Exception("Invalid queue object.");
+            throw new Exception("Invalid queue object.");
         }
         if (empty($newJob))
         {
-            throw new \PHPQueue\Exception("Invalid job data.");
+            throw new Exception("Invalid job data.");
         }
         $status = false;
         try
@@ -84,7 +84,7 @@ class Base
             $status = $queue->addJob($newJob);
             $queue->afterAdd();
         }
-        catch (Exception $ex)
+        catch (\Exception $ex)
         {
             $queue->onError($ex);
             throw $ex;
@@ -99,9 +99,9 @@ class Base
      */
     static public function getJob($queue, $jobId=null)
     {
-        if (! ($queue instanceof \PHPQueue\JobQueue))
+        if (! ($queue instanceof JobQueue))
         {
-            throw new \PHPQueue\Exception("Invalid queue object.");
+            throw new Exception("Invalid queue object.");
         }
         $job = null;
         try
@@ -110,7 +110,7 @@ class Base
             $job = $queue->getJob($jobId);
             $queue->afterGet();
         }
-        catch (Exception $ex)
+        catch (\Exception $ex)
         {
             $queue->onError($ex);
             throw $ex;
@@ -126,9 +126,9 @@ class Base
      */
     static public function updateJob($queue, $jobId=null, $resultData=null)
     {
-        if (! ($queue instanceof \PHPQueue\JobQueue))
+        if (! ($queue instanceof JobQueue))
         {
-            throw new \PHPQueue\Exception("Invalid queue object.");
+            throw new Exception("Invalid queue object.");
         }
         $status = false;
         try
@@ -138,7 +138,7 @@ class Base
             $status = $queue->clearJob($jobId);
             $queue->afterUpdate();
         }
-        catch (Exception $ex)
+        catch (\Exception $ex)
         {
             $queue->onError($ex);
             $queue->releaseJob($jobId);
@@ -157,7 +157,7 @@ class Base
     {
         if (empty($worker_name))
         {
-            throw new \PHPQueue\Exception("Worker name is empty");
+            throw new Exception("Worker name is empty");
         }
         if ( empty(self::$all_workers[$worker_name]) )
         {
@@ -166,9 +166,9 @@ class Base
             {
                 self::$all_workers[$worker_name] = new $className();
             }
-            catch (Exception $ex)
+            catch (\Exception $ex)
             {
-                throw new \PHPQueue\Exception($ex->getMessage(), $ex->getCode());
+                throw new Exception($ex->getMessage(), $ex->getCode());
             }
         }
         return self::$all_workers[$worker_name];
@@ -186,7 +186,7 @@ class Base
             }
             else
             {
-                throw new \PHPQueue\Exception("Worker file does not exist: $classFile");
+                throw new Exception("Worker file does not exist: $classFile");
             }
             $class_name =  "\\" . $worker_name . 'Worker';
         }
@@ -209,13 +209,13 @@ class Base
      */
     static public function workJob($worker, $job)
     {
-        if (! ($worker instanceof \PHPQueue\Worker))
+        if (! ($worker instanceof Worker))
         {
-            throw new \PHPQueue\Exception("Invalid worker object.");
+            throw new Exception("Invalid worker object.");
         }
-        if (! ($job instanceof \PHPQueue\Job))
+        if (! ($job instanceof Job))
         {
-            throw new \PHPQueue\Exception("Invalid job object.");
+            throw new Exception("Invalid job object.");
         }
         try
         {
@@ -225,7 +225,7 @@ class Base
             $worker->afterJob();
             $worker->onSuccess();
         }
-        catch (Exception $ex)
+        catch (\Exception $ex)
         {
             $worker->onError($ex);
             $job->onError();
@@ -251,7 +251,7 @@ class Base
         }
         else
         {
-            throw new \PHPQueue\Exception("Invalid Backend object.");
+            throw new Exception("Invalid Backend object.");
         }
     }
 }

@@ -19,11 +19,11 @@ class Cli
         $status = false;
         try
         {
-            $queue = \PHPQueue\Base::getQueue($this->queue_name);
-            $status = \PHPQueue\Base::addJob($queue, $payload);
+            $queue = Base::getQueue($this->queue_name);
+            $status = Base::addJob($queue, $payload);
             fwrite(STDOUT, "Done.\n");
         }
-        catch (Exception $ex)
+        catch (\Exception $ex)
         {
             fwrite(STDOUT, sprintf("Error: %s\n", $ex->getMessage()));
             throw $ex;
@@ -34,15 +34,15 @@ class Cli
     public function work()
     {
         $newJob = null;
-        $queue = \PHPQueue\Base::getQueue($this->queue_name);
+        $queue = Base::getQueue($this->queue_name);
         try
         {
-            $newJob = \PHPQueue\Base::getJob($queue);
+            $newJob = Base::getJob($queue);
             fwrite(STDOUT, "===========================================================\n");
             fwrite(STDOUT, "Next Job:\n");
             var_dump($newJob);
         }
-        catch (Exception $ex)
+        catch (\Exception $ex)
         {
             fwrite(STDOUT, "Error: " . $ex->getMessage() . "\n");
         }
@@ -56,7 +56,7 @@ class Cli
         {
             if (empty($newJob->worker))
             {
-                throw new \PHPQueue\Exception("No worker declared.");
+                throw new Exception("No worker declared.");
             }
             if (is_string($newJob->worker))
             {
@@ -71,7 +71,7 @@ class Cli
                 }
             }
             fwrite(STDOUT, "Updating job... \n");
-            return \PHPQueue\Base::updateJob($queue, $newJob->job_id, $result_data);
+            return Base::updateJob($queue, $newJob->job_id, $result_data);
         }
         catch (Exception $ex)
         {
@@ -84,8 +84,8 @@ class Cli
     protected function processWorker($worker_name, $new_job)
     {
         fwrite(STDOUT, sprintf("Running worker (%s) now... ", $worker_name));
-        $newWorker = \PHPQueue\Base::getWorker($worker_name);
-        \PHPQueue\Base::workJob($newWorker, $new_job);
+        $newWorker = Base::getWorker($worker_name);
+        Base::workJob($newWorker, $new_job);
         fwrite(STDOUT, "Done.\n");
         return $newWorker->result_data;
     }

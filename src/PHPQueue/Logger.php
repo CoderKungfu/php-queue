@@ -14,7 +14,7 @@ class Logger extends \Monolog\Logger
     {
         if (empty(self::$all_logs[$logName]))
         {
-            $logger = new Logger($logName);
+            $logger = new self($logName);
             $logger->pushHandler(new \Monolog\Handler\StreamHandler($logPath, $logLevel));
             self::$all_logs[$logName] = $logger;
         }
