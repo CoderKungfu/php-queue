@@ -22,7 +22,7 @@ class SampleQueue extends PHPQueue\JobQueue
         @file_put_contents($this->file_path, serialize($this->jobs));
     }
 
-    public function addJob($newJob)
+    public function addJob($newJob = null)
     {
         parent::addJob($newJob);
         array_unshift($this->jobs, $newJob);
