@@ -57,4 +57,3 @@ class Job
         $this->status = self::NOT_OK;
     }
 }
-?>

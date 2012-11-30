@@ -168,4 +168,3 @@ class PredisTest extends PHPUnit_Framework_TestCase
         $this->object->getConnection()->flushall();
     }
 }
-?>

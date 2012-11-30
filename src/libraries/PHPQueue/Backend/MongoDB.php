@@ -110,4 +110,3 @@ class MongoDB extends Base
         return true;
     }
 }
-?>

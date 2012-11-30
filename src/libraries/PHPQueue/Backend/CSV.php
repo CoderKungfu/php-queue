@@ -75,4 +75,3 @@ class CSV extends Base
         return ($written_bytes > 0);
     }
 }
-?>

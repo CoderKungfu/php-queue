@@ -28,4 +28,3 @@ class Helpers
         return $return;
     }
 }
-?>

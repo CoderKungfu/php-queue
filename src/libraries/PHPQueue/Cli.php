@@ -90,4 +90,3 @@ class Cli
         return $newWorker->result_data;
     }
 }
-?>

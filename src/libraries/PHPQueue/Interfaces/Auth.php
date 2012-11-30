@@ -4,4 +4,3 @@ interface Auth
 {
     public function isAuth();
 }
-?>

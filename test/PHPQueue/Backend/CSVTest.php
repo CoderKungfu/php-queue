@@ -57,4 +57,3 @@ class CSVTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array('4','Cherian','George'), $result);
     }
 }
-?>

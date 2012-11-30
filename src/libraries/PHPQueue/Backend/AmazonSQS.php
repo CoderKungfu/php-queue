@@ -116,4 +116,3 @@ class AmazonSQS extends Base
         return true;
     }
 }
-?>

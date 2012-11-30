@@ -104,4 +104,3 @@ class Memcache extends Base
         return true;
     }
 }
-?>

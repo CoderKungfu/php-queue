@@ -39,4 +39,3 @@ abstract class JobQueue
 
     public function onError(\Exception $ex){}
 }
-?>

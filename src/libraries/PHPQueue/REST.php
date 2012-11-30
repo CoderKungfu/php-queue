@@ -256,4 +256,3 @@ class REST
         return Helpers::output($data, $code, $message);
     }
 }
-?>

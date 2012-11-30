@@ -76,4 +76,3 @@ class MemcacheTest extends PHPUnit_Framework_TestCase
         $this->assertEmpty($result);
     }
 }
-?>

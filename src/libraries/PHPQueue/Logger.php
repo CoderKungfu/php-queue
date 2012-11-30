@@ -21,4 +21,3 @@ class Logger extends \Monolog\Logger
         return self::$all_logs[$logName];
     }
 }
-?>

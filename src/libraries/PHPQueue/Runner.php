@@ -137,4 +137,3 @@ abstract class Runner
         return $worker->result_data;
     }
 }
-?>

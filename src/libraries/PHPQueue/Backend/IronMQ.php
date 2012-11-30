@@ -104,4 +104,3 @@ class IronMQ extends Base
     }
     
 }
-?>

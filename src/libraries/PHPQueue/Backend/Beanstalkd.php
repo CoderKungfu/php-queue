@@ -71,4 +71,3 @@ class Beanstalkd extends Base
         $this->afterClearRelease();
     }
 }
-?>

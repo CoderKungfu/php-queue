@@ -21,4 +21,3 @@ abstract class Worker
     public function onSuccess(){}
     public function onError(\Exception $ex){}
 }
-?>

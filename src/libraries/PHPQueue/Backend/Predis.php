@@ -226,4 +226,3 @@ class Predis extends Base
         return !empty($this->queue_name);
     }
 }
-?>
