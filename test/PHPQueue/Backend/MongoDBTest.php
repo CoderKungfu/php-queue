@@ -1,5 +1,6 @@
 <?php
-class MongoDBTest extends PHPUnit_Framework_TestCase
+namespace PHPQueue\Backend;
+class MongoDBTest extends \PHPUnit_Framework_TestCase
 {
     private $object;
     private $ids = array();
@@ -18,7 +19,7 @@ class MongoDBTest extends PHPUnit_Framework_TestCase
                 , 'db'  => 'testdb'
                 , 'collection' => 'things'
             );
-            $this->object = new PHPQueue\Backend\MongoDB($options);
+            $this->object = new MongoDB($options);
         }
     }
 
@@ -73,4 +74,3 @@ class MongoDBTest extends PHPUnit_Framework_TestCase
         $this->assertNull($result);
     }
 }
-?>

@@ -32,7 +32,7 @@
         "iron-io/iron_mq": "For IronMQ backend support"
     },
     "autoload": {
-        "psr-0": {"PHPQueue": "src/libraries/"}
+        "psr-0": {"PHPQueue": "src/"}
     },
     "extra": {
         "branch-alias": {
