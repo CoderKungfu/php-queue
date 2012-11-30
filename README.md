@@ -2,6 +2,8 @@
 
 A unified front-end for different queuing backends. Includes a REST server, CLI interface and daemon runners.
 
+[![Build Status](https://secure.travis-ci.org/miccheng/php-queue.png?branch=master)](https://travis-ci.org/miccheng/php-queue)
+
 ## Why PHP-Queue? ##
 
 The pains of implementing a queueing system (eg. Beanstalk, Amazon SQS, RabbitMQ) for your applciation:
