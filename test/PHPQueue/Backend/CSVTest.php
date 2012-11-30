@@ -6,7 +6,7 @@ class CSVTest extends PHPUnit_Framework_TestCase
     public function __construct()
     {
         parent::__construct();
-        $filename = '/tmp/test.csv';
+        $filename = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'test.csv';
         file_put_contents($filename, '');
         $opt = array('filePath'=>$filename);
         $this->object = new PHPQueue\Backend\CSV($opt);
