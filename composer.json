@@ -1,42 +1,43 @@
 {
-	"name": "coderkungfu/php-queue",
-	"description": "A unified front-end for different queuing backends. Includes a REST server, CLI interface and daemon runners.",
-	"keywords": ["queue", "transaction"],
-	"homepage": "http://github.com/miccheng/php-queue",
-	"type": "library",
-	"license": "MIT",
-	"authors": [
-		{
-			"name": "Michael Cheng",
-			"email": "mcheng.work@gmail.com"
-		}
-	],
-	"require": {
-		"Respect/Rest": "0.5.*",
-		"monolog/monolog": "1.2.*"
-	},
-	"require-dev": {
-		"clio/clio": "@stable",
-		"mrpoundsign/pheanstalk-5.3": "dev-master",
-		"amazonwebservices/aws-sdk-for-php": "dev-master",
-		"predis/predis": "v0.8.0",
-		"iron-io/iron_mq": "dev-master"
-	},
-	"suggest": {
-		"predis/predis": "For Redis backend support",
-		"mrpoundsign/pheanstalk-5.3": "For Beanstalkd backend support",
-		"amazonwebservices/aws-sdk-for-php": "For AWS SQS backend support",
-		"predis/predis": "For Redis backend support",
-		"pecl-mongodb": "For MongoDB backend support",
-		"clio/clio": "Support for daemonizing PHP CLI runner",
-		"iron-io/iron_mq": "For IronMQ backend support"
-	},
-	"autoload": {
-		"psr-0": {"PHPQueue": "src/libraries/"}
-	},
-	"extra": {
-		"branch-alias": {
-			"dev-master": "0.1.x-dev"
-		}
-	}
+    "name": "coderkungfu/php-queue",
+    "description": "A unified front-end for different queuing backends. Includes a REST server, CLI interface and daemon runners.",
+    "keywords": ["queue", "transaction"],
+    "homepage": "http://github.com/miccheng/php-queue",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michael Cheng",
+            "email": "mcheng.work@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "Respect/Rest": "0.5.*",
+        "monolog/monolog": "1.2.*"
+    },
+    "require-dev": {
+        "clio/clio": "@stable",
+        "mrpoundsign/pheanstalk-5.3": "dev-master",
+        "amazonwebservices/aws-sdk-for-php": "dev-master",
+        "predis/predis": "v0.8.0",
+        "iron-io/iron_mq": "dev-master"
+    },
+    "suggest": {
+        "predis/predis": "For Redis backend support",
+        "mrpoundsign/pheanstalk-5.3": "For Beanstalkd backend support",
+        "amazonwebservices/aws-sdk-for-php": "For AWS SQS backend support",
+        "predis/predis": "For Redis backend support",
+        "pecl-mongodb": "For MongoDB backend support",
+        "clio/clio": "Support for daemonizing PHP CLI runner",
+        "iron-io/iron_mq": "For IronMQ backend support"
+    },
+    "autoload": {
+        "psr-0": {"PHPQueue": "src/libraries/"}
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1.x-dev"
+        }
+    }
 }
