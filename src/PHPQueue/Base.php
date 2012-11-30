@@ -67,7 +67,7 @@ class Base
      * @param array $newJob
      * @return boolean
      */
-    static public function addJob(JobQueue $queue, $newJob=array())
+    static public function addJob(JobQueue $queue, $newJob)
     {
         if (empty($newJob))
         {
