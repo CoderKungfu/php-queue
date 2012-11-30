@@ -57,7 +57,7 @@ class PredisTest extends \PHPUnit_Framework_TestCase
             $result = $this->object->isJobOpen($jobB);
             $this->fail("Job should not still be open.");
         }
-        catch (Exception $ex)
+        catch (\Exception $ex)
         {
             $this->assertTrue(true);
         }
@@ -93,7 +93,7 @@ class PredisTest extends \PHPUnit_Framework_TestCase
             $result = $this->object->setKey($key, $data);
             $this->fail("Shouldn't be able to save");
         }
-        catch (Exception $ex)
+        catch (\Exception $ex)
         {
             $this->assertTrue(true);
         }
@@ -147,7 +147,7 @@ class PredisTest extends \PHPUnit_Framework_TestCase
             $this->object->clearKey($jobId);
             $this->fail("Should not be able to delete.");
         }
-        catch(Exception $ex)
+        catch(\Exception $ex)
         {
             $this->assertTrue(true);
         }

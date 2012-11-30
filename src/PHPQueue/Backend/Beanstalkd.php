@@ -31,7 +31,12 @@ class Beanstalkd extends Base
     public function add($data=array())
     {
         $this->beforeAdd();
-        return $this->getConnection()->useTube($this->tube)->put(json_encode($data));
+        $response = $this->getConnection()->useTube($this->tube)->put(json_encode($data));
+        if (!$response)
+        {
+            throw new \PHPQueue\Exception("Unable to save job.");
+        }
+        return true;
     }
 
     /**
@@ -59,6 +64,7 @@ class Beanstalkd extends Base
         $this->getConnection()->delete($theJob);
         $this->last_job_id = $jobId;
         $this->afterClearRelease();
+        return true;
     }
 
     public function release($jobId=null)
@@ -69,5 +75,6 @@ class Beanstalkd extends Base
         $this->getConnection()->release($theJob);
         $this->last_job_id = $jobId;
         $this->afterClearRelease();
+        return true;
     }
 }
