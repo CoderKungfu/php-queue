@@ -1,5 +1,6 @@
 <?php
-class CSVTest extends PHPUnit_Framework_TestCase
+namespace PHPQueue\Backend;
+class CSVTest extends \PHPUnit_Framework_TestCase
 {
     private $object;
 
@@ -9,7 +10,7 @@ class CSVTest extends PHPUnit_Framework_TestCase
         $filename = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'test.csv';
         file_put_contents($filename, '');
         $opt = array('filePath'=>$filename);
-        $this->object = new PHPQueue\Backend\CSV($opt);
+        $this->object = new CSV($opt);
     }
 
     public function testAdd()

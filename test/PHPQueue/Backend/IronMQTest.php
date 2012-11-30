@@ -1,8 +1,9 @@
 <?php
+namespace PHPQueue\Backend;
 /**
  * @testdox To enable test: Save iron.json to ~/.iron.json in your home folder.
  */
-class IronMQTest extends PHPUnit_Framework_TestCase
+class IronMQTest extends \PHPUnit_Framework_TestCase
 {
     private $object;
 
@@ -19,7 +20,7 @@ class IronMQTest extends PHPUnit_Framework_TestCase
                 'queue' => 'test_queue',
                 'msg_options' => array('timeout'=>1)
             );
-            $this->object = new PHPQueue\Backend\IronMQ($options);
+            $this->object = new IronMQ($options);
         }
     }
 

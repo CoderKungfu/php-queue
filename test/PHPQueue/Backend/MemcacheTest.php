@@ -1,5 +1,6 @@
 <?php
-class MemcacheTest extends PHPUnit_Framework_TestCase
+namespace PHPQueue\Backend;
+class MemcacheTest extends \PHPUnit_Framework_TestCase
 {
     private $object;
 
@@ -18,7 +19,7 @@ class MemcacheTest extends PHPUnit_Framework_TestCase
                             )
                 , 'expiry'  => 600
             );
-            $this->object = new PHPQueue\Backend\Memcache($options);
+            $this->object = new Memcache($options);
         }
     }
 
