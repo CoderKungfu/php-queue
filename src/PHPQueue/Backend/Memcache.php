@@ -1,5 +1,8 @@
 <?php
 namespace PHPQueue\Backend;
+
+use PHPQueue\Exception\BackendException;
+
 class Memcache extends Base
 {
     public $servers;
@@ -32,7 +35,7 @@ class Memcache extends Base
     {
         if (empty($this->servers))
         {
-            throw new \PHPQueue\Exception\BackendException("No servers specified");
+            throw new BackendException("No servers specified");
         }
         $this->connection = new \Memcache;
         foreach($this->servers as $server)
@@ -47,7 +50,7 @@ class Memcache extends Base
             }
             else
             {
-                throw new \PHPQueue\Exception\BackendException("Unknown Memcache server arguments.");
+                throw new BackendException("Unknown Memcache server arguments.");
             }
         }
     }
@@ -63,11 +66,11 @@ class Memcache extends Base
     {
         if (empty($key) && !is_string($key))
         {
-            throw new \PHPQueue\Exception\BackendException("Key is invalid.");
+            throw new BackendException("Key is invalid.");
         }
         if (empty($data))
         {
-            throw new \PHPQueue\Exception\BackendException("No data.");
+            throw new BackendException("No data.");
         }
         $this->beforeAdd();
         if (empty($expiry))
@@ -81,7 +84,7 @@ class Memcache extends Base
         }
         if (!$status)
         {
-            throw new \PHPQueue\Exception\BackendException("Unable to save data.");
+            throw new BackendException("Unable to save data.");
         }
         return $status;
     }

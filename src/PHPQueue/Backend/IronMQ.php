@@ -1,5 +1,8 @@
 <?php
 namespace PHPQueue\Backend;
+
+use PHPQueue\Exception\BackendException;
+
 class IronMQ extends Base
 {
     public $token = null;
@@ -62,7 +65,7 @@ class IronMQ extends Base
         {
             $this->getConnection()->postMessage($this->queue_name, $payload);
         }
-        catch (\Exception $ex)
+        catch (BackendException $ex)
         {
             throw $ex;
         }
