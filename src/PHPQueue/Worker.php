@@ -15,7 +15,7 @@ abstract class Worker
     /**
      * @param \PHPQueue\Job $jobObject
      */
-    public function runJob(Job $jobObject){}
+    public function runJob($jobObject){}
     public function afterJob(){}
 
     public function onSuccess(){}
