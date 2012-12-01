@@ -29,12 +29,12 @@ class SampleQueue extends PHPQueue\JobQueue
         return true;
     }
 
-    public function getJob($jobId=null)
+    public function getJob($jobId = null)
     {
         parent::getJob();
         if ( empty($this->jobs) )
         {
-            throw new \PHPQueue\Exception("No more jobs.");
+            throw new Exception("No more jobs.");
         }
         $jobData = array_pop($this->jobs);
         $nextJob = new \PHPQueue\Job();
@@ -49,4 +49,3 @@ class SampleQueue extends PHPQueue\JobQueue
         return count($this->jobs);
     }
 }
-?>

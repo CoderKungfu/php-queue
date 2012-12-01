@@ -49,4 +49,3 @@ class BeanstalkSampleQueue extends PHPQueue\JobQueue
         $this->dataSource->release($jobId);
     }
 }
-?>
