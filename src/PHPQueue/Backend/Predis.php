@@ -32,7 +32,7 @@ class Predis extends Base
     {
         if (empty($this->servers))
         {
-            throw new \PHPQueue\Exception("No servers specified");
+            throw new \PHPQueue\Exception\BackendException("No servers specified");
         }
         $this->connection = new \Predis\Client($this->servers, $this->redis_options);
     }
@@ -42,11 +42,11 @@ class Predis extends Base
         $this->beforeAdd();
         if (empty($data))
         {
-            throw new \PHPQueue\Exception("No data.");
+            throw new \PHPQueue\Exception\BackendException("No data.");
         }
         if (!$this->hasQueue())
         {
-            throw new \PHPQueue\Exception("No queue specified.");
+            throw new \PHPQueue\Exception\BackendException("No queue specified.");
         }
         $encoded_data = json_encode($data);
         $this->getConnection()->rpush($this->queue_name, $encoded_data);
@@ -58,7 +58,7 @@ class Predis extends Base
         $this->beforeGet();
         if (!$this->hasQueue())
         {
-            throw new \PHPQueue\Exception("No queue specified.");
+            throw new \PHPQueue\Exception\BackendException("No queue specified.");
         }
         if (!$this->keyExists($this->queue_name) || $this->getConnection()->llen($this->queue_name) == 0)
         {
@@ -76,13 +76,13 @@ class Predis extends Base
         $this->beforeRelease($jobId);
         if (!$this->hasQueue())
         {
-            throw new \PHPQueue\Exception("No queue specified.");
+            throw new \PHPQueue\Exception\BackendException("No queue specified.");
         }
         $job_data = $this->open_items[$jobId];
         $status = $this->getConnection()->rpush($this->queue_name, $job_data);
         if (!$status)
         {
-            throw new \PHPQueue\Exception("Unable to save data.");
+            throw new \PHPQueue\Exception\BackendException("Unable to save data.");
         }
         $this->last_job_id = $jobId;
         $this->afterClearRelease();
@@ -105,11 +105,11 @@ class Predis extends Base
     {
         if (empty($key) && !is_string($key))
         {
-            throw new \PHPQueue\Exception("Key is invalid.");
+            throw new \PHPQueue\Exception\BackendException("Key is invalid.");
         }
         if (empty($data))
         {
-            throw new \PHPQueue\Exception("No data.");
+            throw new \PHPQueue\Exception\BackendException("No data.");
         }
         $this->beforeAdd();
         try
@@ -125,12 +125,12 @@ class Predis extends Base
             }
             if (!$status)
             {
-                throw new \PHPQueue\Exception("Unable to save data.");
+                throw new \PHPQueue\Exception\BackendException("Unable to save data.");
             }
         }
         catch (Exception $ex)
         {
-            throw new \PHPQueue\Exception($ex->getMessage(), $ex->getCode());
+            throw new \PHPQueue\Exception\BackendException($ex->getMessage(), $ex->getCode());
         }
         return $status;
     }
@@ -164,7 +164,7 @@ class Predis extends Base
                 }
                 break;
             default:
-                throw new \PHPQueue\Exception(sprintf("Data type (%s) not supported yet.", $type));
+                throw new \PHPQueue\Exception\BackendException(sprintf("Data type (%s) not supported yet.", $type));
                 break;
         }
         return $data;

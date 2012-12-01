@@ -30,7 +30,7 @@ class CSV extends Base
         }
         else
         {
-            throw new \PHPQueue\Exception(sprintf("File is not writable: %s", $this->file_path));
+            throw new \PHPQueue\Exception\BackendException(sprintf("File is not writable: %s", $this->file_path));
         }
     }
 
@@ -69,7 +69,7 @@ class CSV extends Base
     {
         if (!is_array($data))
         {
-            throw new \PHPQueue\Exception("Data is not an array.");
+            throw new \PHPQueue\Exception\BackendException("Data is not an array.");
         }
         $written_bytes = fputcsv($this->put_handle, $data);
         return ($written_bytes > 0);

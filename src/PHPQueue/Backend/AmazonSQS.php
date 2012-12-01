@@ -50,7 +50,7 @@ class AmazonSQS extends Base
         if (!$response->isOK())
         {
             $error = $response->body->Error;
-            throw new \PHPQueue\Exception((string)$error->Message, (int)$error->Code);
+            throw new \PHPQueue\Exception\BackendException((string)$error->Message, (int)$error->Code);
         }
         return true;
     }
@@ -66,7 +66,7 @@ class AmazonSQS extends Base
         if (!$response->isOk())
         {
             $error = $response->body->Error;
-            throw new \PHPQueue\Exception((string)$error->Message, (int)$error->Code);
+            throw new \PHPQueue\Exception\JobNotFoundException((string)$error->Message, (int)$error->Code);
         }
         else
         {
@@ -95,7 +95,7 @@ class AmazonSQS extends Base
         if (!$response->isOk())
         {
             $error = $response->body->Error;
-            throw new \PHPQueue\Exception((string)$error->Message, (int)$error->Code);
+            throw new \PHPQueue\Exception\BackendException((string)$error->Message, (int)$error->Code);
         }
         $this->last_job_id = $jobId;
         $this->afterClearRelease();

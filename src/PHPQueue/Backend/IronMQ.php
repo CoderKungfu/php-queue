@@ -62,7 +62,7 @@ class IronMQ extends Base
         {
             $this->getConnection()->postMessage($this->queue_name, $payload);
         }
-        catch (Exception $ex)
+        catch (\Exception $ex)
         {
             throw $ex;
         }

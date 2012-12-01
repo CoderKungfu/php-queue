@@ -34,7 +34,7 @@ class Beanstalkd extends Base
         $response = $this->getConnection()->useTube($this->tube)->put(json_encode($data));
         if (!$response)
         {
-            throw new \PHPQueue\Exception("Unable to save job.");
+            throw new \PHPQueue\Exception\BackendException("Unable to save job.");
         }
         return true;
     }
@@ -48,7 +48,7 @@ class Beanstalkd extends Base
         $newJob = $this->getConnection()->watch($this->tube)->reserve(self::$reserve_timeout);
         if ($newJob == false)
         {
-            throw new \PHPQueue\Exception("No job found.");
+            throw new \PHPQueue\Exception\JobNotFoundException("No job found.");
         }
         $this->last_job = $newJob;
         $this->last_job_id = $newJob->getId();

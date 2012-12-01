@@ -32,7 +32,7 @@ class Memcache extends Base
     {
         if (empty($this->servers))
         {
-            throw new \PHPQueue\Exception("No servers specified");
+            throw new \PHPQueue\Exception\BackendException("No servers specified");
         }
         $this->connection = new \Memcache;
         foreach($this->servers as $server)
@@ -47,7 +47,7 @@ class Memcache extends Base
             }
             else
             {
-                throw new \PHPQueue\Exception("Unknown Memcache server arguments.");
+                throw new \PHPQueue\Exception\BackendException("Unknown Memcache server arguments.");
             }
         }
     }
@@ -63,11 +63,11 @@ class Memcache extends Base
     {
         if (empty($key) && !is_string($key))
         {
-            throw new \PHPQueue\Exception("Key is invalid.");
+            throw new \PHPQueue\Exception\BackendException("Key is invalid.");
         }
         if (empty($data))
         {
-            throw new \PHPQueue\Exception("No data.");
+            throw new \PHPQueue\Exception\BackendException("No data.");
         }
         $this->beforeAdd();
         if (empty($expiry))
@@ -81,7 +81,7 @@ class Memcache extends Base
         }
         if (!$status)
         {
-            throw new \PHPQueue\Exception("Unable to save data.");
+            throw new \PHPQueue\Exception\BackendException("Unable to save data.");
         }
         return $status;
     }

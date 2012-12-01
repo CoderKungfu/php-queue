@@ -57,7 +57,7 @@ class MongoDBTest extends \PHPUnit_Framework_TestCase
             $jobId = 'xxx';
             $result = $this->object->clear($jobId);
         }
-        catch (\PHPQueue\Exception $ex)
+        catch (\PHPQueue\Exception\JobNotFoundException $ex)
         {
             $this->assertTrue(true);
         }

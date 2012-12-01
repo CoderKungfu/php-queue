@@ -32,7 +32,7 @@ class MongoDB extends Base
     {
         if (empty($this->server_uri))
         {
-            throw new \PHPQueue\Exception("No server specified");
+            throw new \PHPQueue\Exception\BackendException("No server specified");
         }
         $this->connection = new \Mongo($this->server_uri, $this->mongo_options);
     }
@@ -41,7 +41,7 @@ class MongoDB extends Base
     {
         if (empty($this->db_name) || !is_string($this->db_name))
         {
-            throw new \PHPQueue\Exception("DB is invalid.");
+            throw new \PHPQueue\Exception\Exception("DB is invalid.");
         }
         $db = $this->db_name;
         return $this->getConnection()->$db;
@@ -51,7 +51,7 @@ class MongoDB extends Base
     {
         if (empty($this->collection_name) || !is_string($this->collection_name))
         {
-            throw new \PHPQueue\Exception("Collection is invalid.");
+            throw new \PHPQueue\Exception\Exception("Collection is invalid.");
         }
         $db = $this->getDB();
         $collection = $this->collection_name;
@@ -62,7 +62,7 @@ class MongoDB extends Base
     {
         if (empty($data) || !is_array($data))
         {
-            throw new \PHPQueue\Exception("No data.");
+            throw new \PHPQueue\Exception\Exception("No data.");
         }
         if (!isset($data['_id']))
         {
@@ -73,7 +73,7 @@ class MongoDB extends Base
         $status = $the_collection->insert($data);
         if (!$status)
         {
-            throw new \PHPQueue\Exception("Unable to save data.");
+            throw new \PHPQueue\Exception\Exception("Unable to save data.");
         }
         $this->last_job_id = $data['_id'];
         return $status;
@@ -103,7 +103,7 @@ class MongoDB extends Base
         $data = $this->get($key);
         if (is_null($data))
         {
-            throw new \PHPQueue\Exception("Record not found.");
+            throw new \PHPQueue\Exception\JobNotFoundException("Record not found.");
         }
         $this->getCollection()->remove(array('_id' => $key));
         $this->last_job_id = $key;
