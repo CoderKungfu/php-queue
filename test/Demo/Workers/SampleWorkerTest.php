@@ -6,7 +6,7 @@ class SampleWorkerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->object = PHPQueue\Base::getWorker('Sample');
+        $this->object = \PHPQueue\Base::getWorker('Sample');
     }
 
     public function testRunJob()
@@ -15,7 +15,7 @@ class SampleWorkerTest extends \PHPUnit_Framework_TestCase
               'worker' => 'Sample'
             , 'data' => array('var1'=>"Milo")
         );
-        $job = new PHPQueue\Job($data1);
+        $job = new \PHPQueue\Job($data1);
         $this->object->runJob($job);
         $this->assertEquals(
                   array('var1'=>"Milo",'var2'=>"Welcome back!")
