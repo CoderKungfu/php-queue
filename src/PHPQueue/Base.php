@@ -1,5 +1,9 @@
 <?php
 namespace PHPQueue;
+
+use PHPQueue\Exception\QueueNotFoundException;
+use PHPQueue\Exception\WorkerNotFoundException;
+
 class Base
 {
     static public $queue_path = null;
@@ -18,7 +22,7 @@ class Base
     {
         if (empty($queue))
         {
-            throw new Exception("Queue name is empty");
+            throw new \InvalidArgumentException("Queue name is empty");
         }
         if ( empty(self::$all_queues[$queue]) )
         {
@@ -29,7 +33,7 @@ class Base
             }
             catch (\Exception $ex)
             {
-                throw new Exception($ex->getMessage(), $ex->getCode());
+                throw new QueueNotFoundException($ex->getMessage(), $ex->getCode());
             }
         }
         return self::$all_queues[$queue];
@@ -47,7 +51,7 @@ class Base
             }
             else
             {
-                throw new Exception("Queue file does not exist: $classFile");
+                throw new QueueNotFoundException("Queue file does not exist: $classFile");
             }
             $class_name =  "\\" . $queue_name . 'Queue';
         }
@@ -71,7 +75,7 @@ class Base
     {
         if (empty($newJob))
         {
-            throw new Exception("Invalid job data.");
+            throw new \InvalidArgumentException("Invalid job data.");
         }
         $status = false;
         try
@@ -145,7 +149,7 @@ class Base
     {
         if (empty($worker_name))
         {
-            throw new Exception("Worker name is empty");
+            throw new \InvalidArgumentException("Worker name is empty");
         }
         if ( empty(self::$all_workers[$worker_name]) )
         {
@@ -156,7 +160,7 @@ class Base
             }
             catch (\Exception $ex)
             {
-                throw new Exception($ex->getMessage(), $ex->getCode());
+                throw new WorkerNotFoundException($ex->getMessage(), $ex->getCode());
             }
         }
         return self::$all_workers[$worker_name];
@@ -174,7 +178,7 @@ class Base
             }
             else
             {
-                throw new Exception("Worker file does not exist: $classFile");
+                throw new WorkerNotFoundException("Worker file does not exist: $classFile");
             }
             $class_name =  "\\" . $worker_name . 'Worker';
         }
@@ -231,7 +235,7 @@ class Base
         }
         else
         {
-            throw new Exception("Invalid Backend object.");
+            throw new \InvalidArgumentException("Invalid Backend object.");
         }
     }
 }
