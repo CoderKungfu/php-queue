@@ -22,6 +22,10 @@ class CSV extends Base
         {
             $this->file_path = $options['filePath'];
         }
+    }
+
+    public function connect()
+    {
         if ( !file_exists($this->file_path) )
         {
             file_put_contents($this->file_path, '');
@@ -30,6 +34,7 @@ class CSV extends Base
         {
             $this->put_handle = fopen($this->file_path, 'a');
             $this->get_handle = fopen($this->file_path, 'r+');
+            $this->connection = true;
         }
         else
         {
@@ -37,16 +42,10 @@ class CSV extends Base
         }
     }
 
-    public function connect()
-    {
-    }
-
-    public function clear($jobId=null)
-    {
-    }
-
     public function get($jobId=null)
     {
+        $this->beforeGet();
+        $this->getConnection();
         if (!is_null($jobId))
         {
             $curPos = ftell($this->get_handle);
@@ -55,7 +54,7 @@ class CSV extends Base
             {
                 if ($lineJob[0] == $jobId)
                 {
-                    $lineData = $lineJob;
+                    $data = $lineJob;
                     break;
                 }
             }
@@ -63,18 +62,44 @@ class CSV extends Base
         }
         else
         {
-            $lineData = fgetcsv($this->get_handle);
+            $data = fgetcsv($this->get_handle);
         }
-        return $lineData;
+        $this->last_job = $data;
+        $this->last_job_id = time();
+        $this->afterGet();
+        return $data;
     }
 
     public function add($data=array())
     {
+        $this->beforeAdd($data);
+        $this->getConnection();
         if (!is_array($data))
         {
             throw new BackendException("Data is not an array.");
         }
         $written_bytes = fputcsv($this->put_handle, $data);
         return ($written_bytes > 0);
+    }
+
+    public function clear($jobId=null)
+    {
+        $this->beforeClear($jobId);
+        $this->afterClearRelease();
+        return true;
+    }
+
+    public function release($jobId=null)
+    {
+        $this->beforeRelease($jobId);
+        $data = $this->open_items[$jobId];
+        $this->getConnection();
+        $written_bytes = fputcsv($this->put_handle, $data);
+        if ($written_bytes < 0)
+        {
+            throw new BackendException("Unable to release data.");
+        }
+        $this->last_job_id = $jobId;
+        $this->afterClearRelease();
     }
 }
