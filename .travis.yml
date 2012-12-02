@@ -11,3 +11,6 @@ php:
 before_script:
   - composer install
 script: phpunit -c phpunit.xml.dist
+after_script:
+  - git clone https://github.com/packfire/pdc.git
+  - php pdc/pdc src vendor/autoload.php
