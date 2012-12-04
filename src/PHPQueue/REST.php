@@ -8,6 +8,9 @@
  *   curl -XPUT http://<server>/<queueName>
  */
 namespace PHPQueue;
+
+use PHPQueue\Exception\Exception;
+
 class REST
 {
     static public $json_payload_key = null;
@@ -206,7 +209,7 @@ class REST
             Base::updateJob($queue, $newJob->job_id, $result_data);
             return $this->successful();
         }
-        catch (Exception $ex)
+        catch (\Exception $ex)
         {
             $queue->releaseJob($newJob->job_id);
             return $this->failed($ex->getCode(), $ex->getMessage());
