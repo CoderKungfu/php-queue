@@ -1,5 +1,8 @@
 <?php
 namespace PHPQueue;
+
+use PHPQueue\Exception\Exception;
+
 class Cli
 {
     public $queue_name;
@@ -73,7 +76,7 @@ class Cli
             fwrite(STDOUT, "Updating job... \n");
             return Base::updateJob($queue, $newJob->job_id, $result_data);
         }
-        catch (Exception $ex)
+        catch (\Exception $ex)
         {
             fwrite(STDOUT, sprintf("\nError occured: %s\n", $ex->getMessage()));
             $queue->releaseJob($newJob->job_id);

@@ -57,7 +57,7 @@ abstract class Base
     {
         if (empty($this->open_items[$jobId]))
         {
-            throw new \PHPQueue\Exception("Job was not previously retrieved.");
+            throw new \PHPQueue\Exception\JobNotFoundException("Job was not previously retrieved.");
         }
     }
 

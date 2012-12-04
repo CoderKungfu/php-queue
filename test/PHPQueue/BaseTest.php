@@ -1,5 +1,6 @@
 <?php
 namespace PHPQueue;
+
 class BaseTest extends \PHPUnit_Framework_TestCase
 {
     public function __construct($name = NULL, array $data = array(), $dataName = '')
@@ -11,52 +12,37 @@ class BaseTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testGetQueue()
+    protected function getSampleQueue()
     {
-        try
-        {
-            Base::getQueue(null);
-            $this->fail("Should not be able to get the Queue");
-        }
-        catch (\Exception $ex)
-        {
-            $this->assertEquals("Queue name is empty", $ex->getMessage());
-        }
-        try
-        {
-            Base::getQueue('NonExistent');
-            $this->fail("Should not be able to get the Queue");
-        }
-        catch (\Exception $ex)
-        {
-            $this->assertStringStartsWith("Queue file does not exist:", $ex->getMessage());
-        }
-        try
-        {
-            Base::getQueue('SampleNotThere');
-            $this->fail("Should not be able to get the Queue");
-        }
-        catch (\Exception $ex)
-        {
-            $this->assertStringStartsWith("Queue file does not exist:", $ex->getMessage());
-        }
-        $result = Base::getQueue('Sample');
+        return Base::getQueue('Sample');
+    }
+
+    public function testCanGetQueue()
+    {
+        $result = $this->getSampleQueue();
         $this->assertInstanceOf('\\PHPQueue\\JobQueue', $result);
+    }
+
+    /**
+     * @expectedException \PHPQueue\Exception\QueueNotFoundException
+     */
+    public function testCanFailWhenInvalidQueueNameAreGiven()
+    {
+        Base::getQueue('NonExistent');
     }
 
     public function testAddJob()
     {
-        try
-        {
-            Base::addJob(null);
-            $this->fail("Should not be able to add to Queue");
-        }
-        catch (\Exception $ex)
-        {
-            $this->assertStringStartsWith("Invalid queue object.", $ex->getMessage());
-        }
+        $queue = $this->getSampleQueue();
+        $result = Base::addJob($queue, array('var1'=>"Hello, world!"));
+        $this->assertTrue($result);
+        $this->assertEquals(1, $queue->getQueueSize());
+        $result = Base::getJob($queue); //clear
+    }
 
-        $queue = Base::getQueue('Sample');
+    public function testNoNullJob()
+    {
+        $queue = $this->getSampleQueue();
         try
         {
             Base::addJob($queue, null);
@@ -66,28 +52,23 @@ class BaseTest extends \PHPUnit_Framework_TestCase
         {
             $this->assertStringStartsWith("Invalid job data.", $ex->getMessage());
         }
-        $result = Base::addJob($queue, array('var1'=>"Hello, world!"));
-        $this->assertTrue($result);
-        $this->assertEquals(1, $queue->getQueueSize());
     }
 
     public function testGetJob()
     {
-        try
-        {
-            Base::getJob(null);
-            $this->fail("Should not be able to get job from Queue");
-        }
-        catch (\Exception $ex)
-        {
-            $this->assertStringStartsWith("Invalid queue object.", $ex->getMessage());
-        }
-
-        $queue = Base::getQueue('Sample');
+        $queue = $this->getSampleQueue();
+        $result = Base::addJob($queue, array('var1'=>"Hello, world!"));
+        $queue = $this->getSampleQueue();
         $result = Base::getJob($queue);
         $this->assertInstanceOf('\\PHPQueue\\Job', $result);
         $this->assertEquals(0, $queue->getQueueSize());
+    }
 
+    public function testNoMoreJob()
+    {
+        $queue = $this->getSampleQueue();
+        $result = Base::addJob($queue, array('var1'=>"Hello, world!"));
+        $result = Base::getJob($queue); //clear
         try
         {
             $result = Base::getJob($queue);
@@ -99,62 +80,23 @@ class BaseTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testGetWorker()
+    /**
+     * @expectedException \PHPQueue\Exception\WorkerNotFoundException
+     */
+    public function testCanFailWhenInvalidWorkerNameAreGiven()
     {
-        try
-        {
-            Base::getWorker(null);
-            $this->fail("Should not be able to get the Worker");
-        }
-        catch (\Exception $ex)
-        {
-            $this->assertEquals("Worker name is empty", $ex->getMessage());
-        }
-        try
-        {
-            Base::getWorker('NonExistent');
-            $this->fail("Should not be able to get the Worker");
-        }
-        catch (\Exception $ex)
-        {
-            $this->assertStringStartsWith("Worker file does not exist:", $ex->getMessage());
-        }
-        try
-        {
-            Base::getWorker('SampleNotThere');
-            $this->fail("Should not be able to get the Worker");
-        }
-        catch (\Exception $ex)
-        {
-            $this->assertStringStartsWith("Worker file does not exist:", $ex->getMessage());
-        }
+        Base::getWorker('NonExistent');
+    }
+
+    public function testCanGetWorker()
+    {
         $result = Base::getWorker('Sample');
         $this->assertInstanceOf('\\PHPQueue\\Worker', $result);
     }
 
     public function testWorkJob()
     {
-        try
-        {
-            Base::workJob(null, null);
-            $this->fail("Should not be able to work the Job");
-        }
-        catch (\Exception $ex)
-        {
-            $this->assertStringStartsWith("Invalid worker object", $ex->getMessage());
-        }
-
         $worker = Base::getWorker('Sample');
-        try
-        {
-            Base::workJob($worker, null);
-            $this->fail("Should not be able to work the Job");
-        }
-        catch (\Exception $ex)
-        {
-            $this->assertStringStartsWith("Invalid job object", $ex->getMessage());
-        }
-
         $job = new Job();
         $job->worker = 'Sample';
         $job->data = array('var1'=>'Hello, world!');

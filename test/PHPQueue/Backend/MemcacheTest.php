@@ -64,7 +64,7 @@ class MemcacheTest extends \PHPUnit_Framework_TestCase
             $this->object->clear($jobId);
             $this->fail("Should not be able to delete.");
         }
-        catch(Exception $ex)
+        catch(\Exception $ex)
         {
             $this->assertTrue(true);
         }

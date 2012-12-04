@@ -1,33 +1,28 @@
 <?php
 namespace PHPQueue\Backend;
-/**
- * @testdox To enable test: Save iron.json to ~/.iron.json in your home folder.
- */
-class IronMQTest extends \PHPUnit_Framework_TestCase
+class BeanstalkdTest extends \PHPUnit_Framework_TestCase
 {
     private $object;
 
     public function setUp()
     {
         parent::setUp();
-        if (!class_exists('\IronMQ'))
+        if (!class_exists('\Pheanstalk\Pheanstalk'))
         {
-            $this->markTestSkipped('Iron MQ library not installed');
+            $this->markTestSkipped('\Pheanstalk\Pheanstalk not installed');
         }
         else
         {
             $options = array(
-                'queue' => 'test_queue',
-                'msg_options' => array('timeout'=>1)
-            );
-            $this->object = new IronMQ($options);
+                              'server' => '127.0.0.1'
+                            , 'tube'   => 'testqueue'
+                        );
+            $this->object = new Beanstalkd($options);
         }
     }
 
     public function testAdd()
     {
-        $this->object->getConnection()->clearQueue($this->object->queue_name);
-
         $data = array('1','Willy','Wonka');
         $result = $this->object->add($data);
         $this->assertTrue($result);
@@ -41,7 +36,6 @@ class IronMQTest extends \PHPUnit_Framework_TestCase
         $result = $this->object->get();
         $this->assertNotEmpty($result);
         $this->assertEquals(array('1','Willy','Wonka'), $result);
-        sleep(1);
     }
 
     /**
@@ -57,9 +51,8 @@ class IronMQTest extends \PHPUnit_Framework_TestCase
         }
         catch(\Exception $ex)
         {
-            $this->assertNotEquals("Should not be able to delete.", $ex->getMessage());
+            $this->assertTrue(true);
         }
-
         $result = $this->object->get();
         $this->assertNotEmpty($result);
         $jobId = $this->object->last_job_id;
