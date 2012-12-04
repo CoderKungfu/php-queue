@@ -26,7 +26,7 @@ class CSV extends Base
 
     public function connect()
     {
-        if ( !file_exists($this->file_path) )
+        if ( !is_file($this->file_path) )
         {
             file_put_contents($this->file_path, '');
         }

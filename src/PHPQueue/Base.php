@@ -45,7 +45,7 @@ class Base
         if (!is_null(self::$queue_path))
         {
             $classFile = self::$queue_path . '/' . $queue_name . 'Queue.php';
-            if (file_exists($classFile))
+            if (is_file($classFile))
             {
                 require_once $classFile;
             }
@@ -172,7 +172,7 @@ class Base
         if (!is_null(self::$worker_path))
         {
             $classFile = self::$worker_path . '/' . $worker_name . 'Worker.php';
-            if (file_exists($classFile))
+            if (is_file($classFile))
             {
                 require_once $classFile;
             }
