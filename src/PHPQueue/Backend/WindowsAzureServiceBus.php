@@ -37,8 +37,6 @@ class WindowsAzureServiceBus extends Base
         $this->connection = ServicesBuilder::getInstance()->createServiceBusService($this->connection_string);
     }
 
-    
-
     /**
      * @param array $data
      * @return boolean Status of saving
@@ -48,7 +46,8 @@ class WindowsAzureServiceBus extends Base
     {
         $this->beforeAdd();
         $this->checkQueue();
-        try {
+        try
+        {
             $message = new BrokeredMessage();
             $message->setBody(json_encode($data));
             $this->getConnection()->sendQueueMessage($this->queue_name, $message);
