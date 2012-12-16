@@ -36,6 +36,7 @@ class BeanstalkdTest extends \PHPUnit_Framework_TestCase
         $result = $this->object->get();
         $this->assertNotEmpty($result);
         $this->assertEquals(array('1','Willy','Wonka'), $result);
+        $this->object->release($this->object->last_job_id);
     }
 
     /**
