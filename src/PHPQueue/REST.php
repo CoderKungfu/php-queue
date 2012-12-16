@@ -179,7 +179,7 @@ class REST
         {
             $newJob = Base::getJob($queue);
         }
-        catch (Exception $ex)
+        catch (\Exception $ex)
         {
             return $this->failed(405, $ex->getMessage());
         }
