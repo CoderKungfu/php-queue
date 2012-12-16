@@ -15,7 +15,7 @@ class WindowsAzureServiceBusTest extends \PHPUnit_Framework_TestCase
         {
             $options = array(
                   'connection_string' => 'Endpoint=https://noobqueue.servicebus.windows.net/;SharedSecretIssuer=owner;SharedSecretValue=72smuycIAYp7H2HvN4WleJzMrykNb45AKo+IVwcWCoQ='
-                , 'queue_name'        => 'myqueue'
+                , 'queue'        => 'myqueue'
             );
             $this->object = new WindowsAzureServiceBus($options);
         }
