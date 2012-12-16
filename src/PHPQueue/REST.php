@@ -90,7 +90,7 @@ class REST
             return $this->failed(401, $ex->getMessage());
         }
 
-        $method = $_SERVER['REQUEST_METHOD'];
+        $method = !empty($_GET['REQUEST_METHOD']) ? $_GET['REQUEST_METHOD'] : $_SERVER['REQUEST_METHOD'];
         switch($method)
         {
             case 'POST':
