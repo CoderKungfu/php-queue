@@ -68,6 +68,19 @@ class WindowsAzureBlobTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @expectedException \PHPQueue\Exception\BackendException
+     */
+    public function testClearInvalidName()
+    {
+        $container_name = 'testimg';
+        $this->object->setContainer($container_name);
+
+        $fake_filename = 'xxx';
+        $this->object->clear($fake_filename);
+        $this->fail("Should not be able to delete.");
+    }
+
+    /**
      * @depends testAdd
      */
     public function testClear()
@@ -76,17 +89,6 @@ class WindowsAzureBlobTest extends \PHPUnit_Framework_TestCase
         $this->object->setContainer($container_name);
         $result = $this->object->clear('image.jpg');
         $this->assertTrue($result);
-
-        try
-        {
-            $fake_filename = 'xxx';
-            $this->object->clear($fake_filename);
-            $this->fail("Should not be able to delete.");
-        }
-        catch(\Exception $ex)
-        {
-            $this->assertTrue(true);
-        }
 
         $result = $this->object->deleteContainer($container_name);
         $this->assertTrue($result);
