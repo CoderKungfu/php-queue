@@ -128,7 +128,7 @@ class WindowsAzureBlob extends FS
     {
         if (is_string($data) && is_file($data))
         {
-            $data = fopen($data);
+            $data = fopen($data, 'r');
         }
         $this->put($key, $data, $options);
     }
