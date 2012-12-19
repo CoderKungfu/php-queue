@@ -72,6 +72,10 @@ class WindowsAzureServiceBus extends Base
             $options = new ReceiveMessageOptions();
             $options->setPeekLock();
             $response = $this->getConnection()->receiveQueueMessage($this->queue_name, $options);
+            if (empty($response))
+            {
+                throw new JobNotFoundException('No message found.', 404);
+            }
 
             $this->last_job = $response;
             $this->last_job_id = $response->getMessageId();
