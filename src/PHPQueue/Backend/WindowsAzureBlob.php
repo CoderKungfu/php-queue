@@ -124,6 +124,15 @@ class WindowsAzureBlob extends FS
         return true;
     }
 
+    public function putFile($key, $data=null, $options=null)
+    {
+        if (is_string($data) && is_file($data))
+        {
+            $data = fopen($data);
+        }
+        $this->put($key, $data, $options);
+    }
+
     public function clear($key = null)
     {
         try
@@ -152,6 +161,18 @@ class WindowsAzureBlob extends FS
         {
             throw new BackendException($ex->getMessage(), $ex->getCode());
         }
+    }
+
+    public function fetchFile($key, $destination=null)
+    {
+        $response = $this->fetch($key);
+        $handle = $response['object']->getContentStream();
+        $contents = '';
+        while (!feof($handle)) {
+            $contents .= fread($handle, 8192);
+        }
+        fclose($handle);
+        return file_put_contents($destination, $contents);
     }
 
     public function copy($src_container, $src_file, $dest_container, $dest_file, $options=null)
