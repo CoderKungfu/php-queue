@@ -7,8 +7,8 @@ use PHPQueue\Exception\JobNotFoundException;
 use WindowsAzure\Common\ServicesBuilder;
 use WindowsAzure\Common\ServiceException;
 use WindowsAzure\ServiceBus\Models\QueueInfo;
-use WindowsAzure\ServiceBus\models\BrokeredMessage;
-use WindowsAzure\ServiceBus\models\ReceiveMessageOptions;
+use WindowsAzure\ServiceBus\Models\BrokeredMessage;
+use WindowsAzure\ServiceBus\Models\ReceiveMessageOptions;
 
 class WindowsAzureServiceBus extends Base
 {
