@@ -163,7 +163,7 @@ class WindowsAzureBlob extends FS
         }
     }
 
-    public function fetchFile($key, $destination=null)
+    public function fetchFile($key, $destination=null, $options=null)
     {
         $response = $this->fetch($key);
         $handle = $response['object']->getContentStream();
