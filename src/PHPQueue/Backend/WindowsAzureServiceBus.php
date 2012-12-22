@@ -37,11 +37,19 @@ class WindowsAzureServiceBus extends Base
         $this->connection = ServicesBuilder::getInstance()->createServiceBusService($this->connection_string);
     }
 
-    /**
-     * @param array $data
-     * @return boolean Status of saving
-     * @throws \PHPQueue\Exception
-     */
+	/**
+	 * @return \WindowsAzure\ServiceBus\ServiceBusRestProxy
+	 */
+	public function getConnection()
+	{
+		return parent::getConnection();
+	}
+
+	/**
+	 * @param array $data
+	 * @throws \PHPQueue\Exception\BackendException
+	 * @return boolean Status of saving
+	 */
     public function add($data=array())
     {
         $this->beforeAdd();
@@ -59,10 +67,10 @@ class WindowsAzureServiceBus extends Base
         return true;
     }
 
-    /**
-     * @return array
-     * @throws \PHPQueue\Exception
-     */
+	/**
+	 * @throws \PHPQueue\Exception\JobNotFoundException
+	 * @return array
+	 */
     public function get()
     {
         $this->beforeGet();
@@ -88,11 +96,11 @@ class WindowsAzureServiceBus extends Base
         }
     }
 
-    /**
-     * @param string $jobId
-     * @return boolean
-     * @throws \PHPQueue\Exception
-     */
+	/**
+	 * @param string $jobId
+	 * @throws \PHPQueue\Exception\BackendException
+	 * @return boolean
+	 */
     public function clear($jobId=null)
     {
         $this->beforeClear($jobId);
@@ -110,11 +118,11 @@ class WindowsAzureServiceBus extends Base
         }
     }
 
-    /**
-     * @param string $jobId
-     * @return boolean
-     * @throws \PHPQueue\Exception If job wasn't retrieved previously.
-     */
+	/**
+	 * @param string $jobId
+	 * @throws \PHPQueue\Exception\BackendException
+	 * @return boolean
+	 */
     public function release($jobId=null)
     {
         $this->beforeRelease($jobId);
@@ -144,7 +152,6 @@ class WindowsAzureServiceBus extends Base
         {
             throw new BackendException($ex->getMessage(), $ex->getCode());
         }
-        return false;
     }
 
     private function checkQueue()
