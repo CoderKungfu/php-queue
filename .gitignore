@@ -6,3 +6,4 @@ composer.lock
 phpunit.xml
 vendor
 composer.phar
+downloads
