@@ -2,6 +2,9 @@
 namespace PHPQueue\Backend;
 class WindowsAzureBlobTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var \PHPQueue\Backend\WindowsAzureBlob
+     */
     private $object;
 
     public function setUp()
@@ -49,7 +52,7 @@ class WindowsAzureBlobTest extends \PHPUnit_Framework_TestCase
 
         $this->object->setContainer($container_name);
         $file = __DIR__ . '/cc_logo.jpg';
-        $result = $this->object->put('image.jpg', $file);
+        $result = $this->object->putFile('image.jpg', $file);
         $this->assertTrue($result);
 
         $result = $this->object->listFiles();
@@ -63,7 +66,7 @@ class WindowsAzureBlobTest extends \PHPUnit_Framework_TestCase
     {
         $container_name = 'testimg';
         $this->object->setContainer($container_name);
-        $result = $this->object->fetch('image.jpg');
+        $result = $this->object->fetchFile('image.jpg', __DIR__ . '/downloads');
         $this->assertNotEmpty($result);
     }
 
