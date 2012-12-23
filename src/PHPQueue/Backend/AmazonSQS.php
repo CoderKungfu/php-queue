@@ -42,11 +42,11 @@ class AmazonSQS extends Base
         $this->connection->set_region($this->region);
     }
 
-    /**
-     * @param array $data
-     * @return boolean Status of saving
-     * @throws \PHPQueue\Exception
-     */
+	/**
+	 * @param array $data
+	 * @throws \PHPQueue\Exception\BackendException
+	 * @return boolean Status of saving
+	 */
     public function add($data=array())
     {
         $this->beforeAdd();
@@ -59,10 +59,10 @@ class AmazonSQS extends Base
         return true;
     }
 
-    /**
-     * @return array
-     * @throws \PHPQueue\Exception
-     */
+	/**
+	 * @throws \PHPQueue\Exception\JobNotFoundException
+	 * @return array
+	 */
     public function get()
     {
         $this->beforeGet();
@@ -86,11 +86,11 @@ class AmazonSQS extends Base
         }
     }
 
-    /**
-     * @param string $jobId
-     * @return boolean
-     * @throws \PHPQueue\Exception
-     */
+	/**
+	 * @param string $jobId
+	 * @throws \PHPQueue\Exception\BackendException
+	 * @return boolean
+	 */
     public function clear($jobId=null)
     {
         $this->beforeClear($jobId);
@@ -109,7 +109,7 @@ class AmazonSQS extends Base
     /**
      * @param string $jobId
      * @return boolean
-     * @throws \PHPQueue\Exception If job wasn't retrieved previously.
+     * @throws \PHPQueue\Exception\BackendException If job wasn't retrieved previously.
      */
     public function release($jobId=null)
     {
