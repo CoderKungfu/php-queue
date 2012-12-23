@@ -25,6 +25,14 @@ class WindowsAzureBlob extends FS
         }
     }
 
+    /**
+     * @return \WindowsAzure\Blob\BlobRestProxy
+     */
+    public function getConnection()
+    {
+        return parent::getConnection();
+    }
+
     public function connect()
     {
         if (empty($this->connection_string))
@@ -130,7 +138,7 @@ class WindowsAzureBlob extends FS
         {
             $data = fopen($data, 'r');
         }
-        $this->put($key, $data, $options);
+        return $this->put($key, $data, $options);
     }
 
     public function clear($key = null)
