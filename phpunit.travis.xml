@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit 
+    colors="true" 
+    stopOnFailure="false"
+	bootstrap="test/bootstrap.php"
+> 
+   <filter>
+        <whitelist>
+            <directory suffix=".php">src</directory>
+        </whitelist>
+    </filter>
+    <testsuites>
+        <testsuite name="PHPQueue">
+            <directory suffix="Test.php">test</directory>
+            <exclude>test/PHPQueue/Backend/PDOTest.php</exclude>
+        </testsuite>
+    </testsuites>
+</phpunit>
