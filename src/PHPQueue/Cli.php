@@ -34,6 +34,25 @@ class Cli
         return $status;
     }
 
+    public function peek()
+    {
+        $newJob = null;
+        $queue = Base::getQueue($this->queue_name);
+        try
+        {
+            $newJob = Base::getJob($queue);
+            fwrite(STDOUT, "===========================================================\n");
+            fwrite(STDOUT, "Next Job:\n");
+            var_dump($newJob);
+            fwrite(STDOUT, "\nReleasing Job...\n");
+            $queue->releaseJob($newJob->job_id);
+        }
+        catch (\Exception $ex)
+        {
+            fwrite(STDOUT, "Error: " . $ex->getMessage() . "\n");
+        }
+    }
+
     public function work()
     {
         $newJob = null;
