@@ -124,7 +124,7 @@ abstract class Runner
                 $this->logger->addError($ex->getMessage());
                 $this->logger->addInfo(sprintf('Releasing job (%s).', $newJob->job_id));
                 $this->queue->releaseJob($newJob->job_id);
-                throw $ex;
+                $sleepTime = self::RUN_USLEEP * 5;
             }
         }
         $this->logger->addInfo('Sleeping ' . ceil($sleepTime / 1000000) . ' seconds.');
