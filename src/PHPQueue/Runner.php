@@ -11,6 +11,9 @@ abstract class Runner
     public $logger;
     public $log_path;
     public $log_level;
+    protected $current_date;
+    protected $current_log_check = 0;
+    protected $max_check_interval = 3600;
 
     public function __construct($queue='', $options=array())
     {
@@ -53,12 +56,7 @@ abstract class Runner
                                 , $baseFolder
                             );
         }
-        $logFileName = sprintf('%s-%s.log', $this->queue_name, date('Ymd'));
-        $this->logger = Logger::createLogger(
-                              $this->queue_name
-                            , $this->log_level
-                            , $this->log_path . $logFileName
-                        );
+        $this->createLogger();
     }
 
     protected function beforeLoop()
@@ -74,7 +72,22 @@ abstract class Runner
     {
         while (true)
         {
+            $this->checkAndCycleLog();
             $this->workJob();
+        }
+    }
+
+    protected function checkAndCycleLog()
+    {
+        $this->current_log_check++;
+        if ($this->current_log_check > $this->max_check_interval)
+        {
+            if ($this->current_date != date('Ymd'))
+            {
+                unset($this->logger);
+                $this->createLogger();
+            }
+            $this->current_log_check = 0;
         }
     }
 
@@ -138,5 +151,16 @@ abstract class Runner
         Base::workJob($worker, $new_job);
         $this->logger->addInfo(sprintf('Worker is done. Updating job (%s). Result:', $new_job->job_id), $worker->result_data);
         return $worker->result_data;
+    }
+
+    protected function createLogger()
+    {
+        $this->current_date = date('Ymd');
+        $logFileName = sprintf('%s-%s.log', $this->queue_name, date('Ymd'));
+        $this->logger = Logger::createLogger(
+              $this->queue_name
+            , $this->log_level
+            , $this->log_path . $logFileName
+        );
     }
 }
