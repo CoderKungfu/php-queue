@@ -9,7 +9,9 @@
 
 #require_once '/absolute/path/to/php-queue/src/demo/config.php';
 require_once dirname(__DIR__) . '/config.php';
-$pid_file = __DIR__ . '/process.pid';
+$worker = !empty($argv[2]) ? $argv[2] : 1;
+$pid_file = sprintf('%s/process_w%s.pid', __DIR__, $worker);
+
 if (empty($argv[1]))
 {
     Clio\Console::output("Unknown action.");
