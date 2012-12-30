@@ -10,8 +10,7 @@ $action = $argv[2];
 $options = array('queue'=>$queue_name);
 $c = new PHPQueue\Cli($options);
 
-switch ($action)
-{
+switch ($action) {
     case 'add':
         $payload_json = $argv[4];
         $payload = json_decode($payload_json, true);

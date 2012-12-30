@@ -4,6 +4,6 @@ namespace PHPQueue\Exception;
 /**
  * A PHPQueue exception
  */
-class Exception extends \Exception{
-    
+class Exception extends \Exception
+{
 }

@@ -8,12 +8,9 @@ class MongoDBTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         parent::setUp();
-        if (!class_exists('\Mongo'))
-        {
+        if (!class_exists('\Mongo')) {
             $this->markTestSkipped('Mongo extension is not installed');
-        }
-        else
-        {
+        } else {
             $options = array(
                 'server' => 'mongodb://localhost'
                 , 'db'  => 'testdb'
@@ -52,17 +49,12 @@ class MongoDBTest extends \PHPUnit_Framework_TestCase
      */
     public function testClear()
     {
-        try
-        {
+        try {
             $jobId = 'xxx';
             $result = $this->object->clear($jobId);
-        }
-        catch (\PHPQueue\Exception\JobNotFoundException $ex)
-        {
+        } catch (\PHPQueue\Exception\JobNotFoundException $ex) {
             $this->assertTrue(true);
-        }
-        catch (\Exception $ex)
-        {
+        } catch (\Exception $ex) {
             $this->fail('Should not be able to delete.');
         }
 

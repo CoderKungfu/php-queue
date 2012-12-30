@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  * Secured REST server using Authorization: Token.
  *
  * Example cURL commands:
@@ -12,42 +12,38 @@
 require_once dirname(__DIR__) . '/config.php';
 class SecuredREST implements \PHPQueue\Interfaces\Auth
 {
-    static public $valid_token = 'ki*ksjdu^GDjc\nk';
+    public static $valid_token = 'ki*ksjdu^GDjc\nk';
 
     public function isAuth()
     {
         $token = $this->getToken();
-        if ( !empty($token) && ($token == self::$valid_token))
-        {
+        if ( !empty($token) && ($token == self::$valid_token)) {
             return true;
         }
+
         return false;
     }
 
     private function getToken()
     {
         $authHeader = null;
-        if ( function_exists( 'apache_request_headers' ) )
-        {
+        if ( function_exists( 'apache_request_headers' ) ) {
             $apacheHeaders = apache_request_headers();
             if ( isset( $apacheHeaders['Authorization'] ) )
             $authHeader = $apacheHeaders['Authorization'];
-        }
-        else
-        {
+        } else {
             if ( isset( $_SERVER['HTTP_AUTHORIZATION'] ) )
             $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
         }
-        if ( isset( $authHeader ) )
-        {
+        if ( isset( $authHeader ) ) {
             $m = array();
             $tokenPattern = '/^(?P<authscheme>Token)\s(?P<token>[a-zA-Z0-9\!\@\#\$\%\^\&\*\(\)\\\]+)$/';
             $match = preg_match( $tokenPattern, $authHeader, $m );
-            if ( $match > 0 )
-            {
+            if ($match > 0) {
                 return $m['token'];
             }
         }
+
         return false;
     }
 }

@@ -13,22 +13,19 @@ use PHPQueue\Exception\Exception;
 
 class REST
 {
-    static public $json_payload_key = null;
-    static public $rest_server;
-    static public $response_content = array(
+    public static $json_payload_key = null;
+    public static $rest_server;
+    public static $response_content = array(
                             'application/json' => 'json_encode'
                         );
     public $auth_class = null;
 
     public function __construct($options=array())
     {
-        if ( !empty($options['auth']) )
-        {
+        if ( !empty($options['auth']) ) {
             $auth_class = $options['auth'];
-            if (is_string($auth_class))
-            {
-                if (!(strpos($auth_class, "\\") === 0))
-                {
+            if (is_string($auth_class)) {
+                if (!(strpos($auth_class, "\\") === 0)) {
                     $auth_class = '\\' . $auth_class;
                 }
                 $auth_class = new $auth_class($options);
@@ -40,11 +37,10 @@ class REST
     /**
      * Starts a Respect/REST server with default routes:
      */
-    static public function defaultRoutes($options=array())
+    public static function defaultRoutes($options=array())
     {
         $router = !empty($options['router']) ? $options['router'] : '\PHPQueue\REST';
-        if (is_string($router))
-        {
+        if (is_string($router)) {
             $router = new $router($options);
         }
         $response_format = !empty($options['format'])
@@ -53,8 +49,7 @@ class REST
 
         self::startServer()
                 ->always('Accept', $response_format)
-                ->any('/*/**', function($queue=null, $actions=array()) use ($router, $options)
-                {
+                ->any('/*/**', function($queue=null, $actions=array()) use ($router, $options) {
                     return $router->route($queue, $actions, $options);
                 });
     }
@@ -63,36 +58,32 @@ class REST
      * Starts the Respect/REST server
      * @return \Respect\Rest\Router
      */
-    static public function startServer()
+    public static function startServer()
     {
-        if (empty(self::$rest_server))
-        {
+        if (empty(self::$rest_server)) {
             self::$rest_server = new \Respect\Rest\Router;
         }
+
         return self::$rest_server;
     }
 
     /**
      * Specify how a routed URL should be handled.
-     * @param string $queue
-     * @param array $actions
-     * @param array $options array('auth'=>Object)
+     * @param  string   $queue
+     * @param  array    $actions
+     * @param  array    $options array('auth'=>Object)
      * @return stdClass
      */
     public function route($queue=null, $actions=array(), $options=array())
     {
-        try
-        {
+        try {
             $this->isAuth();
-        }
-        catch (\Exception $ex)
-        {
+        } catch (\Exception $ex) {
             return $this->failed(401, $ex->getMessage());
         }
 
         $method = !empty($_GET['REQUEST_METHOD']) ? $_GET['REQUEST_METHOD'] : $_SERVER['REQUEST_METHOD'];
-        switch($method)
-        {
+        switch ($method) {
             case 'POST':
                 return $this->post($queue);
                 break;
@@ -107,36 +98,32 @@ class REST
 
     protected function isAuth()
     {
-        if ( !is_null($this->auth_class) )
-        {
-            if ( !is_a($this->auth_class, '\PHPQueue\Interfaces\Auth') )
-            {
+        if ( !is_null($this->auth_class) ) {
+            if ( !is_a($this->auth_class, '\PHPQueue\Interfaces\Auth') ) {
                 throw new Exception("Invalid Auth Object.");
             }
-            if (!$this->auth_class->isAuth())
-            {
+            if (!$this->auth_class->isAuth()) {
                 throw new Exception("Not Authorized");
             }
         }
+
         return true;
     }
 
     /**
      * Handles a POST method
-     * @param string $queueName
+     * @param  string   $queueName
      * @return stdClass
      */
     protected function post($queueName=null)
     {
         $payload = $this->getPayload();
-        try
-        {
+        try {
             $queue = Base::getQueue($queueName);
             Base::addJob($queue, $payload);
+
             return $this->successful();
-        }
-        catch (\Exception $ex)
-        {
+        } catch (\Exception $ex) {
             return $this->failed($ex->getCode(), $ex->getMessage());
         }
     }
@@ -147,71 +134,59 @@ class REST
     protected function getPayload()
     {
         $payload = array();
-        switch($_SERVER['CONTENT_TYPE'])
-        {
+        switch ($_SERVER['CONTENT_TYPE']) {
             case 'application/json':
                 $content = file_get_contents('php://input');
                 $payload = json_decode($content, true);
-                if( !empty(self::$json_payload_key) && isset($payload['data']) )
-                {
+                if ( !empty(self::$json_payload_key) && isset($payload['data']) ) {
                     $payload = $payload['data'];
                 }
                 break;
             default:
-                if (!empty($_POST))
-                {
+                if (!empty($_POST)) {
                     $payload = $_POST;
                 }
                 break;
         }
+
         return $payload;
     }
 
     /**
      * Trigger a worker for a queue. Next item in the queue will be retrieved and worked with the appropriate worker.
-     * @param string $queueName
+     * @param  string   $queueName
      * @return stdClass
      */
     protected function work($queueName=null)
     {
         $queue = Base::getQueue($queueName);
-        try
-        {
+        try {
             $newJob = Base::getJob($queue);
-        }
-        catch (\Exception $ex)
-        {
+        } catch (\Exception $ex) {
             return $this->failed(405, $ex->getMessage());
         }
 
-        if (empty($newJob))
-        {
+        if (empty($newJob)) {
             return $this->failed(404, "No Job in queue.");
         }
-        try
-        {
-            if (empty($newJob->worker))
-            {
+        try {
+            if (empty($newJob->worker)) {
                 throw new Exception("No worker declared.");
             }
-            if (is_string($newJob->worker))
-            {
+            if (is_string($newJob->worker)) {
                 $result_data = $this->processWorker($newJob->worker, $newJob);
-            }
-            else if (is_array($newJob->worker))
-            {
-                foreach($newJob->worker as $worker_name)
-                {
+            } elseif (is_array($newJob->worker)) {
+                foreach ($newJob->worker as $worker_name) {
                     $result_data = $this->processWorker($worker_name, $newJob);
                     $newJob->data = $result_data;
                 }
             }
             Base::updateJob($queue, $newJob->job_id, $result_data);
+
             return $this->successful();
-        }
-        catch (\Exception $ex)
-        {
+        } catch (\Exception $ex) {
             $queue->releaseJob($newJob->job_id);
+
             return $this->failed($ex->getCode(), $ex->getMessage());
         }
     }
@@ -220,6 +195,7 @@ class REST
     {
         $newWorker = Base::getWorker($worker_name);
         Base::workJob($newWorker, $new_job);
+
         return $newWorker->result_data;
     }
 
