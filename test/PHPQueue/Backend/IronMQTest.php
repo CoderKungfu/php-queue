@@ -10,12 +10,9 @@ class IronMQTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         parent::setUp();
-        if (!class_exists('\IronMQ'))
-        {
+        if (!class_exists('\IronMQ')) {
             $this->markTestSkipped('Iron MQ library not installed');
-        }
-        else
-        {
+        } else {
             $options = array(
                 'queue' => 'test_queue',
                 'msg_options' => array('timeout'=>1)
@@ -50,14 +47,11 @@ class IronMQTest extends \PHPUnit_Framework_TestCase
      */
     public function testClear()
     {
-        try
-        {
+        try {
             $jobId = 'xxx';
             $this->object->clear($jobId);
             $this->fail("Should not be able to delete.");
-        }
-        catch(\Exception $ex)
-        {
+        } catch (\Exception $ex) {
             $this->assertNotEquals("Should not be able to delete.", $ex->getMessage());
         }
 

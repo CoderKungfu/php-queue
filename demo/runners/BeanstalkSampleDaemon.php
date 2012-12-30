@@ -12,43 +12,34 @@ require_once dirname(__DIR__) . '/config.php';
 $worker = !empty($argv[2]) ? $argv[2] : 1;
 $pid_file = sprintf('%s/process_w%s.pid', __DIR__, $worker);
 
-if (empty($argv[1]))
-{
+if (empty($argv[1])) {
     Clio\Console::output("Unknown action.");
     die();
 }
-switch($argv[1])
-{
+switch ($argv[1]) {
     case 'start':
         Clio\Console::stdout('Starting... ');
-        try
-        {
+        try {
             Clio\Daemon::work(array(
                     'pid' => $pid_file,
                 ),
-                function($stdin, $stdout, $sterr)
-                {
+                function($stdin, $stdout, $sterr) {
                     class BeanstalkSample extends PHPQueue\Runner{}
                     $runner = new BeanstalkSample('BeanstalkSample', array('logPath'=>__DIR__ . '/logs/'));
                     $runner->run();
                 }
             );
             Clio\Console::output('%g[OK]%n');
-        }
-        catch (Exception $ex)
-        {
+        } catch (Exception $ex) {
             Clio\Console::output('%r[FAILED]%n');
         }
         break;
     case 'stop':
         Clio\Console::stdout('Stopping... ');
-        try
-        {
+        try {
             Clio\Daemon::kill($pid_file, true);
             Clio\Console::output('%g[OK]%n');
-        }
-        catch (Exception $ex)
-        {
+        } catch (Exception $ex) {
             Clio\Console::output('%r[FAILED]%n');
         }
         break;

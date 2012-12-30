@@ -10,12 +10,9 @@ class WindowsAzureBlobTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         parent::setUp();
-        if (!class_exists('\WindowsAzure\Common\ServicesBuilder'))
-        {
+        if (!class_exists('\WindowsAzure\Common\ServicesBuilder')) {
             $this->markTestSkipped('Windows Azure not installed');
-        }
-        else
-        {
+        } else {
             $options = array(
                   'connection_string' => 'DefaultEndpointsProtocol=https;AccountName=noobsgblob;AccountKey=WHkYwMCHYFMB1EHu061XlD11XS7v0gzKWcYKh4s5YTTioWpyYIVOki2KYki42gekpaVLmKN9WaYc3elyvh/qpQ=='
             );

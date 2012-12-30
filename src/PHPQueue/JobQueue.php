@@ -9,12 +9,12 @@ abstract class JobQueue
     public function getQueueSize(){}
 
     /**
-     * @param type $newJob
+     * @param  type                $newJob
      * @throws \PHPQueue\Exception
      */
     public function beforeAdd($newJob=null){}
     /**
-     * @param \PHPQueue\Job $newJob
+     * @param  \PHPQueue\Job       $newJob
      * @throws \PHPQueue\Exception
      */
     public function addJob($newJob=null){}
@@ -22,7 +22,7 @@ abstract class JobQueue
 
     public function beforeGet(){}
     /**
-     * @param string $jobId
+     * @param  string        $jobId
      * @return \PHPQueue\Job
      */
     public function getJob($jobId=null)

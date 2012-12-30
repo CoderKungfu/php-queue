@@ -10,12 +10,9 @@ class PDOTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         parent::setUp();
-        if (!class_exists('\PDO'))
-        {
+        if (!class_exists('\PDO')) {
             $this->markTestSkipped('PDO extension is not installed');
-        }
-        else
-        {
+        } else {
             $options = array(
                   'connection_string' => 'mysql:host=localhost;dbname=phpqueuetest'
                 , 'db_user'           => 'root'

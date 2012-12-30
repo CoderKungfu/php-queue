@@ -7,12 +7,9 @@ class AmazonSQSTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         parent::setUp();
-        if (!class_exists('\AmazonSQS'))
-        {
+        if (!class_exists('\AmazonSQS')) {
             $this->markTestSkipped('Amazon PHP SDK not installed');
-        }
-        else
-        {
+        } else {
             $options = array(
                   'region'      => \AmazonSQS::REGION_APAC_SE1
                 , 'queue'       => 'https://sqs.ap-southeast-1.amazonaws.com/524787626913/testqueue'
@@ -49,14 +46,11 @@ class AmazonSQSTest extends \PHPUnit_Framework_TestCase
      */
     public function testClear()
     {
-        try
-        {
+        try {
             $jobId = 'xxx';
             $this->object->clear($jobId);
             $this->fail("Should not be able to delete.");
-        }
-        catch(\Exception $ex)
-        {
+        } catch (\Exception $ex) {
             $this->assertTrue(true);
         }
 

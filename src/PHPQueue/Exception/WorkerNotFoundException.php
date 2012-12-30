@@ -4,6 +4,6 @@ namespace PHPQueue\Exception;
 /**
  * Exception thrown when queue cannot be load or not found
  */
-class WorkerNotFoundException extends Exception {
-    
+class WorkerNotFoundException extends Exception
+{
 }

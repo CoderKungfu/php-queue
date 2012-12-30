@@ -7,12 +7,9 @@ class BeanstalkdTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         parent::setUp();
-        if (!class_exists('\Pheanstalk\Pheanstalk'))
-        {
+        if (!class_exists('\Pheanstalk\Pheanstalk')) {
             $this->markTestSkipped('\Pheanstalk\Pheanstalk not installed');
-        }
-        else
-        {
+        } else {
             $options = array(
                               'server' => '127.0.0.1'
                             , 'tube'   => 'testqueue'
@@ -44,14 +41,11 @@ class BeanstalkdTest extends \PHPUnit_Framework_TestCase
      */
     public function testClear()
     {
-        try
-        {
+        try {
             $jobId = 'xxx';
             $this->object->clear($jobId);
             $this->fail("Should not be able to delete.");
-        }
-        catch(\Exception $ex)
-        {
+        } catch (\Exception $ex) {
             $this->assertTrue(true);
         }
         $result = $this->object->get();

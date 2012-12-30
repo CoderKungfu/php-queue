@@ -7,12 +7,9 @@ class MemcacheTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         parent::setUp();
-        if (!class_exists('\Memcache'))
-        {
+        if (!class_exists('\Memcache')) {
             $this->markTestSkipped('Memcache not installed');
-        }
-        else
-        {
+        } else {
             $options = array(
                 'servers' => array(
                                     array('localhost', 11211)
@@ -41,7 +38,6 @@ class MemcacheTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($result);
     }
 
-
     public function testGet()
     {
         $result = $this->object->get('A0001');
@@ -58,14 +54,11 @@ class MemcacheTest extends \PHPUnit_Framework_TestCase
      */
     public function testClear()
     {
-        try
-        {
+        try {
             $jobId = 'xxx';
             $this->object->clear($jobId);
             $this->fail("Should not be able to delete.");
-        }
-        catch(\Exception $ex)
-        {
+        } catch (\Exception $ex) {
             $this->assertTrue(true);
         }
 

@@ -16,8 +16,7 @@ abstract class Base
 
     public function beforeGet($jobId=null)
     {
-        if (!empty($jobId))
-        {
+        if (!empty($jobId)) {
             $this->last_job_id = $jobId;
         }
     }
@@ -30,8 +29,7 @@ abstract class Base
 
     public function beforeClear($jobId=null)
     {
-        if (!empty($jobId))
-        {
+        if (!empty($jobId)) {
             $this->last_job_id = $jobId;
         }
     }
@@ -39,8 +37,7 @@ abstract class Base
 
     public function beforeRelease($jobId=null)
     {
-        if (!empty($jobId))
-        {
+        if (!empty($jobId)) {
             $this->last_job_id = $jobId;
         }
     }
@@ -55,18 +52,17 @@ abstract class Base
 
     public function isJobOpen($jobId)
     {
-        if (empty($this->open_items[$jobId]))
-        {
+        if (empty($this->open_items[$jobId])) {
             throw new \PHPQueue\Exception\JobNotFoundException("Job was not previously retrieved.");
         }
     }
 
     public function getConnection()
     {
-        if (is_null($this->connection))
-        {
+        if (is_null($this->connection)) {
             $this->connect();
         }
+
         return $this->connection;
     }
 }

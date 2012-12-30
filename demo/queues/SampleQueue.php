@@ -7,11 +7,9 @@ class SampleQueue extends PHPQueue\JobQueue
     public function __construct()
     {
         parent::__construct();
-        if (is_file($this->file_path))
-        {
+        if (is_file($this->file_path)) {
             $data = unserialize(file_get_contents($this->file_path));
-            if (is_array($data))
-            {
+            if (is_array($data)) {
                 $this->jobs = $data;
             }
         }
@@ -26,26 +24,28 @@ class SampleQueue extends PHPQueue\JobQueue
     {
         parent::addJob($newJob);
         array_unshift($this->jobs, $newJob);
+
         return true;
     }
 
     public function getJob($jobId = null)
     {
         parent::getJob();
-        if ( empty($this->jobs) )
-        {
+        if ( empty($this->jobs) ) {
             throw new Exception("No more jobs.");
         }
         $jobData = array_pop($this->jobs);
         $nextJob = new \PHPQueue\Job();
         $nextJob->data = $jobData;
         $nextJob->worker = 'Sample';
+
         return $nextJob;
     }
 
     public function getQueueSize()
     {
         parent::getQueueSize();
+
         return count($this->jobs);
     }
 }

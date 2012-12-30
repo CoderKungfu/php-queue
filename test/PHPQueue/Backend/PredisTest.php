@@ -7,12 +7,9 @@ class PredisTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         parent::setUp();
-        if (!class_exists('\Predis\Client'))
-        {
+        if (!class_exists('\Predis\Client')) {
             $this->markTestSkipped('Predis not installed');
-        }
-        else
-        {
+        } else {
             $options = array(
                 'servers' => array('host' => '127.0.0.1', 'port' => 6379)
                 , 'queue' => 'testqueue'
@@ -52,13 +49,10 @@ class PredisTest extends \PHPUnit_Framework_TestCase
         $jobB = $this->object->last_job_id;
         $result = $this->object->clear($jobB);
         $this->assertTrue($result);
-        try
-        {
+        try {
             $result = $this->object->isJobOpen($jobB);
             $this->fail("Job should not still be open.");
-        }
-        catch (\Exception $ex)
-        {
+        } catch (\Exception $ex) {
             $this->assertTrue(true);
         }
         $this->assertEquals(2, $this->object->getConnection()->llen($this->object->queue_name));
@@ -86,15 +80,12 @@ class PredisTest extends \PHPUnit_Framework_TestCase
         $result = $this->object->setKey($key, $data);
         $this->assertTrue($result);
 
-        try
-        {
+        try {
             $key = 'A0004';
             $data = array(1, 'Willy', 'Wonka', 'boo'=>array(5,6,7));
             $result = $this->object->setKey($key, $data);
             $this->fail("Shouldn't be able to save");
-        }
-        catch (\Exception $ex)
-        {
+        } catch (\Exception $ex) {
             $this->assertTrue(true);
         }
     }
@@ -141,14 +132,11 @@ class PredisTest extends \PHPUnit_Framework_TestCase
      */
     public function testClearKey()
     {
-        try
-        {
+        try {
             $jobId = 'xxx';
             $this->object->clearKey($jobId);
             $this->fail("Should not be able to delete.");
-        }
-        catch(\Exception $ex)
-        {
+        } catch (\Exception $ex) {
             $this->assertTrue(true);
         }
 

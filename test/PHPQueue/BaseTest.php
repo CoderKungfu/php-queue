@@ -6,8 +6,7 @@ class BaseTest extends \PHPUnit_Framework_TestCase
     public function __construct($name = NULL, array $data = array(), $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-        if (file_exists('/tmp/sample_data.ser'))
-        {
+        if (file_exists('/tmp/sample_data.ser')) {
             @unlink('/tmp/sample_data.ser');
         }
     }
@@ -43,13 +42,10 @@ class BaseTest extends \PHPUnit_Framework_TestCase
     public function testNoNullJob()
     {
         $queue = $this->getSampleQueue();
-        try
-        {
+        try {
             Base::addJob($queue, null);
             $this->fail("Should not be able to add to Queue");
-        }
-        catch (\Exception $ex)
-        {
+        } catch (\Exception $ex) {
             $this->assertStringStartsWith("Invalid job data.", $ex->getMessage());
         }
     }
@@ -69,13 +65,10 @@ class BaseTest extends \PHPUnit_Framework_TestCase
         $queue = $this->getSampleQueue();
         $result = Base::addJob($queue, array('var1'=>"Hello, world!"));
         $result = Base::getJob($queue); //clear
-        try
-        {
+        try {
             $result = Base::getJob($queue);
             $this->fail("Should not be able to get job from Queue");
-        }
-        catch (\Exception $ex)
-        {
+        } catch (\Exception $ex) {
             $this->assertStringStartsWith("No more jobs.", $ex->getMessage());
         }
     }
@@ -106,4 +99,3 @@ class BaseTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($job->isSuccessful());
     }
 }
-?>

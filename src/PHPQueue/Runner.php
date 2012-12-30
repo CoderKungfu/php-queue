@@ -17,8 +17,7 @@ abstract class Runner
 
     public function __construct($queue='', $options=array())
     {
-        if (!empty($queue))
-        {
+        if (!empty($queue)) {
             $this->queue_name = $queue;
         }
         if (
@@ -28,14 +27,12 @@ abstract class Runner
         {
             $this->log_path = $options['logPath'];
         }
-        if ( !empty($options['logLevel']) )
-        {
+        if ( !empty($options['logLevel']) ) {
             $this->log_level = $options['logLevel'];
-        }
-        else
-        {
+        } else {
             $this->log_level = Logger::INFO;
         }
+
         return $this;
     }
 
@@ -48,8 +45,7 @@ abstract class Runner
 
     public function setup()
     {
-        if (empty($this->log_path))
-        {
+        if (empty($this->log_path)) {
             $baseFolder = dirname(dirname(__DIR__));
             $this->log_path = sprintf(
                                   '%s/demo/runners/logs/'
@@ -61,8 +57,7 @@ abstract class Runner
 
     protected function beforeLoop()
     {
-        if (empty($this->queue_name))
-        {
+        if (empty($this->queue_name)) {
             throw new Exception('Queue name is invalid');
         }
         $this->queue = Base::getQueue($this->queue_name);
@@ -70,8 +65,7 @@ abstract class Runner
 
     protected function loop()
     {
-        while (true)
-        {
+        while (true) {
             $this->checkAndCycleLog();
             $this->workJob();
         }
@@ -80,10 +74,8 @@ abstract class Runner
     protected function checkAndCycleLog()
     {
         $this->current_log_check++;
-        if ($this->current_log_check > $this->max_check_interval)
-        {
-            if ($this->current_date != date('Ymd'))
-            {
+        if ($this->current_log_check > $this->max_check_interval) {
+            if ($this->current_date != date('Ymd')) {
                 unset($this->logger);
                 $this->createLogger();
             }
@@ -95,45 +87,32 @@ abstract class Runner
     {
         $sleepTime = self::RUN_USLEEP;
         $newJob = null;
-        try
-        {
+        try {
             $newJob = Base::getJob($this->queue);
-        }
-        catch (\Exception $ex)
-        {
+        } catch (\Exception $ex) {
             $this->logger->addError($ex->getMessage());
             $sleepTime = self::RUN_USLEEP * 5;
         }
-        if (empty($newJob))
-        {
+        if (empty($newJob)) {
             $this->logger->addNotice("No Job found.");
             $sleepTime = self::RUN_USLEEP * 10;
-        }
-        else
-        {
-            try
-            {
-                if (empty($newJob->worker))
-                {
+        } else {
+            try {
+                if (empty($newJob->worker)) {
                     throw new Exception("No worker declared.");
                 }
-                if (is_string($newJob->worker))
-                {
+                if (is_string($newJob->worker)) {
                     $result_data = $this->processWorker($newJob->worker, $newJob);
-                }
-                else if (is_array($newJob->worker))
-                {
+                } elseif (is_array($newJob->worker)) {
                     $this->logger->addInfo(sprintf("Running chained new job (%s) with workers", $new_job->job_id), $newJob->worker);
-                    foreach($newJob->worker as $worker_name)
-                    {
+                    foreach ($newJob->worker as $worker_name) {
                         $result_data = $this->processWorker($worker_name, $newJob);
                         $newJob->data = $result_data;
                     }
                 }
+
                 return Base::updateJob($this->queue, $newJob->job_id, $result_data);
-            }
-            catch (\Exception $ex)
-            {
+            } catch (\Exception $ex) {
                 $this->logger->addError($ex->getMessage());
                 $this->logger->addInfo(sprintf('Releasing job (%s).', $newJob->job_id));
                 $this->queue->releaseJob($newJob->job_id);
@@ -150,6 +129,7 @@ abstract class Runner
         $worker = Base::getWorker($worker_name);
         Base::workJob($worker, $new_job);
         $this->logger->addInfo(sprintf('Worker is done. Updating job (%s). Result:', $new_job->job_id), $worker->result_data);
+
         return $worker->result_data;
     }
 

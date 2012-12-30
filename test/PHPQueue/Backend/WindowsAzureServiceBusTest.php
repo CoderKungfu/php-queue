@@ -7,12 +7,9 @@ class WindowsAzureServiceBusTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         parent::setUp();
-        if (!class_exists('\WindowsAzure\Common\ServicesBuilder'))
-        {
+        if (!class_exists('\WindowsAzure\Common\ServicesBuilder')) {
             $this->markTestSkipped('Windows Azure not installed');
-        }
-        else
-        {
+        } else {
             $options = array(
                   'connection_string' => 'Endpoint=https://noobqueue.servicebus.windows.net/;SharedSecretIssuer=owner;SharedSecretValue=72smuycIAYp7H2HvN4WleJzMrykNb45AKo+IVwcWCoQ='
                 , 'queue'        => 'myqueue'
@@ -44,14 +41,11 @@ class WindowsAzureServiceBusTest extends \PHPUnit_Framework_TestCase
      */
     public function testClear()
     {
-        try
-        {
+        try {
             $jobId = 'xxx';
             $this->object->clear($jobId);
             $this->fail("Should not be able to delete.");
-        }
-        catch(\Exception $ex)
-        {
+        } catch (\Exception $ex) {
             $this->assertTrue(true);
         }
 

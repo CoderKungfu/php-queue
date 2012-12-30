@@ -23,4 +23,3 @@ class SampleWorkerTest extends \PHPUnit_Framework_TestCase
             );
     }
 }
-?>
