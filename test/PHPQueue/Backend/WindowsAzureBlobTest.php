@@ -25,19 +25,19 @@ class WindowsAzureBlobTest extends \PHPUnit_Framework_TestCase
         $container_name = 'test'.time();
 
         $result = $this->object->listContainers();
-        $this->assertEmpty($result);
+        $num = count($result);
 
         $result = $this->object->createContainer($container_name);
         $this->assertTrue($result);
 
         $result = $this->object->listContainers();
-        $this->assertEquals(1, count($result));
+        $this->assertEquals($num + 1, count($result));
 
         $result = $this->object->deleteContainer($container_name);
         $this->assertTrue($result);
 
         $result = $this->object->listContainers();
-        $this->assertEmpty($result);
+        $this->assertEquals($num, count($result));
     }
 
     public function testAdd()
@@ -63,7 +63,7 @@ class WindowsAzureBlobTest extends \PHPUnit_Framework_TestCase
     {
         $container_name = 'testimg';
         $this->object->setContainer($container_name);
-        $result = $this->object->fetchFile('image.jpg', __DIR__ . '/downloads');
+        $result = $this->object->fetchFile('image.jpg', __DIR__ . '/downloads/image.jpg');
         $this->assertNotEmpty($result);
     }
 
