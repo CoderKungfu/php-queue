@@ -20,4 +20,14 @@ class Logger extends \Monolog\Logger
 
         return self::$all_logs[$logName];
     }
+
+    public static function cycleLog($logName, $logLevel = Logger::WARNING, $logPath=null)
+    {
+        if (!empty(self::$all_logs[$logName])) {
+            unset(self::$all_logs[$logName]);
+            self::createLogger($logName, $logLevel, $logPath);
+        }
+
+        return self::$all_logs[$logName];
+    }
 }
