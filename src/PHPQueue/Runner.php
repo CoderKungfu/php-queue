@@ -6,14 +6,21 @@ use PHPQueue\Exception\Exception;
 abstract class Runner
 {
     const RUN_USLEEP = 1000000;
-    public $queue_name;
+    /**
+     * @var \PHPQueue\JobQueue
+     */
     private $queue;
+    /**
+     * @var \PHPQueue\Logger
+     */
     public $logger;
+
+    public $queue_name;
     public $log_path;
     public $log_level;
     protected $current_date;
     protected $current_log_check = 0;
-    protected $max_check_interval = 3600;
+    protected $max_check_interval = 360;
 
     public function __construct($queue='', $options=array())
     {
@@ -76,8 +83,12 @@ abstract class Runner
         $this->current_log_check++;
         if ($this->current_log_check > $this->max_check_interval) {
             if ($this->current_date != date('Ymd')) {
-                unset($this->logger);
-                $this->createLogger();
+                $this->logger->addAlert("Cycling log file now.");
+                $this->logger = Logger::cycleLog(
+                      $this->queue_name
+                    , $this->log_level
+                    , $this->getFullLogPath()
+                );
             }
             $this->current_log_check = 0;
         }
@@ -135,12 +146,20 @@ abstract class Runner
 
     protected function createLogger()
     {
-        $this->current_date = date('Ymd');
-        $logFileName = sprintf('%s-%s.log', $this->queue_name, date('Ymd'));
         $this->logger = Logger::createLogger(
               $this->queue_name
             , $this->log_level
-            , $this->log_path . $logFileName
+            , $this->getFullLogPath()
         );
+    }
+
+    /**
+     * @return string
+     */
+    protected function getFullLogPath()
+    {
+        $this->current_date = date('Ymd');
+
+        return sprintf('%s/%s-%s.log', $this->log_path, $this->queue_name, $this->current_date);
     }
 }
