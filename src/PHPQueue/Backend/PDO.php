@@ -9,6 +9,7 @@ class PDO extends Base
     private $db_user;
     private $db_password;
     private $db_table;
+    private $pdo_options = array();
 
     public function __construct($options=array())
     {
@@ -25,6 +26,9 @@ class PDO extends Base
         if (!empty($options['db_table'])) {
             $this->db_table = $options['db_table'];
         }
+        if (!empty($options['pdo_options']) && is_array($options['pdo_options'])) {
+            $this->pdo_options = array_merge($this->pdo_options, $options['pdo_options']);
+        }
     }
 
     public function setTable($table_name=null)
@@ -39,7 +43,7 @@ class PDO extends Base
 
     public function connect()
     {
-        $this->connection = new \PDO($this->connection_string, $this->db_user, $this->db_password);
+        $this->connection = new \PDO($this->connection_string, $this->db_user, $this->db_password, $this->pdo_options);
     }
 
     public function add($data = null)

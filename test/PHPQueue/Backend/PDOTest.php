@@ -18,6 +18,9 @@ class PDOTest extends \PHPUnit_Framework_TestCase
                 , 'db_user'           => 'root'
                 , 'db_password'       => 'media1'
                 , 'db_table'          => 'pdotest'
+                , 'pdo_options'       => array(
+                    \PDO::ATTR_PERSISTENT => true
+                )
             );
             $this->object = new PDO($options);
         }
