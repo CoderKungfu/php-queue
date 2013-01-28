@@ -61,15 +61,15 @@ Here's a basic script to start a PHP Daemon (using [`Clio\Clio`](https://packagi
 require_once '/path/to/your/config.php';
 Clio\Daemon::work(
 	array(
-			'pid' => $pid_file,
+		'pid' => $pid_file,
 	),
 	function($stdin, $stdout, $sterr)
 	{
-		class BeanstalkSample extends PHPQueue\Runner{}
-		$runner = new BeanstalkSample(
-					  'BeanstalkSample'
-					, array('logPath'=>__DIR__ . '/logs/'));
-		$runner->run();
+	class BeanstalkSample extends PHPQueue\Runner{}
+	$runner = new BeanstalkSample(
+			  'BeanstalkSample'
+			, array('logPath'=>__DIR__ . '/logs/'));
+	$runner->run();
 	}
 );
 ```
@@ -120,27 +120,27 @@ if (empty($argv[1]))
 switch($argv[1])
 {
 	case 'start':
-		fwrite(STDOUT, "Starting... ");
-		Clio\Daemon::work(array(
-				'pid' => $pid_file,
-			),
-			function($stdin, $stdout, $sterr)
-			{
-				class BeanstalkSample extends PHPQueue\Runner{}
-				$runner = new BeanstalkSample('BeanstalkSample', array('logPath'=>__DIR__ . '/logs/'));
-				$runner->run();
-			}
-		);
-		fwrite(STDOUT, "[OK]" . PHP_EOL);
-		break;
+	fwrite(STDOUT, "Starting... ");
+	Clio\Daemon::work(array(
+		'pid' => $pid_file,
+		),
+		function($stdin, $stdout, $sterr)
+		{
+		class BeanstalkSample extends PHPQueue\Runner{}
+		$runner = new BeanstalkSample('BeanstalkSample', array('logPath'=>__DIR__ . '/logs/'));
+		$runner->run();
+		}
+	);
+	fwrite(STDOUT, "[OK]" . PHP_EOL);
+	break;
 	case 'stop':
-		fwrite(STDOUT, "Stopping... ");
-		Clio\Daemon::kill($pid_file, true);
-		fwrite(STDOUT, "[OK]" . PHP_EOL);
-		break;
+	fwrite(STDOUT, "Stopping... ");
+	Clio\Daemon::kill($pid_file, true);
+	fwrite(STDOUT, "[OK]" . PHP_EOL);
+	break;
 	default:
-		fwrite(STDOUT, "Unknown action." . PHP_EOL);
-		break;
+	fwrite(STDOUT, "Unknown action." . PHP_EOL);
+	break;
 }
 ?>
 ```
@@ -153,13 +153,13 @@ switch($argv[1])
 #!/usr/bin/php
 ```
 	and make the file executable under linux:
-	
+
 	```
 $ chmod a+x BeanstalkSampleDaemon.php
 ```
 
 	That way, you can call the script directly without invoing PHP:
-	
+
 	```
 $ ./BeanstalkSampleDaemon.php
 ```

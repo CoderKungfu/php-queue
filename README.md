@@ -33,11 +33,11 @@ PHP-Queue hopes to serve as an abstract layer between your application code and 
 * **Powerful**
 
 	The framework is deliberately open-ended and can be adapted to your implementation. It doesn't get in the way of your queue system.
-	
+
 	We've build a simple REST server to let you post job data to your queue easily. We also included a CLI interface for adding and triggering workers. All of which you can sub-class and overwrite.
-	
+
 	You can also include our core library files into your application and do some powerful heavy lifting.
-	
+
 	We also added a bunch of convenience Backend libraries such as Memcache, Redis, MongoDB, CSV to let you tap on ancillary data sources outside of your queue Job.
 
 ---
@@ -107,7 +107,7 @@ PHPQueue\Base::$queue_namespace = '\MyFabulousApp\Queues';
 PHPQueue\Base::$worker_namespace = '\MyFabulousApp\Workers';
 ?>
 ```
-PHP-Queue will attempt to instantiate the `PHPQueue\JobQueue` and `PHPQueue\Worker` classes using your namespace - appended with the queue/worker name. (ie. `\MyFabulousApp\Queues\Facebook`). 
+PHP-Queue will attempt to instantiate the `PHPQueue\JobQueue` and `PHPQueue\Worker` classes using your namespace - appended with the queue/worker name. (ie. `\MyFabulousApp\Queues\Facebook`).
 
 It might be advisable to use [Composer's Custom Autoloader](http://getcomposer.org/doc/01-basic-usage.md#autoloading) for this.
 
