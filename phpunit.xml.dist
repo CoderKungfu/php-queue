@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit 
-    colors="true" 
+<phpunit
+    colors="true"
     stopOnFailure="false"
 	bootstrap="test/bootstrap.php"
-> 
+>
    <filter>
         <whitelist>
             <directory suffix=".php">src</directory>
