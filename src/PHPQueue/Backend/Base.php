@@ -65,4 +65,11 @@ abstract class Base
 
         return $this->connection;
     }
+
+    public function setConnection($connection)
+    {
+        $this->connection = $connection;
+
+        return true;
+    }
 }

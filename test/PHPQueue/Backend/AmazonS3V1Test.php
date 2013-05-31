@@ -1,7 +1,7 @@
 <?php
 namespace PHPQueue\Backend;
 
-class AmazonS3Test extends \PHPUnit_Framework_TestCase
+class AmazonS3V1Test extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var \PHPQueue\Backend\AmazonS3
@@ -16,15 +16,16 @@ class AmazonS3Test extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped('Amazon PHP SDK not installed');
         } else {
             $options = array(
-                  'region'         => \AmazonS3::REGION_APAC_SE1
-                , 'region_website' => \AmazonS3::REGION_APAC_SE1_WEBSITE
-                , 'bucket'         => $this->test_upload_bucket
-    //                , 'sqs_options' => array(
-    //                                      'key'    => 'xxx'
-    //                                    , 'secret' => 'xxx'
-    //                                )
+                'region'         => \AmazonS3::REGION_APAC_SE1,
+                'region_website' => \AmazonS3::REGION_APAC_SE1_WEBSITE,
+                'bucket'         => $this->test_upload_bucket,
+                's3_options' => array(
+                    'key'    => 'your_s3_key',
+                    'secret' => 'your_s3_secret'
+                )
             );
-            $this->object = new AmazonS3($options);
+            $this->object = new AmazonS3();
+            $this->object->setBackend(new Aws\AmazonS3V1($options));
         }
     }
 
@@ -33,19 +34,19 @@ class AmazonS3Test extends \PHPUnit_Framework_TestCase
         $container_name = 'test'.time();
 
         $result = $this->object->listContainers();
-        $this->assertEmpty($result);
+        $count = count($result);
 
         $result = $this->object->createContainer($container_name);
         $this->assertTrue($result);
 
         $result = $this->object->listContainers();
-        $this->assertEquals(1, count($result));
+        $this->assertEquals($count + 1, count($result));
 
         $result = $this->object->deleteContainer($container_name);
         $this->assertTrue($result);
 
         $result = $this->object->listContainers();
-        $this->assertEmpty($result);
+        $this->assertEquals($count, count($result));
     }
 
     public function testAdd()
