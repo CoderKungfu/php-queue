@@ -1,25 +1,29 @@
 <?php
 namespace PHPQueue\Backend;
-class AmazonSQSTest extends \PHPUnit_Framework_TestCase
+
+class AmazonSQSV2Test extends \PHPUnit_Framework_TestCase
 {
     private $object;
 
     public function setUp()
     {
         parent::setUp();
-        if (!class_exists('\AmazonSQS')) {
-            $this->markTestSkipped('Amazon PHP SDK not installed');
+        if (!class_exists('\Aws\Sqs\SqsClient')) {
+            $this->markTestSkipped('Amazon PHP SDK 2 not installed');
         } else {
             $options = array(
-                  'region'      => \AmazonSQS::REGION_APAC_SE1
-                , 'queue'       => 'https://sqs.ap-southeast-1.amazonaws.com/524787626913/testqueue'
-//                , 'sqs_options' => array(
-//                                      'key'    => 'xxx'
-//                                    , 'secret' => 'xxx'
-//                                )
-                , 'receiving_options' => array('VisibilityTimeout' => 0)
+                'region' => 'ap-southeast-1',
+                'queue' => 'https://sqs.ap-southeast-1.amazonaws.com/524787626913/testqueue',
+                'sqs_options' => array(
+                    'key' => 'your_sqs_key',
+                    'secret' => 'your_sqs_secret'
+                ),
+                'receiving_options' => array(
+                    'VisibilityTimeout' => 0
+                )
             );
-            $this->object = new AmazonSQS($options);
+            $this->object = new AmazonSQS();
+            $this->object->setBackend(new Aws\AmazonSQSV2($options));
         }
     }
 
