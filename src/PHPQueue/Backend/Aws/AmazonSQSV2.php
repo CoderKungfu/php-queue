@@ -1,6 +1,7 @@
 <?php
-namespace PHPQueue\Backend;
+namespace PHPQueue\Backend\Aws;
 
+use PHPQueue\Backend\Base;
 use PHPQueue\Exception\BackendException;
 use PHPQueue\Exception\JobNotFoundException;
 use Aws\Sqs\SqsClient;

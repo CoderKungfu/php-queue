@@ -54,7 +54,8 @@ class AmazonS3V2Test extends \PHPUnit_Framework_TestCase
                 'secret' => self::$s3_secret
             )
         );
-        $this->object = new AmazonS3V2($options);
+        $this->object = new AmazonS3();
+        $this->object->setBackend(new Aws\AmazonS3V2($options));
     }
 
     /**

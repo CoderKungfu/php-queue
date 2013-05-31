@@ -1,6 +1,7 @@
 <?php
-namespace PHPQueue\Backend;
+namespace PHPQueue\Backend\Aws;
 
+use PHPQueue\Backend\FS;
 use PHPQueue\Exception\BackendException;
 use Aws\S3\S3Client;
 use Aws\S3\Enum\CannedAcl;

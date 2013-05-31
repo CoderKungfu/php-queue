@@ -1,5 +1,6 @@
 <?php
 namespace PHPQueue\Backend;
+
 class AmazonSQSV2Test extends \PHPUnit_Framework_TestCase
 {
     private $object;
@@ -21,7 +22,8 @@ class AmazonSQSV2Test extends \PHPUnit_Framework_TestCase
                     'VisibilityTimeout' => 0
                 )
             );
-            $this->object = new AmazonSQSV2($options);
+            $this->object = new AmazonSQS();
+            $this->object->setBackend(new Aws\AmazonSQSV2($options));
         }
     }
 
