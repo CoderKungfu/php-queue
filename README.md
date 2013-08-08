@@ -160,6 +160,10 @@ $ php cli.php <QueueName> work
 
 You can extend the `PHPQueue\Cli` class to customize your own CLI batch jobs (eg. import data from a MySQL DB into a queue).
 
+## Runners ##
+
+You can read more about the [Runners here](https://github.com/CoderKungfu/php-queue/blob/master/demo/runners/README.md).
+
 ---
 ## License ##
 
