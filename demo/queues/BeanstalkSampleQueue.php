@@ -50,4 +50,10 @@ class BeanstalkSampleQueue extends PHPQueue\JobQueue
     {
         $this->dataSource->release($jobId);
     }
+    
+    public function getQueueSize()
+    {
+        $pheanstalkResponseObject = $this->dataSource->getConnection()->statsTube($this->sourceConfig['tube']);
+        return $pheanstalkResponseObject['current-jobs-ready'];
+    }
 }
