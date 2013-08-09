@@ -19,7 +19,7 @@ class BeanstalkSampleQueue extends PHPQueue\JobQueue
                         );
     }
 
-    public function addJob(array $newJob)
+    public function addJob($newJob = null)
     {
         $formatted_data = array('worker'=>$this->queueWorker, 'data'=>$newJob);
         $this->dataSource->add($formatted_data);
@@ -27,7 +27,7 @@ class BeanstalkSampleQueue extends PHPQueue\JobQueue
         return true;
     }
 
-    public function getJob()
+    public function getJob($jobId = null)
     {
         $data = $this->dataSource->get();
         $nextJob = new \PHPQueue\Job($data, $this->dataSource->last_job_id);
