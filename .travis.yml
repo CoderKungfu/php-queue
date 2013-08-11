@@ -6,10 +6,11 @@
 language: php
 php:
   - 5.3
-  - 5.3.3
   - 5.4
+  - 5.5
 before_script:
-  - composer install
+  - composer self-update
+  - composer install --no-dev
 script: phpunit -c phpunit.travis.xml
 after_script:
   - "wget --quiet http://mauris.sg/bin/pdc.phar && php pdc.phar src"
