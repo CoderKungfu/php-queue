@@ -9,6 +9,7 @@ php:
   - 5.3.3
   - 5.4
 before_script:
+  - composer self-update
   - composer install
 script: phpunit -c phpunit.travis.xml
 after_script:
