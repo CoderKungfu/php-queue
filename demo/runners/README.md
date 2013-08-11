@@ -158,7 +158,7 @@ switch($argv[1])
 $ chmod a+x BeanstalkSampleDaemon.php
 ```
 
-	That way, you can call the script directly without invoing PHP:
+	That way, you can call the script directly without involving PHP:
 	
 	```
 $ ./BeanstalkSampleDaemon.php
