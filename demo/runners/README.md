@@ -74,7 +74,7 @@ Clio\Daemon::work(
 );
 ```
 
-Here's a bsic script to stop a PHP Daemon (using [`Clio\Clio`](https://packagist.org/packages/clio/clio)).
+Here's a basic script to stop a PHP Daemon (using [`Clio\Clio`](https://packagist.org/packages/clio/clio)).
 
 ```php
 # BeanstalkSampleStop.php
