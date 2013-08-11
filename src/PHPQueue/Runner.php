@@ -115,7 +115,7 @@ abstract class Runner
                 if (is_string($newJob->worker)) {
                     $result_data = $this->processWorker($newJob->worker, $newJob);
                 } elseif (is_array($newJob->worker)) {
-                    $this->logger->addInfo(sprintf("Running chained new job (%s) with workers", $new_job->job_id), $newJob->worker);
+                    $this->logger->addInfo(sprintf("Running chained new job (%s) with workers", $newJob->job_id), $newJob->worker);
                     foreach ($newJob->worker as $worker_name) {
                         $result_data = $this->processWorker($worker_name, $newJob);
                         $newJob->data = $result_data;
