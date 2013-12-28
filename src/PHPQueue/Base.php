@@ -10,14 +10,15 @@ class Base
     public static $worker_path = null;
     public static $queue_namespace = null;
     public static $worker_namespace = null;
+    public static $config_class = null;
     private static $all_queues = array();
     private static $all_workers = array();
-    private static $config_class;
 
     /**
-     * @param  string             $queue
-     * @param  array              $options
+     * @param string             $queue
      * @return \PHPQueue\JobQueue
+     * @throws \InvalidArgumentException
+     * @throws Exception\QueueNotFoundException
      */
     public static function getQueue($queue)
     {
@@ -45,9 +46,11 @@ class Base
     }
 
     /**
-     * @param  \PHPQueue\JobQueue $queue
-     * @param  array              $newJob
-     * @return boolean
+     * @param JobQueue           $queue
+     * @param array              $newJob
+     * @return bool|void
+     * @throws \InvalidArgumentException
+     * @throws \Exception
      */
     public static function addJob(JobQueue $queue, $newJob)
     {
@@ -68,9 +71,10 @@ class Base
     }
 
     /**
-     * @param  \PHPQueue\JobQueue $queue
-     * @param  string             $jobId
-     * @return \PHPQueue\Job
+     * @param JobQueue    $queue
+     * @param string      $jobId
+     * @return null|Job
+     * @throws \Exception
      */
     public static function getJob(JobQueue $queue, $jobId=null)
     {
@@ -88,10 +92,11 @@ class Base
     }
 
     /**
-     * @param  \PHPQueue\JobQueue $queue
-     * @param  string             $jobId
-     * @param  mixed              $resultData
-     * @return boolean
+     * @param JobQueue     $queue
+     * @param string       $jobId
+     * @param mixed        $resultData
+     * @return bool|void
+     * @throws \Exception
      */
     public static function updateJob(JobQueue $queue, $jobId=null, $resultData=null)
     {
@@ -112,9 +117,9 @@ class Base
 
     /**
      * @param  string              $worker_name
-     * @param  array               $options
-     * @return \PHPQueue\Worker
-     * @throws \PHPQueue\Exception
+     * @return Worker
+     * @throws Exception\WorkerNotFoundException
+     * @throws \InvalidArgumentException
      */
     public static function getWorker($worker_name)
     {
@@ -182,6 +187,11 @@ class Base
         }
     }
 
+    /**
+     * @param string $org_class_name
+     * @param string $class_suffix
+     * @return string
+     */
     private static function loadAndReturnFullClassName($org_class_name, $class_suffix='')
     {
         $full_class_name = '';
