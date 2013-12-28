@@ -12,6 +12,7 @@ class Base
     public static $worker_namespace = null;
     private static $all_queues = array();
     private static $all_workers = array();
+    private static $config_class;
 
     /**
      * @param  string             $queue
