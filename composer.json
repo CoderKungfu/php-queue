@@ -2,7 +2,7 @@
     "name": "coderkungfu/php-queue",
     "description": "A unified front-end for different queuing backends. Includes a REST server, CLI interface and daemon runners.",
     "keywords": ["queue", "transaction"],
-    "homepage": "http://github.com/miccheng/php-queue",
+    "homepage": "http://github.com/CoderKungfu/php-queue",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -47,7 +47,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.1.x-dev"
+            "dev-master": "1.0.0-dev"
         }
     }
 }
