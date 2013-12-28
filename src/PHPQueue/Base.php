@@ -39,7 +39,16 @@ class Base
 
     protected static function loadAndGetQueueClassName($queue_name)
     {
-        $class_name = self::loadAndReturnFullClassName($queue_name, 'Queue');
+        $class_name = '';
+        if (!is_null(self::$queue_path))
+        {
+            $class_name = self::loadAndReturnFullClassName(self::$queue_path, $queue_name, 'Queue');
+        }
+        if (empty($class_name) && !is_null(self::$queue_namespace))
+        {
+            $class_name = self::getValidNameSpacedClassName(self::$queue_namespace, $queue_name);
+        }
+
         if (empty($class_name))
             throw new QueueNotFoundException("Queue file/class does not exist: $queue_name");
         return $class_name;
@@ -140,7 +149,16 @@ class Base
 
     protected static function loadAndGetWorkerClassName($worker_name)
     {
-        $class_name = self::loadAndReturnFullClassName($worker_name, 'Worker');
+        $class_name = '';
+        if (!is_null(self::$worker_path))
+        {
+            $class_name = self::loadAndReturnFullClassName(self::$worker_path, $worker_name, 'Worker');
+        }
+        if (empty($class_name) && !is_null(self::$worker_namespace))
+        {
+            $class_name = self::getValidNameSpacedClassName(self::$worker_namespace, $worker_name);
+        }
+
         if (empty($class_name))
             throw new WorkerNotFoundException("Worker file/class does not exist: $worker_name");
         return $class_name;
@@ -188,38 +206,45 @@ class Base
     }
 
     /**
+     * @param array|string $path_prefix
      * @param string $org_class_name
      * @param string $class_suffix
      * @return string
      */
-    private static function loadAndReturnFullClassName($org_class_name, $class_suffix='')
+    private static function loadAndReturnFullClassName($path_prefix, $org_class_name, $class_suffix='')
     {
         $full_class_name = '';
-        if (!is_null(self::$queue_path)) {
-            if ( !is_array(self::$queue_path) ) {
-                self::$queue_path = array(self::$queue_path);
-            }
-            foreach(self::$queue_path as $path) {
-                $classFile = $path . '/' . $org_class_name . $class_suffix . '.php';
-                if (is_file($classFile)) {
-                    require_once $classFile;
-                    return "\\" . $org_class_name . $class_suffix;
-                }
+        if (!is_array($path_prefix)) $path_prefix = array($path_prefix);
+
+        foreach($path_prefix as $path)
+        {
+            $classFile = $path . '/' . $org_class_name . $class_suffix . '.php';
+            if (is_file($classFile)) {
+                require_once $classFile;
+                return "\\" . $org_class_name . $class_suffix;
             }
         }
-        if (!is_null(self::$queue_namespace)) {
-            if (!is_array(self::$queue_namespace)) {
-                self::$queue_namespace = array(self::$queue_namespace);
+        return $full_class_name;
+    }
+
+    /**
+     * @param array|string $namespaces
+     * @param $org_class_name
+     * @return string
+     */
+    protected static function getValidNameSpacedClassName($namespaces, $org_class_name)
+    {
+        $full_class_name = '';
+        if (!is_array($namespaces)) $namespaces = array($namespaces);
+
+        foreach($namespaces as $namespace)
+        {
+            if (!(strpos($namespace, "\\") === 0)) {
+                $full_class_name = "\\";
             }
-            foreach(self::$queue_namespace as $namespace)
-            {
-                if (!(strpos($namespace, "\\") === 0)) {
-                    $full_class_name = "\\";
-                }
-                $full_class_name .= $namespace . "\\" . $org_class_name;
-                if (class_exists($full_class_name, true)) {
-                    return $full_class_name;
-                }
+            $full_class_name .= $namespace . "\\" . $org_class_name;
+            if (class_exists($full_class_name, true)) {
+                return $full_class_name;
             }
         }
         return $full_class_name;
