@@ -160,6 +160,6 @@ abstract class Runner
     {
         $this->current_date = date('Ymd');
 
-        return sprintf('%s/%s-%s.log', $this->log_path, $this->queue_name, $this->current_date);
+        return sprintf('%s/RunnerLog-%s-%s.log', $this->log_path, $this->queue_name, $this->current_date);
     }
 }
