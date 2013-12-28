@@ -38,23 +38,9 @@ class Base
 
     protected static function loadAndGetQueueClassName($queue_name)
     {
-        $class_name = '';
-        if (!is_null(self::$queue_path)) {
-            $classFile = self::$queue_path . '/' . $queue_name . 'Queue.php';
-            if (is_file($classFile)) {
-                require_once $classFile;
-            } else {
-                throw new QueueNotFoundException("Queue file does not exist: $classFile");
-            }
-            $class_name =  "\\" . $queue_name . 'Queue';
-        }
-        if (!is_null(self::$queue_namespace)) {
-            if (!(strpos(self::$queue_namespace, "\\") === 0)) {
-                $class_name = "\\";
-            }
-            $class_name .= self::$queue_namespace . "\\" . $queue_name;
-        }
-
+        $class_name = self::loadAndReturnFullClassName($queue_name, 'Queue');
+        if (empty($class_name))
+            throw new QueueNotFoundException("Queue file/class does not exist: $queue_name");
         return $class_name;
     }
 
@@ -149,23 +135,9 @@ class Base
 
     protected static function loadAndGetWorkerClassName($worker_name)
     {
-        $class_name = '';
-        if (!is_null(self::$worker_path)) {
-            $classFile = self::$worker_path . '/' . $worker_name . 'Worker.php';
-            if (is_file($classFile)) {
-                require_once $classFile;
-            } else {
-                throw new WorkerNotFoundException("Worker file does not exist: $classFile");
-            }
-            $class_name =  "\\" . $worker_name . 'Worker';
-        }
-        if (!is_null(self::$worker_namespace)) {
-            if (!(strpos(self::$worker_namespace, "\\") === 0)) {
-                $class_name = "\\";
-            }
-            $class_name .= self::$worker_namespace . "\\" . $worker_name;
-        }
-
+        $class_name = self::loadAndReturnFullClassName($worker_name, 'Worker');
+        if (empty($class_name))
+            throw new WorkerNotFoundException("Worker file/class does not exist: $worker_name");
         return $class_name;
     }
 
@@ -173,7 +145,7 @@ class Base
      * @param  \PHPQueue\Worker    $worker
      * @param  \PHPQueue\Job       $job
      * @return \PHPQueue\Worker
-     * @throws \PHPQueue\Exception
+     * @throws \Exception
      */
     public static function workJob(Worker $worker, Job $job)
     {
@@ -197,7 +169,7 @@ class Base
      * @param  string                      $type    Case-sensitive class name.
      * @param  array                       $options Constuctor options.
      * @return \PHPQueue\backend_classname
-     * @throws \PHPQueue\Exception
+     * @throws \InvalidArgumentException
      */
     public static function backendFactory($type, $options=array())
     {
@@ -208,5 +180,38 @@ class Base
         } else {
             throw new \InvalidArgumentException("Invalid Backend object.");
         }
+    }
+
+    private static function loadAndReturnFullClassName($org_class_name, $class_suffix='')
+    {
+        $full_class_name = '';
+        if (!is_null(self::$queue_path)) {
+            if ( !is_array(self::$queue_path) ) {
+                self::$queue_path = array(self::$queue_path);
+            }
+            foreach(self::$queue_path as $path) {
+                $classFile = $path . '/' . $org_class_name . $class_suffix . '.php';
+                if (is_file($classFile)) {
+                    require_once $classFile;
+                    return "\\" . $org_class_name . $class_suffix;
+                }
+            }
+        }
+        if (!is_null(self::$queue_namespace)) {
+            if (!is_array(self::$queue_namespace)) {
+                self::$queue_namespace = array(self::$queue_namespace);
+            }
+            foreach(self::$queue_namespace as $namespace)
+            {
+                if (!(strpos($namespace, "\\") === 0)) {
+                    $full_class_name = "\\";
+                }
+                $full_class_name .= $namespace . "\\" . $org_class_name;
+                if (class_exists($full_class_name, true)) {
+                    return $full_class_name;
+                }
+            }
+        }
+        return $full_class_name;
     }
 }
