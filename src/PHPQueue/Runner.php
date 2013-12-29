@@ -3,7 +3,7 @@ namespace PHPQueue;
 
 use PHPQueue\Exception\Exception;
 
-abstract class Runner
+class Runner
 {
     const RUN_USLEEP = 1000000;
     /**
