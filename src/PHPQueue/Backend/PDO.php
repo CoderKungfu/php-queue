@@ -53,7 +53,8 @@ class PDO extends Base
         }
         $sql = sprintf('INSERT INTO `%s` (`data`) VALUES (?)', $this->db_table);
         $sth = $this->getConnection()->prepare($sql);
-        $sth->bindParam(1, json_encode($data), \PDO::PARAM_STR);
+        $_tmp = json_encode($data);
+        $sth->bindParam(1, $_tmp, \PDO::PARAM_STR);
         $sth->execute();
         $this->last_job_id = $this->getConnection()->lastInsertId();
 
