@@ -64,14 +64,21 @@ class PDO extends Base
     public function get($id=null)
     {
         if (empty($id)) {
-            throw new BackendException('No ID.');
+            // throw new BackendException('No ID.');
+            $sql = sprintf('SELECT `id`, `data` FROM `%s` WHERE 1 ORDER BY id DESC', $this->db_table);
+            $sth = $this->getConnection()->prepare($sql);
+            $sth->execute();
         }
-        $sql = sprintf('SELECT `data` FROM `%s` WHERE `id` = ?', $this->db_table);
-        $sth = $this->getConnection()->prepare($sql);
-        $sth->bindParam(1, $id, \PDO::PARAM_INT);
-        $sth->execute();
+        else {
+            $sql = sprintf('SELECT `id`, `data` FROM `%s` WHERE `id` = ?', $this->db_table);
+            $sth = $this->getConnection()->prepare($sql);
+            $sth->bindParam(1, $id, \PDO::PARAM_INT);
+            $sth->execute();
+        }
+
         $result = $sth->fetch(\PDO::FETCH_ASSOC);
         if (!empty($result)) {
+            $this->last_job_id = $result['id'];
             return json_decode($result['data'], true);
         }
 
