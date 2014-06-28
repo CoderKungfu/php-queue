@@ -64,7 +64,6 @@ class PDO extends Base
     public function get($id=null)
     {
         if (empty($id)) {
-            // throw new BackendException('No ID.');
             $sql = sprintf('SELECT `id`, `data` FROM `%s` WHERE 1 ORDER BY id DESC', $this->db_table);
             $sth = $this->getConnection()->prepare($sql);
             $sth->execute();
