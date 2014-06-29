@@ -64,7 +64,8 @@ class PDO extends Base
     public function get($id=null)
     {
         if (empty($id)) {
-            $sql = sprintf('SELECT `id`, `data` FROM `%s` WHERE 1 ORDER BY id DESC', $this->db_table);
+            // Where $id is null, get oldest message
+            $sql = sprintf('SELECT `id`, `data` FROM `%s` WHERE 1 ORDER BY id ASC', $this->db_table);
             $sth = $this->getConnection()->prepare($sql);
             $sth->execute();
         }
