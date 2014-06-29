@@ -28,26 +28,25 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
     public function testAddGet()
     {
-        $result = $this->object->createTable('pdotest');
-        $this->assertTrue($result);
-
+        // Create table
+        $this->assertTrue($this->object->createTable('pdotest'));
         $this->object->clearAll();
 
-        $data1 = array('2','Boo','Moeow');
-        $result = $this->object->add($data1);
-        $this->assertTrue($result);
+        $data1 = array('2', 'Boo', 'Moeow');
+        $data2 = array('1','Willy','Wonka');
 
+        // Queue first message
+        $this->assertTrue($this->object->add($data1));
         $this->assertEquals(1, $this->object->last_job_id);
 
-        $data2 = array('1','Willy','Wonka');
-        $result = $this->object->add($data2);
-        $this->assertTrue($result);
+        // Queue second message
+        $this->assertTrue($this->object->add($data2));
 
-        $last_id = $this->object->last_job_id;
+        // Check get method
+        $this->assertEquals($data2, $this->object->get($this->object->last_job_id));
 
-        $result = $this->object->get($last_id);
-        $this->assertNotEmpty($result);
-        $this->assertEquals($data2, $result);
+        // Check get method with no message ID.
+        $this->assertEquals($data1, $this->object->get());
     }
 
     /**

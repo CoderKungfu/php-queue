@@ -53,7 +53,8 @@ class PDO extends Base
         }
         $sql = sprintf('INSERT INTO `%s` (`data`) VALUES (?)', $this->db_table);
         $sth = $this->getConnection()->prepare($sql);
-        $sth->bindParam(1, json_encode($data), \PDO::PARAM_STR);
+        $_tmp = json_encode($data);
+        $sth->bindParam(1, $_tmp, \PDO::PARAM_STR);
         $sth->execute();
         $this->last_job_id = $this->getConnection()->lastInsertId();
 
@@ -63,14 +64,21 @@ class PDO extends Base
     public function get($id=null)
     {
         if (empty($id)) {
-            throw new BackendException('No ID.');
+            // Where $id is null, get oldest message
+            $sql = sprintf('SELECT `id`, `data` FROM `%s` WHERE 1 ORDER BY id ASC', $this->db_table);
+            $sth = $this->getConnection()->prepare($sql);
+            $sth->execute();
         }
-        $sql = sprintf('SELECT `data` FROM `%s` WHERE `id` = ?', $this->db_table);
-        $sth = $this->getConnection()->prepare($sql);
-        $sth->bindParam(1, $id, \PDO::PARAM_INT);
-        $sth->execute();
+        else {
+            $sql = sprintf('SELECT `id`, `data` FROM `%s` WHERE `id` = ?', $this->db_table);
+            $sth = $this->getConnection()->prepare($sql);
+            $sth->bindParam(1, $id, \PDO::PARAM_INT);
+            $sth->execute();
+        }
+
         $result = $sth->fetch(\PDO::FETCH_ASSOC);
         if (!empty($result)) {
+            $this->last_job_id = $result['id'];
             return json_decode($result['data'], true);
         }
 
