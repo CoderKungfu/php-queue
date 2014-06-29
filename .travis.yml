@@ -8,9 +8,17 @@ php:
   - 5.3
   - 5.4
   - 5.5
+
+mysql:
+  database: phpqueuetest
+  username: root
+  encoding: utf8
+
 before_script:
+  - mysql -e 'create database phpqueuetest;'
   - composer self-update
   - composer install --no-dev
+
 script: phpunit -c phpunit.travis.xml
 after_script:
   - "wget --quiet http://mauris.sg/bin/pdc.phar && php pdc.phar src"
