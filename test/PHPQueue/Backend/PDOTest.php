@@ -16,7 +16,7 @@ class PDOTest extends \PHPUnit_Framework_TestCase
             $options = array(
                   'connection_string' => 'mysql:host=localhost;dbname=phpqueuetest'
                 , 'db_user'           => 'root'
-                , 'db_password'       => 'media1'
+                , 'db_password'       => ''
                 , 'db_table'          => 'pdotest'
                 , 'pdo_options'       => array(
                     \PDO::ATTR_PERSISTENT => true
