@@ -2,7 +2,7 @@
 
 A unified front-end for different queuing backends. Includes a REST server, CLI interface and daemon runners.
 
-[![Build Status](https://secure.travis-ci.org/miccheng/php-queue.png?branch=master)](https://travis-ci.org/miccheng/php-queue)
+[![Build Status](https://secure.travis-ci.org/CoderKungfu/php-queue.png?branch=master)](https://travis-ci.org/CoderKungfu/php-queue)
 
 ## Why PHP-Queue? ##
 
