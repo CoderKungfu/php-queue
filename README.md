@@ -1,4 +1,5 @@
 #PHP-Queue#
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/CoderKungfu/php-queue?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 A unified front-end for different queuing backends. Includes a REST server, CLI interface and daemon runners.
 
