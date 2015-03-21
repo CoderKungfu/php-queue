@@ -39,7 +39,12 @@ PHP-Queue hopes to serve as an abstract layer between your application code and 
 	
 	You can also include our core library files into your application and do some powerful heavy lifting.
 	
-	We also added a bunch of convenience Backend libraries such as Memcache, Redis, MongoDB, CSV to let you tap on ancillary data sources outside of your queue Job.
+	Several backend drivers are bundled:
+    * Memcache
+    * Redis
+    * MongoDB
+    * CSV
+    These can be used as the primary job queue server, or for abstract FIFO or key-value data access.
 
 ---
 ## Installation ##
