@@ -73,22 +73,23 @@ class Stomp extends Base
     public function get()
     {
         $this->beforeGet();
-        $this->getConnection()->subscribe($this->queue_name);
+        $this->getConnection()->subscribe($this->queue_name, array('ack' => 'client'));
         if ($this->read_timeout) {
             $this->getConnection()->setReadTimeout($this->read_timeout);
         }
         $response = $this->getConnection()->readFrame();
         $this->afterGet();
 
-        $this->getConnection()->unsubscribe($this->queue_name);
-
         // TODO: We should provide finer-grained control of ack().
+        if ($response) {
+            $this->getConnection()->ack($response);
+        }
+
+        $this->getConnection()->unsubscribe($this->queue_name);
 
         if (!$response) {
             throw new JobNotFoundException('No message found');
         }
-
-        $this->getConnection()->ack($response);
 
         $message = json_decode($response->body, true);
         if ($this->merge_headers) {
