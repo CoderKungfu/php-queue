@@ -35,6 +35,7 @@ class Memcache extends Base
         $this->connection = new \Memcache;
         foreach ($this->servers as $server) {
             if (is_string($server)) {
+                // TODO: configure port
                 $this->connection->addserver($server, 11211, $this->is_persistent);
             } elseif (is_array($server)) {
                 call_user_func_array(array($this->connection, 'addserver'), $server);

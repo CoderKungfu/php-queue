@@ -1,6 +1,6 @@
 <?php
 /**
- * PHPQueue\REST class
+ * PHPQueue\REST server
  *
  * Example:
  *   curl -XPOST http://<server>/<queueName> -d "var1=foo&var2=bar"
