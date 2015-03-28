@@ -12,25 +12,31 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         parent::setUp();
         if (!class_exists('\PDO')) {
             $this->markTestSkipped('PDO extension is not installed');
-        } else {
-            $options = array(
-                  'connection_string' => 'mysql:host=localhost;dbname=phpqueuetest'
-                , 'db_user'           => 'root'
-                , 'db_password'       => ''
-                , 'db_table'          => 'pdotest'
-                , 'pdo_options'       => array(
-                    \PDO::ATTR_PERSISTENT => true
-                )
-            );
-            $this->object = new PDO($options);
         }
+        $options = array(
+              'connection_string' => 'mysql:host=localhost;dbname=phpqueuetest'
+            , 'db_table'          => 'pdotest'
+            , 'pdo_options'       => array(
+                \PDO::ATTR_PERSISTENT => true
+            )
+        );
+        $this->object = new PDO($options);
+
+        // Create table
+        $this->assertTrue($this->object->createTable('pdotest'));
+        $this->object->clearAll();
+    }
+
+    public function tearDown()
+    {
+        $result = $this->object->deleteTable('pdotest');
+        $this->assertTrue($result);
+
+        parent::tearDown();
     }
 
     public function testAddGet()
     {
-        // Create table
-        $this->assertTrue($this->object->createTable('pdotest'));
-        $this->object->clearAll();
 
         $data1 = array('2', 'Boo', 'Moeow');
         $data2 = array('1','Willy','Wonka');
@@ -54,14 +60,52 @@ class PDOTest extends \PHPUnit_Framework_TestCase
      */
     public function testClear()
     {
+        // TODO: Include test fixtures instead of relying on side effect.
+        $this->testAddGet();
+
         $jobId = 1;
         $result = $this->object->clear($jobId);
         $this->assertTrue($result);
 
         $result = $this->object->get($jobId);
         $this->assertNull($result);
+    }
 
-        $result = $this->object->deleteTable('pdotest');
-        $this->assertTrue($result);
+    public function testSet()
+    {
+        $data = array(mt_rand(), 'Gas', 'Prom');
+
+        // Set message.
+        $this->object->set(3, $data);
+
+        $this->assertEquals($data, $this->object->get(3));
+    }
+
+    public function testPush()
+    {
+        $data = array(mt_rand(), 'Snow', 'Den');
+
+        // Set message.
+        $id = $this->object->push($data);
+        $this->assertTrue($id > 0);
+        $this->assertEquals($data, $this->object->get($id));
+    }
+
+    public function testPop()
+    {
+        $data = array(mt_rand(), 'Snow', 'Den');
+
+        // Set message.
+        $id = $this->object->push($data);
+        $this->assertTrue($id > 0);
+        $this->assertEquals($data, $this->object->pop());
+    }
+
+    /**
+     * @expectedException \PHPQueue\Exception\JobNotFoundException
+     */
+    public function testPopEmpty()
+    {
+        $this->object->pop();
     }
 }

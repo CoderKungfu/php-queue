@@ -2,13 +2,21 @@
 namespace PHPQueue\Backend;
 
 use PHPQueue\Exception\BackendException;
+use PHPQueue\Interfaces\KeyValueStore;
+use PHPQueue\Interfaces\FifoQueueStore;
 
-class Predis extends Base
+/**
+ * NOTE: The FIFO index is not usable as a key-value selector in this backend.
+ */
+class Predis
+    extends Base
+    implements FifoQueueStore, KeyValueStore
 {
     const TYPE_STRING='string';
     const TYPE_HASH='hash';
     const TYPE_LIST='list';
     const TYPE_SET='set';
+    const TYPE_NONE='none';
 
     public $servers;
     public $redis_options = array();
@@ -36,31 +44,41 @@ class Predis extends Base
         $this->connection = new \Predis\Client($this->servers, $this->redis_options);
     }
 
+    /** @deprecated */
     public function add($data=array())
     {
-        $this->beforeAdd();
         if (empty($data)) {
             throw new BackendException("No data.");
         }
+        $this->push($data);
+        return true;
+    }
+
+    public function push($data)
+    {
+        $this->beforeAdd();
         if (!$this->hasQueue()) {
             throw new BackendException("No queue specified.");
         }
         $encoded_data = json_encode($data);
+        // Note that we're ignoring the "new length" return value, cos I don't
+        // see how to make it useful.
         $this->getConnection()->rpush($this->queue_name, $encoded_data);
-
-        return true;
     }
 
-    public function get()
+    /**
+     * @return array|null
+     */
+    public function pop()
     {
         $this->beforeGet();
         if (!$this->hasQueue()) {
             throw new BackendException("No queue specified.");
         }
-        if (!$this->keyExists($this->queue_name) || $this->getConnection()->llen($this->queue_name) == 0) {
+        $data = $this->getConnection()->lpop($this->queue_name);
+        if (!$data) {
             return null;
         }
-        $data = $this->getConnection()->lpop($this->queue_name);
         $this->last_job = $data;
         $this->last_job_id = time();
         $this->afterGet();
@@ -83,21 +101,20 @@ class Predis extends Base
         $this->afterClearRelease();
     }
 
-    public function clear($jobId=null)
+    /** @deprecated */
+    public function setKey($key=null, $data=null)
     {
-        $this->beforeClear($jobId);
-        $this->afterClearRelease();
-
+        $this->set($key, $data);
         return true;
     }
 
     /**
      * @param  string              $key
-     * @param  mixed               $data
+     * @param  array|string        $data
      * @return boolean
      * @throws \PHPQueue\Exception
      */
-    public function setKey($key=null, $data=null)
+    public function set($key, $data)
     {
         if (empty($key) && !is_string($key)) {
             throw new BackendException("Key is invalid.");
@@ -116,19 +133,28 @@ class Predis extends Base
             if (!$status) {
                 throw new BackendException("Unable to save data.");
             }
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             throw new BackendException($ex->getMessage(), $ex->getCode());
         }
+    }
 
-        return $status;
+    /** @deprecated */
+    public function getKey($key=null)
+    {
+        return $this->get($key);
     }
 
     /**
      * @param  string $key
      * @return mixed
+     * @throws \Exception
      */
-    public function getKey($key=null)
+    public function get($key=null)
     {
+        if (!$key) {
+            // Deprecated usage.
+            return $this->pop();
+        }
         if (!$this->keyExists($key)) {
             return null;
         }
@@ -146,6 +172,8 @@ class Predis extends Base
                     $data = $this->getConnection()->hgetall($key);
                 }
                 break;
+            case self::TYPE_NONE:
+                return null;
             default:
                 throw new BackendException(sprintf("Data type (%s) not supported yet.", $type));
                 break;
@@ -154,12 +182,22 @@ class Predis extends Base
         return $data;
     }
 
+    /**
+     * @deprecated
+     */
     public function clearKey($key=null)
     {
-        $this->beforeClear($key);
-        $this->getConnection()->del($key);
+        return $this->clear($key);
+    }
 
-        return true;
+    public function clear($key)
+    {
+        $this->beforeClear($key);
+        $num_removed = $this->getConnection()->del($key);
+
+        $this->afterClearRelease();
+
+        return $num_removed > 0;
     }
 
     public function incrKey($key, $count=1)
@@ -193,11 +231,7 @@ class Predis extends Base
     public function keyExists($key)
     {
         $this->beforeGet();
-        if (!$this->getConnection()->exists($key)) {
-            return false;
-        }
-
-        return true;
+        return $this->getConnection()->exists($key);
     }
 
     public function hasQueue()

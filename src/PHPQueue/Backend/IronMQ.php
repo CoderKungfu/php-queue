@@ -2,8 +2,11 @@
 namespace PHPQueue\Backend;
 
 use PHPQueue\Exception\BackendException;
+use PHPQueue\Interfaces\IndexedFifoQueueStore;
 
-class IronMQ extends Base
+class IronMQ
+    extends Base
+    implements IndexedFifoQueueStore
 {
     public $token = null;
     public $project_id = null;
@@ -45,29 +48,51 @@ class IronMQ extends Base
     }
 
     /**
+     * @deprecated
      * @param  array               $data
      * @return boolean             Status of saving
      * @throws \PHPQueue\Exception
      */
     public function add($data=array())
     {
+        $this->push($data);
+        return true;
+    }
+
+    /**
+     * @param  array               $data
+     * @return string              Sent message ID
+     * @throws \PHPQueue\Exception
+     */
+    public function push($data=array())
+    {
         $this->beforeAdd();
         $body = array('body'=>json_encode($data));
         $payload = array_merge($this->default_send_options, $body);
         try {
-            $this->getConnection()->postMessage($this->queue_name, $payload);
+            $response = $this->getConnection()->postMessage($this->queue_name, $payload);
+            // FIXME: untested
+            return $response->id;
         } catch (BackendException $ex) {
             throw $ex;
         }
+    }
 
-        return true;
+    /**
+     * @deprecated
+     * @return array
+     * @throws \PHPQueue\Exception
+     */
+    public function get()
+    {
+        return $this->pop();
     }
 
     /**
      * @return array
      * @throws \PHPQueue\Exception
      */
-    public function get()
+    public function pop()
     {
         $this->beforeGet();
         $response = $this->getConnection()->getMessage($this->queue_name);

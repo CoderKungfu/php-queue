@@ -5,8 +5,11 @@ use MongoClient;
 
 use PHPQueue\Exception\BackendException;
 use PHPQueue\Exception\JobNotFoundException;
+use PHPQueue\Interfaces\KeyValueStore;
 
-class MongoDB extends Base
+class MongoDB
+    extends Base
+    implements KeyValueStore
 {
     public $server_uri;
     public $db_name;
@@ -59,7 +62,20 @@ class MongoDB extends Base
         return $db->$collection;
     }
 
+    /**
+     * @deprecated
+     */
     public function add($data=null, $key=null)
+    {
+        $this->set($key, $data);
+        return true;
+    }
+
+    /**
+     * @throws \PHPQueue\Exception\BackendException
+     * @return boolean Deprecated (always true)
+     */
+    public function set($key, $data)
     {
         if (empty($data) || !is_array($data)) {
             throw new BackendException("No data.");
@@ -75,6 +91,7 @@ class MongoDB extends Base
         }
         $this->last_job_id = $data['_id'];
 
+        // FIXME: always true.
         return $status;
     }
 

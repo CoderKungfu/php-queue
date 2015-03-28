@@ -11,7 +11,6 @@ abstract class Base
     abstract public function connect();
 
     public function beforeAdd($data=null){}
-    abstract public function add($data=null);
     public function afterAdd(){}
 
     public function beforeGet($jobId=null)
@@ -20,7 +19,6 @@ abstract class Base
             $this->last_job_id = $jobId;
         }
     }
-    abstract public function get();
     public function afterGet()
     {
         $id = $this->last_job_id;
@@ -33,7 +31,6 @@ abstract class Base
             $this->last_job_id = $jobId;
         }
     }
-    abstract public function clear($jobId=null);
 
     public function beforeRelease($jobId=null)
     {

@@ -12,20 +12,19 @@ class IronMQTest extends \PHPUnit_Framework_TestCase
         parent::setUp();
         if (!class_exists('\IronMQ')) {
             $this->markTestSkipped('Iron MQ library not installed');
-        } else {
-            $options = array(
-                'queue' => 'test_queue',
-                'msg_options' => array('timeout'=>1)
-            );
-            $this->object = new IronMQ($options);
         }
+        $options = array(
+            'queue' => 'test_queue',
+            'msg_options' => array('timeout'=>1)
+        );
+        $this->object = new IronMQ($options);
+
+        $this->object->getConnection()->clearQueue($this->object->queue_name);
     }
 
     public function testAdd()
     {
-        $this->object->getConnection()->clearQueue($this->object->queue_name);
-
-        $data = array('1','Willy','Wonka');
+        $data = array(mt_rand(),'Willy','Wonka');
         $result = $this->object->add($data);
         $this->assertTrue($result);
     }
@@ -35,6 +34,10 @@ class IronMQTest extends \PHPUnit_Framework_TestCase
      */
     public function testGet()
     {
+        $data = array(mt_rand(),'Willy','Wonka');
+        $result = $this->object->add($data);
+        $this->assertTrue($result);
+
         $result = $this->object->get();
         $this->assertNotEmpty($result);
         $this->assertEquals(array('1','Willy','Wonka'), $result);
@@ -55,10 +58,34 @@ class IronMQTest extends \PHPUnit_Framework_TestCase
             $this->assertNotEquals("Should not be able to delete.", $ex->getMessage());
         }
 
+        $data = array(mt_rand(),'Willy','Wonka');
+        $result = $this->object->add($data);
+        $this->assertTrue($result);
+
         $result = $this->object->get();
         $this->assertNotEmpty($result);
         $jobId = $this->object->last_job_id;
         $result = $this->object->clear($jobId);
         $this->assertTrue($result);
+    }
+
+    public function testPush()
+    {
+        $data = array(mt_rand(), 'Snow', 'Den');
+
+        // Set message.
+        $id = $this->object->push($data);
+        $this->assertTrue($id > 0);
+        $this->assertEquals($data, $this->object->get($id));
+    }
+
+    public function testPop()
+    {
+        $data = array(mt_rand(), 'Snow', 'Den');
+
+        // Set message.
+        $id = $this->object->push($data);
+        $this->assertTrue($id > 0);
+        $this->assertEquals($data, $this->object->pop());
     }
 }

@@ -20,10 +20,14 @@ class MongoDBTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testAddGet()
+    public function tearDown()
     {
         $this->object->getDB()->drop();
+        parent::tearDown();
+    }
 
+    public function testAddGet()
+    {
         $key = 'A0001';
         $data1 = array('name' => 'Michael');
         $result = $this->object->add($data1, $key);
@@ -45,18 +49,20 @@ class MongoDBTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @expectedException \PHPQueue\Exception\JobNotFoundException
+     */
+    public function testClearNonexistent()
+    {
+        $jobId = 'xxx';
+        $result = $this->object->clear($jobId);
+    }
+
+    /**
      * @depends testAddGet
      */
     public function testClear()
     {
-        try {
-            $jobId = 'xxx';
-            $result = $this->object->clear($jobId);
-        } catch (\PHPQueue\Exception\JobNotFoundException $ex) {
-            $this->assertTrue(true);
-        } catch (\Exception $ex) {
-            $this->fail('Should not be able to delete.');
-        }
+        $this->testAddGet();
 
         $jobId = 'A0001';
         $result = $this->object->clear($jobId);
@@ -64,5 +70,12 @@ class MongoDBTest extends \PHPUnit_Framework_TestCase
 
         $result = $this->object->get($jobId);
         $this->assertNull($result);
+    }
+
+    public function testSet()
+    {
+        $data = array(mt_rand(), 'Mr.', 'Jones');
+        $this->object->set(4, $data);
+        $this->assertEquals($data, $this->object->get(4));
     }
 }

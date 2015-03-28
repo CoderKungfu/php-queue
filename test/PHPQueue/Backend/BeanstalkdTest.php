@@ -12,7 +12,7 @@ class BeanstalkdTest extends \PHPUnit_Framework_TestCase
         } else {
             $options = array(
                               'server' => '127.0.0.1'
-                            , 'tube'   => 'testqueue'
+                            , 'tube'   => 'testqueue-' . mt_rand()
                         );
             $this->object = new Beanstalkd($options);
         }
@@ -20,7 +20,7 @@ class BeanstalkdTest extends \PHPUnit_Framework_TestCase
 
     public function testAdd()
     {
-        $data = array('1','Willy','Wonka');
+        $data = array(mt_rand(),'Willy','Wonka');
         $result = $this->object->add($data);
         $this->assertTrue($result);
     }
@@ -30,9 +30,12 @@ class BeanstalkdTest extends \PHPUnit_Framework_TestCase
      */
     public function testGet()
     {
-        $result = $this->object->get();
-        $this->assertNotEmpty($result);
-        $this->assertEquals(array('1','Willy','Wonka'), $result);
+        $data = array(mt_rand(),'Willy','Wonka');
+        $id = $this->object->push($data);
+        $this->assertTrue($id > 0);
+
+        $this->assertEquals($data, $this->object->get());
+
         $this->object->release($this->object->last_job_id);
     }
 
@@ -48,10 +51,38 @@ class BeanstalkdTest extends \PHPUnit_Framework_TestCase
         } catch (\Exception $ex) {
             $this->assertTrue(true);
         }
-        $result = $this->object->get();
-        $this->assertNotEmpty($result);
+
+        $data = array(mt_rand(),'Willy','Wonka');
+        $result = $this->object->add($data);
+        $this->assertTrue($result);
+
+        $this->assertEquals($data, $this->object->get());
         $jobId = $this->object->last_job_id;
         $result = $this->object->clear($jobId);
         $this->assertTrue($result);
+
+        $this->assertNull($this->object->pop());
+    }
+
+    public function testPush()
+    {
+        $data = array(mt_rand(),'Willy','Wonka');
+        $id = $this->object->push($data);
+        $this->assertTrue($id > 0);
+
+        $this->assertEquals($data, $this->object->get($id));
+    }
+
+    public function testPop()
+    {
+        $data = array(mt_rand(),'Willy','Wonka');
+        $this->object->push($data);
+
+        $this->assertEquals($data, $this->object->pop());
+    }
+
+    public function testPopEmpty()
+    {
+        $this->assertNull($this->object->pop());
     }
 }

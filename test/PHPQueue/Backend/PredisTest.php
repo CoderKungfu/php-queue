@@ -18,10 +18,14 @@ class PredisTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testQueue()
+    public function tearDown()
     {
         $this->object->getConnection()->flushall();
+        parent::tearDown();
+    }
 
+    public function testAddGet()
+    {
         $data1 = array('full_name'=>'Michael Cheng');
         $result = $this->object->add($data1);
         $this->assertTrue($result);
@@ -35,7 +39,6 @@ class PredisTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($result);
 
         $result = $this->object->get();
-        $this->assertNotEmpty($result);
         $this->assertEquals($data1, $result);
 
         $jobA = $this->object->last_job_id;
@@ -47,8 +50,7 @@ class PredisTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($data2, $result);
 
         $jobB = $this->object->last_job_id;
-        $result = $this->object->clear($jobB);
-        $this->assertTrue($result);
+        $this->object->clear($jobB);
         try {
             $result = $this->object->isJobOpen($jobB);
             $this->fail("Job should not still be open.");
@@ -79,19 +81,28 @@ class PredisTest extends \PHPUnit_Framework_TestCase
         $data = array(1, 'Willy', 'Wonka');
         $result = $this->object->setKey($key, $data);
         $this->assertTrue($result);
-
-        try {
-            $key = 'A0004';
-            $data = array(1, 'Willy', 'Wonka', 'boo'=>array(5,6,7));
-            $result = $this->object->setKey($key, $data);
-            $this->fail("Shouldn't be able to save");
-        } catch (\Exception $ex) {
-            $this->assertTrue(true);
-        }
     }
 
+
+    /**
+     * Shouldn't be able to save a nested structure
+     *
+     * @expectedException \PHPQueue\Exception\BackendException
+     */
+    public function testSetDeep()
+    {
+        $key = 'A0004';
+        $data = array(mt_rand(), 'Willy', 'Wonka', 'boo'=>array(5,6,7));
+        $this->object->set($key, $data);
+    }
+
+    /**
+     * @ depends testSetKey
+     */
     public function testGetKey()
     {
+        $this->testSetKey();
+
         $result = $this->object->getKey('A0001');
         $this->assertNotEmpty($result);
         $this->assertEquals('Michael Cheng', $result);
@@ -132,28 +143,48 @@ class PredisTest extends \PHPUnit_Framework_TestCase
      */
     public function testClearKey()
     {
-        try {
-            $jobId = 'xxx';
-            $this->object->clearKey($jobId);
-            $this->fail("Should not be able to delete.");
-        } catch (\Exception $ex) {
-            $this->assertTrue(true);
-        }
+        $this->testSetKey();
 
         $jobId = 'A0001';
         $result = $this->object->clearKey($jobId, 'Try clearing A0001');
         $this->assertTrue($result);
 
-        $result = $this->object->getKey($jobId, 'Check A0001');
-        $this->assertEmpty($result);
+        $result = $this->object->get($jobId, 'Check A0001');
+        $this->assertNull($result);
 
         $jobId = 'A0003';
         $result = $this->object->clearKey($jobId, 'Try clearing A0003');
         $this->assertTrue($result);
 
-        $result = $this->object->getKey($jobId, 'Check A0003');
-        $this->assertEmpty($result);
+        $result = $this->object->get($jobId, 'Check A0003');
+        $this->assertNull($result);
+    }
 
-        $this->object->getConnection()->flushall();
+    public function testClearEmpty()
+    {
+        $jobId = 'xxx';
+        $this->assertFalse($this->object->clear($jobId));
+    }
+
+    public function testSetGet()
+    {
+        $key = 'A0001';
+        $data = 'Michael-' . mt_rand();
+        $this->object->set($key, $data);
+
+        $this->assertEquals($data, $this->object->get($key));
+    }
+
+    public function testPushPop()
+    {
+        $data = 'Weezle-' . mt_rand();
+        $this->object->push($data);
+
+        $this->assertEquals($data, $this->object->pop());
+    }
+
+    public function testPopEmpty()
+    {
+        $this->assertNull($this->object->pop());
     }
 }
