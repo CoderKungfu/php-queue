@@ -22,7 +22,9 @@ class MongoDBTest extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        $this->object->getDB()->drop();
+        if ($this->object) {
+            $this->object->getDB()->drop();
+        }
         parent::tearDown();
     }
 

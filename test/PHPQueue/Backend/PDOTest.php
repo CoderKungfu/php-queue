@@ -29,8 +29,10 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        $result = $this->object->deleteTable('pdotest');
-        $this->assertTrue($result);
+        if ($this->object) {
+            $result = $this->object->deleteTable('pdotest');
+            $this->assertTrue($result);
+        }
 
         parent::tearDown();
     }

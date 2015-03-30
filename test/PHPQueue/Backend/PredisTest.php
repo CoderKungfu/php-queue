@@ -20,7 +20,9 @@ class PredisTest extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        $this->object->getConnection()->flushall();
+        if ($this->object) {
+            $this->object->getConnection()->flushall();
+        }
         parent::tearDown();
     }
 
