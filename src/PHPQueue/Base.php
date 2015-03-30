@@ -18,7 +18,7 @@ class Base
      * @param string             $queue
      * @return \PHPQueue\JobQueue
      * @throws \InvalidArgumentException
-     * @throws Exception\QueueNotFoundException
+     * @throws \PHPQueue\Exception\QueueNotFoundException
      */
     public static function getQueue($queue)
     {
@@ -57,7 +57,7 @@ class Base
     /**
      * @param JobQueue           $queue
      * @param array              $newJob
-     * @return bool|void
+     * @return bool
      * @throws \InvalidArgumentException
      * @throws \Exception
      */
@@ -101,7 +101,7 @@ class Base
     }
 
     /**
-     * @param JobQueue     $queue
+     * @param \PHPQueue\JobQueue     $queue
      * @param string       $jobId
      * @param mixed        $resultData
      * @return bool|void
@@ -126,8 +126,8 @@ class Base
 
     /**
      * @param  string              $worker_name
-     * @return Worker
-     * @throws Exception\WorkerNotFoundException
+     * @return \PHPQueue\Worker
+     * @throws \PHPQueue\Exception\WorkerNotFoundException
      * @throws \InvalidArgumentException
      */
     public static function getWorker($worker_name)
@@ -191,7 +191,7 @@ class Base
      * Factory method to instantiate a copy of a backend class.
      * @param  string                      $type    Case-sensitive class name.
      * @param  array                       $options Constuctor options.
-     * @return \PHPQueue\backend_classname
+     * @return \PHPQueue\Backend\Base Instantiation of concrete subclass.
      * @throws \InvalidArgumentException
      */
     public static function backendFactory($type, $options=array())
@@ -229,7 +229,7 @@ class Base
 
     /**
      * @param array|string $namespaces
-     * @param $org_class_name
+     * @param string $org_class_name
      * @return string
      */
     protected static function getValidNameSpacedClassName($namespaces, $org_class_name)
