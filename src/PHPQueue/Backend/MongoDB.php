@@ -1,6 +1,8 @@
 <?php
 namespace PHPQueue\Backend;
 
+use MongoClient;
+
 use PHPQueue\Exception\BackendException;
 use PHPQueue\Exception\JobNotFoundException;
 
@@ -33,7 +35,7 @@ class MongoDB extends Base
         if (empty($this->server_uri)) {
             throw new BackendException("No server specified");
         }
-        $this->connection = new \Mongo($this->server_uri, $this->mongo_options);
+        $this->connection = new MongoClient($this->server_uri, $this->mongo_options);
     }
 
     public function getDB()
