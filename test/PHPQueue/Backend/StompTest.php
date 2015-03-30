@@ -32,7 +32,7 @@ class StompTest extends PHPUnit_Framework_TestCase
         if ($this->unclean) {
             // Gross.  Clear the queue.
             try {
-                while ($result = $this->object->get()) {
+                while ($result = $this->object->pop()) {
                     // pass
                 }
             } catch (JobNotFoundException $ex) {
@@ -46,46 +46,57 @@ class StompTest extends PHPUnit_Framework_TestCase
     /**
      * @medium
      */
-    public function testAdd()
+    public function testPushPop()
     {
         $data = array('unique' => $this->unique);
         $this->unclean = true;
-        $result = $this->object->add($data);
-        $this->assertTrue($result);
+        $this->object->push($data);
 
-        $result = $this->object->get();
+        $this->assertEquals($data, $this->object->pop());
         $this->unclean = false;
     }
 
     /**
-     * @depends testAdd
      * @medium
      */
-    public function testGet()
+    public function testSetGet()
     {
         $data = array('unique' => $this->unique);
         $this->unclean = true;
-        $result = $this->object->add($data);
-        $this->assertTrue($result);
+        $result = $this->object->set($this->unique, $data);
 
-        $result = $this->object->get();
+        $result = $this->object->get($this->unique);
         $this->assertEquals($data, $result);
         $this->unclean = false;
     }
 
     /**
-     * @depends testAdd
+     * @medium
+     */
+    public function testPopEmpty()
+    {
+        $this->assertNull($this->object->pop());
+    }
+
+    /**
+     * @medium
+     */
+    public function testGetNonexistent()
+    {
+        $this->assertNull($this->object->get(mt_rand()));
+    }
+
+    /**
      * @medium
      */
     public function testMergeHeaders()
     {
         $data = array('unique' => $this->unique);
         $this->unclean = true;
-        $result = $this->object->add($data, array('fooHeader' => 5));
-        $this->assertTrue($result);
+        $this->object->push($data, array('fooHeader' => 5));
 
         $this->object->merge_headers = true;
-        $result = $this->object->get();
+        $result = $this->object->pop();
 
         $this->assertTrue(array_key_exists('fooHeader', $result));
         $this->assertEquals($result['fooHeader'], 5);
