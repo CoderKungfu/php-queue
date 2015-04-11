@@ -3,8 +3,11 @@ namespace PHPQueue\Backend;
 
 use PHPQueue\Exception\BackendException;
 use PHPQueue\Exception\JobNotFoundException;
+use PHPQueue\Interfaces\IndexedFifoQueueStore;
 
-class Beanstalkd extends Base
+class Beanstalkd
+    extends Base
+    implements IndexedFifoQueueStore
 {
     public $server_uri;
     public $tube;
@@ -27,29 +30,48 @@ class Beanstalkd extends Base
     }
 
     /**
+     * @deprecated
      * @param  array   $data
      * @return boolean Status of saving
      */
     public function add($data=array())
+    {
+        $this->push($data);
+        return true;
+    }
+
+    /**
+     * @param array $data
+     * @return integer Primary ID of the new record.
+     */
+    public function push($data)
     {
         $this->beforeAdd();
         $response = $this->getConnection()->useTube($this->tube)->put(json_encode($data));
         if (!$response) {
             throw new BackendException("Unable to save job.");
         }
-
-        return true;
+        return $response;
     }
 
     /**
-     * @return array
+     * @deprecated
+     * @return array|null
      */
     public function get()
     {
+        return $this->pop();
+    }
+
+    /**
+     * @return array|null
+     */
+    public function pop()
+    {
         $this->beforeGet();
         $newJob = $this->getConnection()->watch($this->tube)->reserve(self::$reserve_timeout);
-        if ($newJob == false) {
-            throw new JobNotFoundException("No job found.");
+        if (!$newJob) {
+            return null;
         }
         $this->last_job = $newJob;
         $this->last_job_id = $newJob->getId();

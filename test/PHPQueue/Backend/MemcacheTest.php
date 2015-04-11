@@ -38,8 +38,14 @@ class MemcacheTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($result);
     }
 
+    /**
+     * @depends testAdd
+     */
     public function testGet()
     {
+        // TODO: fixtures.
+        $this->testAdd();
+
         $result = $this->object->get('A0001');
         $this->assertNotEmpty($result);
         $this->assertEquals('Michael Cheng', $result);
@@ -49,11 +55,20 @@ class MemcacheTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('1','Willy','Wonka'), $result);
     }
 
+    public function testSet()
+    {
+        $data = array('4', 'Crepuscular');
+        $this->object->set(4, $data);
+        $this->assertEquals($data, $this->object->get(4));
+    }
+
     /**
      * @depends testAdd
      */
     public function testClear()
     {
+        $this->testAdd();
+
         try {
             $jobId = 'xxx';
             $this->object->clear($jobId);

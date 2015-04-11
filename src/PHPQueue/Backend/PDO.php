@@ -2,8 +2,12 @@
 namespace PHPQueue\Backend;
 
 use PHPQueue\Exception\BackendException;
+use PHPQueue\Interfaces\IndexedFifoQueueStore;
+use PHPQueue\Interfaces\KeyValueStore;
 
-class PDO extends Base
+class PDO
+    extends Base
+    implements IndexedFifoQueueStore, KeyValueStore
 {
     private $connection_string;
     private $db_user;
@@ -46,11 +50,20 @@ class PDO extends Base
         $this->connection = new \PDO($this->connection_string, $this->db_user, $this->db_password, $this->pdo_options);
     }
 
+    /**
+     * @deprecated See push() instead.
+     */
     public function add($data = null)
     {
         if (empty($data)) {
             throw new BackendException('No data.');
         }
+        $this->push($data);
+        return true;
+    }
+
+    public function push($data)
+    {
         $sql = sprintf('INSERT INTO `%s` (`data`) VALUES (?)', $this->db_table);
         $sth = $this->getConnection()->prepare($sql);
         $_tmp = json_encode($data);
@@ -58,23 +71,33 @@ class PDO extends Base
         $sth->execute();
         $this->last_job_id = $this->getConnection()->lastInsertId();
 
-        return true;
+        return $this->last_job_id;
     }
 
+    public function set($id, $data)
+    {
+        $sql = sprintf('REPLACE INTO `%s` (`id`, `data`) VALUES (?, ?)', $this->db_table);
+        $sth = $this->getConnection()->prepare($sql);
+        $_tmp = json_encode($data);
+        $sth->bindParam(1, $id, \PDO::PARAM_INT);
+        $sth->bindParam(2, $_tmp, \PDO::PARAM_STR);
+        $sth->execute();
+    }
+
+    /**
+     * @return array|null The retrieved record, or null if nothing was found.
+     */
     public function get($id=null)
     {
         if (empty($id)) {
-            // Where $id is null, get oldest message
-            $sql = sprintf('SELECT `id`, `data` FROM `%s` WHERE 1 ORDER BY id ASC', $this->db_table);
-            $sth = $this->getConnection()->prepare($sql);
-            $sth->execute();
+            // Deprecated usage.
+            return $this->pop();
         }
-        else {
-            $sql = sprintf('SELECT `id`, `data` FROM `%s` WHERE `id` = ?', $this->db_table);
-            $sth = $this->getConnection()->prepare($sql);
-            $sth->bindParam(1, $id, \PDO::PARAM_INT);
-            $sth->execute();
-        }
+
+        $sql = sprintf('SELECT `id`, `data` FROM `%s` WHERE `id` = ?', $this->db_table);
+        $sth = $this->getConnection()->prepare($sql);
+        $sth->bindParam(1, $id, \PDO::PARAM_INT);
+        $sth->execute();
 
         $result = $sth->fetch(\PDO::FETCH_ASSOC);
         if (!empty($result)) {
@@ -82,6 +105,21 @@ class PDO extends Base
             return json_decode($result['data'], true);
         }
 
+        return null;
+    }
+
+    public function pop()
+    {
+        // Where $id is null, get oldest message
+        $sql = sprintf('SELECT `id`, `data` FROM `%s` WHERE 1 ORDER BY id ASC LIMIT 1', $this->db_table);
+        $sth = $this->getConnection()->prepare($sql);
+        $sth->execute();
+
+        $result = $sth->fetch(\PDO::FETCH_ASSOC);
+        if ($result) {
+            $this->last_job_id = $result['id'];
+            return json_decode($result['data'], true);
+        }
         return null;
     }
 

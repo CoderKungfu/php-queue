@@ -44,6 +44,9 @@ class LocalFS extends FS
     public function createContainer($container_name)
     {
         $dir_path = $this->getContainerPath($container_name);
+        if (is_dir($dir_path)) {
+            return true;
+        }
         $status = mkdir($dir_path, 0777, true);
         if (!$status) {
             throw new BackendException('Unable to create directory: '.$dir_path);

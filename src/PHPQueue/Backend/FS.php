@@ -1,6 +1,7 @@
 <?php
 namespace PHPQueue\Backend;
 
+// TODO: Not sure how this fits in with existing interfaces.
 abstract class FS extends Base
 {
     public $container;
