@@ -103,11 +103,8 @@ class PDOTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($data, $this->object->pop());
     }
 
-    /**
-     * @expectedException \PHPQueue\Exception\JobNotFoundException
-     */
     public function testPopEmpty()
     {
-        $this->object->pop();
+        $this->assertNull( $this->object->pop() );
     }
 }
