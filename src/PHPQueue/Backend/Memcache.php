@@ -58,7 +58,7 @@ class Memcache
      */
     public function add($key, $data, $expiry=null)
     {
-        $this->set($key, $data, $expiry);
+        $this->set($key, json_encode($data), $expiry);
         return true;
     }
 
@@ -80,9 +80,9 @@ class Memcache
         if (empty($expiry)) {
             $expiry = $this->expiry;
         }
-        $status = $this->getConnection()->replace($key, $data, $this->use_compression, $expiry);
+        $status = $this->getConnection()->replace($key, json_encode($data), $this->use_compression, $expiry);
         if ($status == false) {
-            $status = $this->getConnection()->set($key, $data, $this->use_compression, $expiry);
+            $status = $this->getConnection()->set($key, json_encode($data), $this->use_compression, $expiry);
         }
         if (!$status) {
             throw new BackendException("Unable to save data.");
@@ -97,7 +97,7 @@ class Memcache
     {
         $this->beforeGet($key);
 
-        return $this->getConnection()->get($key);
+        return json_decode($this->getConnection()->get($key), true);
     }
 
     public function clear($key)
