@@ -205,7 +205,7 @@ class Predis
         if (!$this->keyExists($key)) {
             return false;
         }
-        if ($count > 1) {
+        if ($count === 1) {
             $status = $this->getConnection()->incr($key);
         } else {
             $status = $this->getConnection()->incrby($key, $count);
@@ -219,7 +219,7 @@ class Predis
         if (!$this->keyExists($key)) {
             return false;
         }
-        if ($count > 1) {
+        if ($count === 1) {
             $status = $this->getConnection()->decr($key);
         } else {
             $status = $this->getConnection()->decrby($key, $count);
