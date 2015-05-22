@@ -35,14 +35,13 @@ class Stomp
         if (!empty($options['uri'])) {
             $this->uri = $options['uri'];
         }
-        if (!empty($options['merge_headers'])) {
-            $truish = array('true', '1', true, 1);
-            $this->merge_headers = in_array($options['merge_headers'], $truish, true);
+        if (isset($options['merge_headers'])) {
+            $this->merge_headers = (bool)$options['merge_headers'];
         }
-        if (!empty($options['read_timeout'])) {
+        if (isset($options['read_timeout'])) {
             $this->read_timeout = (int)$options['read_timeout'];
         }
-        if (!empty($options['ack'])) {
+        if (isset($options['ack'])) {
             $this->ack = (bool)$options['ack'];
         }
     }
