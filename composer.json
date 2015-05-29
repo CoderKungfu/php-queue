@@ -40,7 +40,8 @@
         "clio/clio": "Support for daemonizing PHP CLI runner",
         "iron-io/iron_mq": "For IronMQ backend support",
         "microsoft/windowsazure": "For Windows Azure Service Bus backend support",
-        "Respect/Rest": "For a REST server to post job data"
+        "Respect/Rest": "For a REST server to post job data",
+        "fusesource/stomp-php": "For the STOMP backend"
     },
     "autoload": {
         "psr-0": {"PHPQueue": "src/"}
