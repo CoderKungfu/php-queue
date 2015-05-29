@@ -58,7 +58,7 @@ class Memcache
      */
     public function add($key, $data, $expiry=null)
     {
-        $this->set($key, json_encode($data), $expiry);
+        $this->set($key, $data, $expiry);
         return true;
     }
 
