@@ -46,7 +46,7 @@ class Predis
     public function __construct($options=array())
     {
         parent::__construct();
-        if (!empty($options['servers']) && is_array($options['servers'])) {
+        if (!empty($options['servers'])) {
             $this->servers = $options['servers'];
         }
         if (!empty($options['redis_options']) && is_array($options['redis_options'])) {
