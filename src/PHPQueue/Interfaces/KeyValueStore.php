@@ -9,9 +9,10 @@ interface KeyValueStore
     /**
      * @param $key string
      * @param $value mixed Serializable value
+     * @param $properties array optional additional message properties
      * @throws \Exception
      */
-    public function set($key, $value);
+    public function set($key, $value, $properties=array());
 
     /**
      * @param $key string

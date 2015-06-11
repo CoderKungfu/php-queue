@@ -75,7 +75,7 @@ class MongoDB
      * @throws \PHPQueue\Exception\BackendException
      * @return boolean Deprecated (always true)
      */
-    public function set($key, $data)
+    public function set($key, $data, $properties=array())
     {
         if (empty($data) || !is_array($data)) {
             throw new BackendException("No data.");

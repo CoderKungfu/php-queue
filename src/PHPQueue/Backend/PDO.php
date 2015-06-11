@@ -74,7 +74,7 @@ class PDO
         return $this->last_job_id;
     }
 
-    public function set($id, $data)
+    public function set($id, $data, $properties=array())
     {
         $sql = sprintf('REPLACE INTO `%s` (`id`, `data`) VALUES (?, ?)', $this->db_table);
         $sth = $this->getConnection()->prepare($sql);

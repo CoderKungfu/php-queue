@@ -185,9 +185,10 @@ class Predis
     /**
      * @param  string              $key
      * @param  array|string        $data
+     * @param  array               $properties
      * @throws \PHPQueue\Exception
      */
-    public function set($key, $data)
+    public function set($key, $data, $properties=array())
     {
         if (!$key || !is_string($key)) {
             throw new BackendException("Key is invalid.");
