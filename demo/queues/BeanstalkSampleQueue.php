@@ -19,7 +19,7 @@ class BeanstalkSampleQueue extends PHPQueue\JobQueue
                         );
     }
 
-    public function addJob($newJob = null, $DEFAULT_PRIORITY=1024, $DEFAULT_DELAY=0, $DEFAULT_TTR=60)
+    public function addJob($newJob = null)
     {
         $formatted_data = array('worker'=>$this->queueWorker, 'data'=>$newJob);
         $this->dataSource->add($formatted_data, $DEFAULT_PRIORITY, $DEFAULT_DELAY, $DEFAULT_TTR);
