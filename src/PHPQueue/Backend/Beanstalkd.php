@@ -34,9 +34,9 @@ class Beanstalkd
      * @param  array   $data
      * @return boolean Status of saving
      */
-    public function add($data=array())
+    public function add($data=array(), $DEFAULT_PRIORITY=1024, $DEFAULT_DELAY=0, $DEFAULT_TTR=60)
     {
-        $this->push($data);
+        $this->push($data, $DEFAULT_PRIORITY, $DEFAULT_DELAY, $DEFAULT_TTR);
         return true;
     }
 
@@ -44,10 +44,10 @@ class Beanstalkd
      * @param array $data
      * @return integer Primary ID of the new record.
      */
-    public function push($data)
+    public function push($data, $DEFAULT_PRIORITY=1024, $DEFAULT_DELAY=0, $DEFAULT_TTR=60)
     {
         $this->beforeAdd();
-        $response = $this->getConnection()->useTube($this->tube)->put(json_encode($data));
+        $response = $this->getConnection()->useTube($this->tube)->put(json_encode($data), $DEFAULT_PRIORITY, $DEFAULT_DELAY, $DEFAULT_TTR);
         if (!$response) {
             throw new BackendException("Unable to save job.");
         }
