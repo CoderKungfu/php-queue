@@ -133,7 +133,7 @@ class Predis
             $order_key = $this->order_key;
             $this->getConnection()->transaction($options, function ($tx) use ($order_key, &$data) {
                 // Look up the first element in the FIFO ordering.
-                $values = $tx->zrange(self::FIFO_INDEX, 0, 0);
+                $values = $tx->zrange(Predis::FIFO_INDEX, 0, 0);
                 if ($values) {
                     // Use that value as a key into the key-value block, to get the data.
                     $key = $values[0];
@@ -143,7 +143,7 @@ class Predis
                     $tx->multi();
 
                     // Remove from both indexes.
-                    $tx->zrem(self::FIFO_INDEX, $key);
+                    $tx->zrem(Predis::FIFO_INDEX, $key);
                     $tx->del($key);
                 }
             });
@@ -238,7 +238,7 @@ class Predis
         $expiry = $this->expiry;
         $this->getConnection()->transaction($options, function ($tx) use ($key, $score, $encoded_data, $expiry, &$status) {
             $tx->multi();
-            $tx->zadd(self::FIFO_INDEX, $score, $key);
+            $tx->zadd(Predis::FIFO_INDEX, $score, $key);
             if ($expiry) {
                 $status = $tx->setex($key, $expiry, $encoded_data);
             } else {
