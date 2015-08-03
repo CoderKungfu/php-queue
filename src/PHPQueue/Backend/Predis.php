@@ -123,30 +123,36 @@ class Predis
         }
         if ($this->order_key) {
             // Pop the first element.
-            //
-            // Adapted from https://github.com/nrk/predis/blob/v1.0/examples/transaction_using_cas.php
-            $options = array(
-                'cas' => true,
-                'watch' => self::FIFO_INDEX,
-                'retry' => 3,
-            );
-            $order_key = $this->order_key;
-            $this->getConnection()->transaction($options, function ($tx) use ($order_key, &$data) {
-                // Look up the first element in the FIFO ordering.
-                $values = $tx->zrange(Predis::FIFO_INDEX, 0, 0);
-                if ($values) {
-                    // Use that value as a key into the key-value block, to get the data.
-                    $key = $values[0];
-                    $data = $tx->get($key);
+            do {
+                // Adapted from https://github.com/nrk/predis/blob/v1.0/examples/transaction_using_cas.php
+                $options = array(
+                    'cas' => true,
+                    'watch' => self::FIFO_INDEX,
+                    'retry' => 3,
+                );
+                $order_key = $this->order_key;
+                $queue_empty = true; // Fail open.
+                $this->getConnection()->transaction($options, function ($tx) use ($order_key, &$data, &$queue_empty) {
+                    // Look up the first element in the FIFO ordering.
+                    $values = $tx->zrange(Predis::FIFO_INDEX, 0, 0);
+                    if ($values) {
+                        $queue_empty = false;
+                        // Use that value as a key into the key-value block, to get the data.
+                        $key = $values[0];
+                        $data = $tx->get($key);
 
-                    // Begin transaction.
-                    $tx->multi();
+                        // Begin transaction.
+                        $tx->multi();
 
-                    // Remove from both indexes.
-                    $tx->zrem(Predis::FIFO_INDEX, $key);
-                    $tx->del($key);
-                }
-            });
+                        // Remove from both indexes.
+                        $tx->zrem(Predis::FIFO_INDEX, $key);
+                        $tx->del($key);
+                    }
+                });
+                // Skip over anything without a corresponding key/value entry,
+                // which occurs when objects expire, and loop to the next
+                // element.
+            } while ($data === null && !$queue_empty);
         } else {
             $data = $this->getConnection()->lpop($this->queue_name);
         }
