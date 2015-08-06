@@ -103,4 +103,19 @@ class PredisZsetTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertNull($this->object->pop());
     }
+
+    public function testPeek()
+    {
+        $data = array(
+            'name' => 'Weezle-' . mt_rand(),
+            'timestamp' => mt_rand(),
+            'txn_id' => mt_rand(),
+        );
+        $this->object->push($data);
+
+        $this->assertEquals($data, $this->object->peek());
+
+        // Check that we didn't remove the object by peeking.
+        $this->assertEquals($data, $this->object->pop());
+    }
 }

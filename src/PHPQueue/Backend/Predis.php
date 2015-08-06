@@ -1,6 +1,8 @@
 <?php
 namespace PHPQueue\Backend;
 
+use Predis\Transaction\MultiExec;
+
 use PHPQueue\Exception\BackendException;
 use PHPQueue\Interfaces\KeyValueStore;
 use PHPQueue\Interfaces\FifoQueueStore;
@@ -112,6 +114,43 @@ class Predis
     }
 
     /**
+     * Remove stale elements at the top of the queue and return the first real entry
+     *
+     * When data expires, it still leaves a queue entry linking to its
+     * correlation ID.  Clear any of these stale entries at the head of
+     * the queue.
+     *
+     * Note that we run this from inside a transaction, to make it less
+     * likely that we'll hit a race condition.
+     *
+     * @param MultiExec $tx transaction we're working within.
+     *
+     * @return string|null Top element's key, or null if the queue is empty.
+     */
+    protected function peekWithCleanup(MultiExec $tx)
+    {
+        for (;;) {
+            // Look up the first element in the FIFO ordering.
+            $values = $tx->zrange(Predis::FIFO_INDEX, 0, 0);
+            if ($values) {
+                // Use that value as a key into the key-value block.
+                $key = $values[0];
+                $data = $tx->get($key);
+
+                if ($data === null) {
+                    // If the data is missing, then remove from the FIFO index.
+                    $tx->zrem(Predis::FIFO_INDEX, $key);
+                } else {
+                    return $key;
+                }
+            } else {
+                break;
+            }
+        }
+        return null;
+    }
+
+    /**
      * @return array|null
      */
     public function pop()
@@ -123,38 +162,80 @@ class Predis
         }
         if ($this->order_key) {
             // Pop the first element.
-            do {
-                // Adapted from https://github.com/nrk/predis/blob/v1.0/examples/transaction_using_cas.php
-                $options = array(
-                    'cas' => true,
-                    'watch' => self::FIFO_INDEX,
-                    'retry' => 3,
-                );
-                $order_key = $this->order_key;
-                $queue_empty = true; // Fail open.
-                $this->getConnection()->transaction($options, function ($tx) use ($order_key, &$data, &$queue_empty) {
-                    // Look up the first element in the FIFO ordering.
-                    $values = $tx->zrange(Predis::FIFO_INDEX, 0, 0);
-                    if ($values) {
-                        $queue_empty = false;
-                        // Use that value as a key into the key-value block, to get the data.
-                        $key = $values[0];
-                        $data = $tx->get($key);
+            // Adapted from https://github.com/nrk/predis/blob/v1.0/examples/transaction_using_cas.php
+            $options = array(
+                'cas' => true,
+                'watch' => self::FIFO_INDEX,
+                'retry' => 3,
+            );
+            $self = $this;
+            $this->getConnection()->transaction($options, function ($tx) use (&$data, &$self) {
+                // Begin transaction.
+                $tx->multi();
 
-                        // Begin transaction.
-                        $tx->multi();
+                $key = $self->peekWithCleanup($tx);
 
-                        // Remove from both indexes.
-                        $tx->zrem(Predis::FIFO_INDEX, $key);
-                        $tx->del($key);
-                    }
-                });
-                // Skip over anything without a corresponding key/value entry,
-                // which occurs when objects expire, and loop to the next
-                // element.
-            } while ($data === null && !$queue_empty);
+                if ($key) {
+                    // Use that value as a key into the key-value block.
+                    $data = $tx->get($key);
+
+                    // Remove from both indexes.
+                    $tx->zrem(Predis::FIFO_INDEX, $key);
+                    $tx->del($key);
+                }
+            });
         } else {
             $data = $this->getConnection()->lpop($this->queue_name);
+        }
+        if (!$data) {
+            return null;
+        }
+        $this->last_job = $data;
+        $this->last_job_id = time();
+        $this->afterGet();
+
+        return json_decode($data, true);
+    }
+
+    /**
+     * Return the top element in the queue.
+     *
+     * @return array|null
+     */
+    public function peek()
+    {
+        $data = null;
+        $this->beforeGet();
+        if (!$this->hasQueue()) {
+            throw new BackendException("No queue specified.");
+        }
+        if ($this->order_key) {
+            // Adapted from https://github.com/nrk/predis/blob/v1.0/examples/transaction_using_cas.php
+            $options = array(
+                'cas' => true,
+                'watch' => self::FIFO_INDEX,
+                'retry' => 3,
+            );
+            $self = $this;
+            $this->getConnection()->transaction($options, function ($tx) use (&$data, &$self) {
+                // Begin transaction.
+                $tx->multi();
+
+                $key = $self->peekWithCleanup($tx);
+
+                if ($key) {
+                    // Use that value as a key into the key-value block.
+                    $data = $tx->get($key);
+                }
+            });
+        } else {
+            $data_range = $this->getConnection()->lrange($this->queue_name, 0, 0);
+            if (!$data_range) {
+                return null;
+            } else {
+                // Unpack list.
+                $data = $data_range[0];
+            }
         }
         if (!$data) {
             return null;
