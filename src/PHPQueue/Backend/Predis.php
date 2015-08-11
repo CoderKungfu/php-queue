@@ -135,9 +135,9 @@ class Predis
             if ($values) {
                 // Use that value as a key into the key-value block.
                 $key = $values[0];
-                $data = $tx->get($key);
+                $exists = $tx->exists($key);
 
-                if ($data === null) {
+                if (!$exists) {
                     // If the data is missing, then remove from the FIFO index.
                     $tx->zrem(Predis::FIFO_INDEX, $key);
                 } else {
