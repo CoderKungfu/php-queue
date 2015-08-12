@@ -127,7 +127,7 @@ class Predis
      *
      * @return string|null Top element's key, or null if the queue is empty.
      */
-    protected function peekWithCleanup(MultiExec $tx)
+    public function peekWithCleanup(MultiExec $tx)
     {
         for (;;) {
             // Look up the first element in the FIFO ordering.
