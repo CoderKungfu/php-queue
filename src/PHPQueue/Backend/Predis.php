@@ -1,6 +1,7 @@
 <?php
 namespace PHPQueue\Backend;
 
+use Predis\Response\ResponseInterface;
 use Predis\Transaction\MultiExec;
 
 use PHPQueue\Exception\BackendException;
@@ -103,8 +104,8 @@ class Predis
                 throw new BackendException("Cannot push to indexed fifo queue without correlation data.");
             }
             $status = $this->addToIndexedFifoQueue($key, $data);
-            if (!$status) {
-                throw new BackendException("Couldn't push to indexed fifo queue.");
+            if (!self::boolStatus($status)) {
+                throw new BackendException('Couldn\'t push to indexed fifo queue: ' . $status->getMessage());
             }
         } else {
             // Note that we're ignoring the "new length" return value, cos I don't
@@ -255,8 +256,8 @@ class Predis
         }
         $job_data = $this->open_items[$jobId];
         $status = $this->getConnection()->rpush($this->queue_name, $job_data);
-        if (!$status) {
-            throw new BackendException("Unable to save data.");
+        if (!is_int($status)) {
+            throw new BackendException('Unable to save data: ' . $status->getMessage());
         }
         $this->last_job_id = $jobId;
         $this->afterClearRelease();
@@ -298,8 +299,8 @@ class Predis
                     $status = $this->getConnection()->set($key, $data);
                 }
             }
-            if (!$status) {
-                throw new BackendException("Unable to save data.");
+            if (!self::boolStatus($status)) {
+                throw new BackendException('Unable to save data.: ' . $status->getMessage());
             }
         } catch (\Exception $ex) {
             throw new BackendException($ex->getMessage(), $ex->getCode());
@@ -311,6 +312,7 @@ class Predis
      *
      * @param string $key
      * @param array $data
+     * @return Predis\Response\ResponseInterface
      */
     protected function addToIndexedFifoQueue($key, $data)
     {
@@ -422,7 +424,7 @@ class Predis
             $status = $this->getConnection()->incrby($key, $count);
         }
 
-        return $status;
+        return is_int($status);
     }
 
     public function decrKey($key, $count=1)
@@ -436,7 +438,7 @@ class Predis
             $status = $this->getConnection()->decrby($key, $count);
         }
 
-        return $status;
+        return is_int($status);
     }
 
     public function keyExists($key)
@@ -448,5 +450,9 @@ class Predis
     public function hasQueue()
     {
         return !empty($this->queue_name);
+    }
+
+    protected static function boolStatus(ResponseInterface $status) {
+        return ($status == 'OK' || $status == 'QUEUED');
     }
 }
