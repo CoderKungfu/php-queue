@@ -113,7 +113,10 @@ class Stomp
         if ($properties === null) {
             $properties = array('ack' => 'client');
         }
-        $this->getConnection()->subscribe($this->queue_name, $properties);
+        $result = $this->getConnection()->subscribe($this->queue_name, $properties);
+        if (!$result) {
+            throw new BackendException("No response when subscribing to queue {$this->queue_name}");
+        }
         if ($this->read_timeout) {
             $this->getConnection()->setReadTimeout($this->read_timeout);
         }
