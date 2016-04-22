@@ -67,7 +67,7 @@ class PDO
 
     public function push($data)
     {
-        $sql = sprintf('INSERT INTO `%s` (`data`) VALUES (?)', $this->db_table);
+        $sql = sprintf('INSERT INTO `%s` (`data`, `timestamp`) VALUES (?, now())', $this->db_table);
         $sth = $this->getConnection()->prepare($sql);
         $_tmp = json_encode($data);
         $sth->bindParam(1, $_tmp, \PDO::PARAM_STR);
@@ -159,14 +159,26 @@ class PDO
         if (empty($table_name)) {
             throw new BackendException('Invalid table name.');
         }
-        $sql = sprintf("CREATE TABLE IF NOT EXISTS `%s` (
-                    `id` mediumint(20) NOT NULL AUTO_INCREMENT,
-                    `data` mediumtext NULL DEFAULT '',
-                    PRIMARY KEY (`id`)
-                ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;", $table_name);
+        switch ($this->getDriverName()) {
+        case 'mysql':
+            $sql = sprintf("CREATE TABLE IF NOT EXISTS `%s` (
+                        `id` mediumint(20) NOT NULL AUTO_INCREMENT,
+                        `data` mediumtext NULL DEFAULT '',
+                        `timestamp` datetime NOT NULL,
+                        PRIMARY KEY (`id`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;", $table_name);
+            break;
+        default:
+            throw new BackendException('Unknown database driver: ' . $driver);
+        }
         $this->getConnection()->exec($sql);
 
+        // FIXME: we already signal failure using exceptions, should return void.
         return true;
+    }
+
+    protected function getDriverName() {
+        return $this->getConnection()->getAttribute(\PDO::ATTR_DRIVER_NAME);
     }
 
     public function deleteTable($table_name)
