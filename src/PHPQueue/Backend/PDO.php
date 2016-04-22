@@ -27,6 +27,9 @@ class PDO
         if (!empty($options['db_password'])) {
             $this->db_password = $options['db_password'];
         }
+        if (!empty($options['queue'])) {
+            $this->db_table = $options['queue'];
+        }
         if (!empty($options['db_table'])) {
             $this->db_table = $options['db_table'];
         }
