@@ -20,7 +20,13 @@ class PDOTest extends \PHPUnit_Framework_TestCase
                 \PDO::ATTR_PERSISTENT => true
             )
         );
-        $this->object = new PDO($options);
+
+        // Check that the database exists, and politely skip if not.
+        try {
+            $this->object = new \PDO($options['connection_string']);
+        } catch ( \PDOException $ex ) {
+            $this->markTestSkipped('Database access failed: ' . $ex->getMessage());
+        }
 
         // Create table
         $this->assertTrue($this->object->createTable('pdotest'));
