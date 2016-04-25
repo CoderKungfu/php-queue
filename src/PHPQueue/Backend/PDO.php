@@ -169,7 +169,7 @@ class PDO
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;", $table_name);
             break;
         default:
-            throw new BackendException('Unknown database driver: ' . $driver);
+            throw new BackendException('Unknown database driver: ' . $this->getDriverName());
         }
         $this->getConnection()->exec($sql);
 
