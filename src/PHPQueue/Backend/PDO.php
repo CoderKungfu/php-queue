@@ -2,12 +2,17 @@
 namespace PHPQueue\Backend;
 
 use PHPQueue\Exception\BackendException;
+use PHPQueue\Interfaces\AtomicReadBuffer;
+use PHPQueue\Interfaces\FifoQueueStore;
 use PHPQueue\Interfaces\IndexedFifoQueueStore;
 use PHPQueue\Interfaces\KeyValueStore;
 
 class PDO
     extends Base
-    implements IndexedFifoQueueStore, KeyValueStore
+    implements AtomicReadBuffer,
+        FifoQueueStore,
+        IndexedFifoQueueStore,
+        KeyValueStore
 {
     private $connection_string;
     private $db_user;
@@ -77,7 +82,6 @@ class PDO
                 throw new BackendException('Statement failed: ' . implode(' - ', $sth->errorInfo()));
             }
         } catch (\Exception $ex) {
-            // XXX: This isn't catching the exception!
             // TODO: Log original error and table creation attempt.
             $this->createTable($this->db_table);
 
@@ -127,7 +131,7 @@ class PDO
 
     public function pop()
     {
-        // Where $id is null, get oldest message
+        // Get oldest message.
         $sql = sprintf('SELECT `id`, `data` FROM `%s` WHERE 1 ORDER BY id ASC LIMIT 1', $this->db_table);
         $sth = $this->getConnection()->prepare($sql);
         $sth->execute();
@@ -135,9 +139,28 @@ class PDO
         $result = $sth->fetch(\PDO::FETCH_ASSOC);
         if ($result) {
             $this->last_job_id = $result['id'];
+            $this->clear($result['id']);
             return json_decode($result['data'], true);
         }
         return null;
+    }
+
+    public function popAtomic($callback) {
+        try {
+            $this->getConnection()->beginTransaction();
+            $data = $this->pop();
+
+            if (!is_callable($callback)) {
+                throw new RuntimeException("Bad callback passed to " . __METHOD__);
+            }
+            call_user_func($callback, $data);
+
+            $this->getConnection()->commit();
+            return $data;
+        } catch (\Exception $ex) {
+            $this->getConnection()->rollback();
+            throw $ex;
+        }
     }
 
     public function clear($id = null)

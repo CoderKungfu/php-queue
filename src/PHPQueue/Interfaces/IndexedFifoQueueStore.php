@@ -19,7 +19,8 @@ interface IndexedFifoQueueStore extends FifoQueueStore
      * @throws \PHPQueue\Exception\JobNotFoundException When no data is available.
      * @throws \Exception Other failures.
      *
-     * TODO: We should provide transactionality to make this operation safer.
+     * @deprecated This is not a safe operation.  Consider using
+     *     AtomicReadBuffer::popAtomic instead.
      */
     public function pop();
 

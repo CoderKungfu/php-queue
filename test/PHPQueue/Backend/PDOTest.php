@@ -1,5 +1,6 @@
 <?php
 namespace PHPQueue\Backend;
+
 class PDOTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -23,11 +24,12 @@ class PDOTest extends \PHPUnit_Framework_TestCase
 
         // Check that the database exists, and politely skip if not.
         try {
-            $this->object = new \PDO($options['connection_string']);
+            new \PDO($options['connection_string']);
         } catch ( \PDOException $ex ) {
             $this->markTestSkipped('Database access failed: ' . $ex->getMessage());
         }
 
+        $this->object = new PHPQueue\Backend\PDO($options);
         // Create table
         $this->assertTrue($this->object->createTable('pdotest'));
         $this->object->clearAll();
@@ -112,5 +114,49 @@ class PDOTest extends \PHPUnit_Framework_TestCase
     public function testPopEmpty()
     {
         $this->assertNull( $this->object->pop() );
+    }
+
+    /**
+     * popAtomic should pop if the processor callback is successful.
+     */
+    public function testPopAtomicCommit()
+    {
+        $data = array(mt_rand(), 'Abbie', 'Hoffman');
+
+        $this->object->push($data);
+        $self = $this;
+        $did_run = false;
+        $callback = function ($message) use ($self, &$did_run, $data) {
+            $self->assertEquals($data, $message);
+            $did_run = true;
+        };
+        $this->assertEquals($data, $this->object->popAtomic($callback));
+        $this->assertEquals(true, $did_run);
+        // Record has really gone away.
+        $this->assertEquals(null, $this->object->pop());
+    }
+
+    /**
+     * popAtomic should not pop if the processor throws an error.
+     */
+    public function testPopAtomicRollback()
+    {
+        $data = array(mt_rand(), 'Abbie', 'Hoffman');
+
+        $this->object->push($data);
+        $self = $this;
+        $callback = function ($message) use ($self, $data) {
+            $self->assertEquals($data, $message);
+            throw new \Exception("Foiled!");
+        };
+        try {
+            $this->assertEquals($data, $this->object->popAtomic($callback));
+            $this->fail("Should have failed by this point");
+        } catch (\Exception $ex) {
+            $this->assertEquals("Foiled!", $ex->getMessage());
+        }
+
+        // Punchline: data should still be available for the retry pop.
+        $this->assertEquals($data, $this->object->popAtomic(function ($message) {}));
     }
 }

@@ -7,7 +7,7 @@ A unified front-end for different queuing backends. Includes a REST server, CLI 
 
 ## Why PHP-Queue? ##
 
-The pains of implementing a queueing system (eg. Beanstalk, Amazon SQS, RabbitMQ) for your application:
+Implementing a queueing system (eg. Beanstalk, Amazon SQS, RabbitMQ) for your application can be painful:
 
 * Which one is most efficient? Performant?
 * Learning curve to effectively implement the queue backend & the libraries.
@@ -169,6 +169,37 @@ You can extend the `PHPQueue\Cli` class to customize your own CLI batch jobs (eg
 ## Runners ##
 
 You can read more about the [Runners here](https://github.com/CoderKungfu/php-queue/blob/master/demo/runners/README.md).
+
+## Interfaces ##
+
+The queue backends will support one or more of these interfaces:
+
+* AtomicReadBuffer
+
+This is the recommended way to consume messages.  AtomicReadBuffer provides the
+popAtomic($callback) interface, which rolls back the popped record if the
+callback returns by exception.  For example:
+    $queue = new PHPQueue\Backend\PDO($options);
+
+    $queue->popAtomic(function ($message) use ($processor) {
+        $processor->churn($message);
+    });
+
+The message will only be popped if churn() returns successfully.
+
+* FifoQueueStore
+
+A first in first out queue accessed by push and pop.
+
+* IndexedFifoQueueStore
+
+Messages are indexed along one column as they are pushed into a FIFO queue,
+otherwise these behave like FifoQueueStore. clear() deletes records by index.
+There is no get() operation, you'll need a KeyValueStore for that.
+
+* KeyValueStore
+
+Jobs can be retrieved and deleted by their index.
 
 ---
 ## License ##
