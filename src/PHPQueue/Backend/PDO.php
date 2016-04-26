@@ -71,9 +71,23 @@ class PDO
         $sth = $this->getConnection()->prepare($sql);
         $_tmp = json_encode($data);
         $sth->bindParam(1, $_tmp, \PDO::PARAM_STR);
-        $sth->execute();
-        $this->last_job_id = $this->getConnection()->lastInsertId();
+        try {
+            $success = $sth->execute();
+            if (!$success) {
+                throw new BackendException('Statement failed: ' . implode(' - ', $sth->errorInfo()));
+            }
+        } catch (\Exception $ex) {
+            // XXX: This isn't catching the exception!
+            // TODO: Log original error and table creation attempt.
+            $this->createTable($this->db_table);
 
+            // Try again.
+            if (!$sth->execute()) {
+                throw new BackendException('Statement failed: ' . implode(' - ', $sth->errorInfo()));
+            }
+        }
+
+        $this->last_job_id = $this->getConnection()->lastInsertId();
         return $this->last_job_id;
     }
 
