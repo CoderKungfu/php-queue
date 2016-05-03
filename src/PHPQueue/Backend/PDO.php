@@ -200,7 +200,7 @@ class PDO
         case 'mysql':
             $sql = sprintf("CREATE TABLE IF NOT EXISTS `%s` (
                         `id` mediumint(20) NOT NULL AUTO_INCREMENT,
-                        `data` mediumtext NULL DEFAULT '',
+                        `data` mediumtext NULL,
                         `timestamp` datetime NOT NULL,
                         PRIMARY KEY (`id`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;", $table_name);
