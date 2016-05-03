@@ -10,7 +10,7 @@ interface AtomicReadBuffer
      * Pop and process data in an atomic way, so that the message will not be
      * consumed in case of failure.
      *
-     * @param $callback A processing function with the signature,
+     * @param callable $callback A processing function with the signature,
      *     function( $message ) throws Exception
      *         This function accepts an array $message, the next message to be
      *     popped from your buffer.  In normal operation, the message is popped
