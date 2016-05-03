@@ -72,10 +72,11 @@ class PDO
 
     public function push($data)
     {
-        $sql = sprintf('INSERT INTO `%s` (`data`, `timestamp`) VALUES (?, now())', $this->db_table);
+        $sql = sprintf('INSERT INTO `%s` (`data`, `timestamp`) VALUES (?, ?)', $this->db_table);
         $sth = $this->getConnection()->prepare($sql);
         $_tmp = json_encode($data);
         $sth->bindParam(1, $_tmp, \PDO::PARAM_STR);
+        $sth->bindParam(2, self::getTimeStamp(), \PDO::PARAM_STR);
         try {
             $success = $sth->execute();
             if (!$success) {
@@ -97,14 +98,20 @@ class PDO
 
     public function set($id, $data, $properties=array())
     {
-        $sql = sprintf('REPLACE INTO `%s` (`id`, `data`) VALUES (?, ?)', $this->db_table);
+        $sql = sprintf('REPLACE INTO `%s` (`id`, `data`, `timestamp`) VALUES (?, ?, ?)', $this->db_table);
         $sth = $this->getConnection()->prepare($sql);
         $_tmp = json_encode($data);
         $sth->bindParam(1, $id, \PDO::PARAM_INT);
         $sth->bindParam(2, $_tmp, \PDO::PARAM_STR);
+        $sth->bindParam(3, self::getTimeStamp(), \PDO::PARAM_STR);
         $sth->execute();
     }
 
+    protected static function getTimeStamp()
+    {
+        $now = new \DateTime('now', new \DateTimeZone('UTC'));
+        return $now->format('Y-m-d\TH:i:s.u');
+    }
     /**
      * @return array|null The retrieved record, or null if nothing was found.
      */
@@ -151,14 +158,14 @@ class PDO
             $data = $this->pop();
 
             if (!is_callable($callback)) {
-                throw new RuntimeException("Bad callback passed to " . __METHOD__);
+                throw new \RuntimeException("Bad callback passed to " . __METHOD__);
             }
             call_user_func($callback, $data);
 
             $this->getConnection()->commit();
             return $data;
         } catch (\Exception $ex) {
-            $this->getConnection()->rollback();
+            $this->getConnection()->rollBack();
             throw $ex;
         }
     }
@@ -205,6 +212,13 @@ class PDO
                         PRIMARY KEY (`id`)
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;", $table_name);
             break;
+        case 'sqlite':
+            $sql = sprintf("CREATE TABLE IF NOT EXISTS `%s` (
+                        `id` INTEGER PRIMARY KEY,
+                        `data` text NULL,
+                        `timestamp` datetime NOT NULL
+                    );", $table_name);
+            break;
         default:
             throw new BackendException('Unknown database driver: ' . $this->getDriverName());
         }
@@ -214,7 +228,8 @@ class PDO
         return true;
     }
 
-    protected function getDriverName() {
+    protected function getDriverName()
+    {
         return $this->getConnection()->getAttribute(\PDO::ATTR_DRIVER_NAME);
     }
 

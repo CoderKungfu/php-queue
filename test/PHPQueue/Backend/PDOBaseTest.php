@@ -1,38 +1,20 @@
 <?php
 namespace PHPQueue\Backend;
 
-class PDOTest extends \PHPUnit_Framework_TestCase
+abstract class PDOBaseTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var PDO
      */
-    private $object;
+    protected $object;
 
     public function setUp()
     {
         parent::setUp();
-        if (!class_exists('\PDO')) {
-            $this->markTestSkipped('PDO extension is not installed');
-        }
-        $options = array(
-              'connection_string' => 'mysql:host=localhost;dbname=phpqueuetest'
-            , 'db_table'          => 'pdotest'
-            , 'pdo_options'       => array(
-                \PDO::ATTR_PERSISTENT => true
-            )
-        );
 
-        // Check that the database exists, and politely skip if not.
-        try {
-            new \PDO($options['connection_string']);
-        } catch ( \PDOException $ex ) {
-            $this->markTestSkipped('Database access failed: ' . $ex->getMessage());
+        if ( !class_exists( '\PDO' ) ) {
+            $this->markTestSkipped( 'PDO extension is not installed' );
         }
-
-        $this->object = new PHPQueue\Backend\PDO($options);
-        // Create table
-        $this->assertTrue($this->object->createTable('pdotest'));
-        $this->object->clearAll();
     }
 
     public function tearDown()
