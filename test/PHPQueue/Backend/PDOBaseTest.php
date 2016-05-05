@@ -141,4 +141,18 @@ abstract class PDOBaseTest extends \PHPUnit_Framework_TestCase
         // Punchline: data should still be available for the retry pop.
         $this->assertEquals($data, $this->object->popAtomic(function ($message) {}));
     }
+
+    /**
+     * popAtomic should not call the callback if there are no messages
+     */
+    public function testPopAtomicEmpty()
+    {
+        $did_run = false;
+        $callback = function ($unused) use (&$did_run) {
+            $did_run = true;
+        };
+        $data = $this->object->popAtomic($callback);
+        $this->assertNull($data, 'Should return null on an empty queue');
+        $this->assertFalse($did_run, 'Should not call callback without a message');
+    }
 }

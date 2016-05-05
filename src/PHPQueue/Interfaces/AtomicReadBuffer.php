@@ -23,6 +23,7 @@ interface AtomicReadBuffer
      *         Throwing an exception from callback means that we were unable or
      *     chose not to handle the message at all, and it should be considered
      *     unconsumed.  In this case it is not popped when popAtomic returns.
+     *         If there are no messages in the queue, the callback is not run.
      *
      * @return array|null popAtomic returns the currently popped record as a
      *     courtesy.  Note that any atomic processing should happen within

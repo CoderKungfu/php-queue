@@ -157,10 +157,12 @@ class PDO
             $this->getConnection()->beginTransaction();
             $data = $this->pop();
 
-            if (!is_callable($callback)) {
-                throw new \RuntimeException("Bad callback passed to " . __METHOD__);
+            if ($data !== null) {
+                if (!is_callable($callback)) {
+                    throw new \RuntimeException("Bad callback passed to " . __METHOD__);
+                }
+                call_user_func($callback, $data);
             }
-            call_user_func($callback, $data);
 
             $this->getConnection()->commit();
             return $data;
