@@ -72,28 +72,41 @@ class PDO
 
     public function push($data)
     {
-        $sql = sprintf('INSERT INTO `%s` (`data`, `timestamp`) VALUES (?, ?)', $this->db_table);
-        $sth = $this->getConnection()->prepare($sql);
-        $_tmp = json_encode($data);
-        $sth->bindParam(1, $_tmp, \PDO::PARAM_STR);
-        $sth->bindParam(2, self::getTimeStamp(), \PDO::PARAM_STR);
         try {
-            $success = $sth->execute();
+            $success = $this->insert($data);
             if (!$success) {
-                throw new BackendException('Statement failed: ' . implode(' - ', $sth->errorInfo()));
+                throw new BackendException(
+                    'Statement failed: ' .
+                    implode(' - ', $this->getConnection()->errorInfo())
+                );
             }
         } catch (\Exception $ex) {
             // TODO: Log original error and table creation attempt.
             $this->createTable($this->db_table);
 
             // Try again.
-            if (!$sth->execute()) {
-                throw new BackendException('Statement failed: ' . implode(' - ', $sth->errorInfo()));
+            if (!$this->insert($data)) {
+                throw new BackendException('Statement failed: ' .
+                    implode(' - ', $this->getConnection()->errorInfo())
+                );
             }
         }
 
         $this->last_job_id = $this->getConnection()->lastInsertId();
         return $this->last_job_id;
+    }
+
+    protected function insert($data)
+    {
+        $sql = sprintf('INSERT INTO `%s` (`data`, `timestamp`) VALUES (?, ?)', $this->db_table);
+        $sth = $this->getConnection()->prepare($sql);
+        if ($sth === false) {
+            throw new \Exception('Could not prepare statement');
+        }
+        $_tmp = json_encode($data);
+        $sth->bindParam(1, $_tmp, \PDO::PARAM_STR);
+        $sth->bindParam(2, self::getTimeStamp(), \PDO::PARAM_STR);
+        return $sth->execute();
     }
 
     public function set($id, $data, $properties=array())

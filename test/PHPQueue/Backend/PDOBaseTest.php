@@ -155,4 +155,20 @@ abstract class PDOBaseTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($data, 'Should return null on an empty queue');
         $this->assertFalse($did_run, 'Should not call callback without a message');
     }
+
+    /**
+     * Should be able to push without creating the table first
+     */
+    public function testImplicitCreateTable()
+    {
+        $this->object->deleteTable('pdotest'); // created in setUp
+        $data = array(mt_rand(), 'Daniel', 'Berrigan');
+        try {
+            $id = $this->object->push($data);
+            $this->assertTrue($id > 0);
+            $this->assertEquals($data, $this->object->get($id));
+        } catch (\Exception $ex) {
+            $this->fail('Should not throw exception when no table');
+        }
+    }
 }
