@@ -5,6 +5,7 @@ use Predis\Response\ResponseInterface;
 use Predis\Transaction\MultiExec;
 
 use PHPQueue\Exception\BackendException;
+use PHPQueue\Interfaces\AtomicReadBuffer;
 use PHPQueue\Interfaces\KeyValueStore;
 use PHPQueue\Interfaces\FifoQueueStore;
 
@@ -28,7 +29,10 @@ use PHPQueue\Interfaces\FifoQueueStore;
  */
 class Predis
     extends Base
-    implements FifoQueueStore, KeyValueStore
+    implements
+        AtomicReadBuffer,
+        FifoQueueStore,
+        KeyValueStore
 {
     const TYPE_STRING='string';
     const TYPE_HASH='hash';
@@ -196,6 +200,37 @@ class Predis
         $this->afterGet();
 
         return json_decode($data, true);
+    }
+
+    public function popAtomic($callback) {
+        if (!$this->hasQueue()) {
+            throw new BackendException("No queue specified.");
+        }
+        if ($this->order_key) {
+            throw new BackendException("atomicPop not yet supported for zsets");
+        }
+
+        // Pop and process the first element, erring on the side of
+        // at-least-once processing where the callback might get the same
+        // element before it's popped in the case of a race.
+        $options = array(
+            'cas' => true,
+            'watch' => $this->queue_name,
+            'retry' => 3,
+        );
+        $data = null;
+        $self = $this;
+        $this->getConnection()->transaction($options, function ($tx) use (&$data, $callback, $self) {
+            // Begin transaction.
+            $tx->multi();
+
+            $data = $tx->lpop($self->queue_name);
+            $data = json_decode($data, true);
+            if ($data !== null) {
+                $callback($data);
+            }
+        });
+        return $data;
     }
 
     /**

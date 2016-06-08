@@ -11,7 +11,7 @@ interface AtomicReadBuffer
      * consumed in case of failure.
      *
      * @param callable $callback A processing function with the signature,
-     *     function( $message ) throws Exception
+     *     void function( $message ) throws Exception
      *         This function accepts an array $message, the next message to be
      *     popped from your buffer.  In normal operation, the message is popped
      *     after the function returns successfully, which gives us the
@@ -37,5 +37,5 @@ interface AtomicReadBuffer
      *     causes "queue jam", something we alert about loudly and should
      *     eventually shunt these messages into a reject stream.
      */
-    public function popAtomic( $callback );
+    public function popAtomic($callback);
 }
