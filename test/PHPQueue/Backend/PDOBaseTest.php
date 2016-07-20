@@ -139,7 +139,7 @@ abstract class PDOBaseTest extends \PHPUnit_Framework_TestCase
         }
 
         // Punchline: data should still be available for the retry pop.
-        $this->assertEquals($data, $this->object->popAtomic(function ($message) {}));
+        $this->assertEquals($data, $this->object->pop());
     }
 
     /**

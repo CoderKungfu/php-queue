@@ -12,17 +12,19 @@ interface AtomicReadBuffer
      *
      * @param callable $callback A processing function with the signature,
      *     void function( $message ) throws Exception
-     *         This function accepts an array $message, the next message to be
-     *     popped from your buffer.  In normal operation, the message is popped
-     *     after the function returns successfully, which gives us the
-     *     guarantee that each message is consumed successfully "at least
-     *     once".  The processor callback can handle a message by diverting to
-     *     a reject sink, of course, a clean return only means that the
-     *     callback has completed some action locally considered correct, not
-     *     that there were no errors in processing.
+     *         This function accepts an array $message, the next message popped
+     *     from your buffer.  In normal operation, the message is popped after
+     *     the function returns successfully, which gives us the guarantee that
+     *     each message is consumed successfully "at least once".  The
+     *     processor callback might either handle a message and consume it,
+     *     reject and divert to a dead-letter queue, or raise an exception. The
+     *     contract is that a clean function return means that the callback has
+     *     completed its purpose and the message can be dropped without further
+     *     processing.
      *         Throwing an exception from callback means that we were unable or
      *     chose not to handle the message at all, and it should be considered
-     *     unconsumed.  In this case it is not popped when popAtomic returns.
+     *     unconsumed.  In this case it is not popped from the queue when
+     *     popAtomic returns.
      *         If there are no messages in the queue, the callback is not run.
      *
      * @return array|null popAtomic returns the currently popped record as a
