@@ -227,7 +227,7 @@ class Predis
             $data = $tx->lpop($self->queue_name);
             $data = json_decode($data, true);
             if ($data !== null) {
-                $callback($data);
+                call_user_func($callback, $data);
             }
         });
         return $data;
