@@ -104,8 +104,8 @@ class PDO
             throw new \Exception('Could not prepare statement');
         }
         $_tmp = json_encode($data);
-        $sth->bindParam(1, $_tmp, \PDO::PARAM_STR);
-        $sth->bindParam(2, self::getTimeStamp(), \PDO::PARAM_STR);
+        $sth->bindValue(1, $_tmp, \PDO::PARAM_STR);
+        $sth->bindValue(2, self::getTimeStamp(), \PDO::PARAM_STR);
         return $sth->execute();
     }
 
@@ -114,9 +114,9 @@ class PDO
         $sql = sprintf('REPLACE INTO `%s` (`id`, `data`, `timestamp`) VALUES (?, ?, ?)', $this->db_table);
         $sth = $this->getConnection()->prepare($sql);
         $_tmp = json_encode($data);
-        $sth->bindParam(1, $id, \PDO::PARAM_INT);
-        $sth->bindParam(2, $_tmp, \PDO::PARAM_STR);
-        $sth->bindParam(3, self::getTimeStamp(), \PDO::PARAM_STR);
+        $sth->bindValue(1, $id, \PDO::PARAM_INT);
+        $sth->bindValue(2, $_tmp, \PDO::PARAM_STR);
+        $sth->bindValue(3, self::getTimeStamp(), \PDO::PARAM_STR);
         $sth->execute();
     }
 
@@ -137,7 +137,7 @@ class PDO
 
         $sql = sprintf('SELECT `id`, `data` FROM `%s` WHERE `id` = ?', $this->db_table);
         $sth = $this->getConnection()->prepare($sql);
-        $sth->bindParam(1, $id, \PDO::PARAM_INT);
+        $sth->bindValue(1, $id, \PDO::PARAM_INT);
         $sth->execute();
 
         $result = $sth->fetch(\PDO::FETCH_ASSOC);
@@ -193,7 +193,7 @@ class PDO
         try {
             $sql = sprintf('DELETE FROM `%s` WHERE `id` = ?', $this->db_table);
             $sth = $this->getConnection()->prepare($sql);
-            $sth->bindParam(1, $id, \PDO::PARAM_INT);
+            $sth->bindValue(1, $id, \PDO::PARAM_INT);
             $sth->execute();
         } catch (\Exception $ex) {
             throw new BackendException('Invalid ID.');
