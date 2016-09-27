@@ -154,6 +154,12 @@ class PDO
         // Get oldest message.
         $sql = sprintf('SELECT `id`, `data` FROM `%s` WHERE 1 ORDER BY id ASC LIMIT 1', $this->db_table);
         $sth = $this->getConnection()->prepare($sql);
+
+        // This will be false if the table or collection does not exist
+        if ( ! $sth ) {
+            return null;
+        }
+
         $sth->execute();
 
         $result = $sth->fetch(\PDO::FETCH_ASSOC);
