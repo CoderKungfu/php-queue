@@ -188,6 +188,15 @@ class PredisTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->object->pop());
     }
 
+    public function testPopBadJson()
+    {
+        // Bad JSON
+        $data = "{'a': u'Weezle-'" . mt_rand() . "'}";
+        $this->object->getConnection()->rpush($this->object->queue_name, $data);
+
+        $this->assertNull($this->object->pop());
+    }
+
     public function testPopEmpty()
     {
         $this->assertNull($this->object->pop());

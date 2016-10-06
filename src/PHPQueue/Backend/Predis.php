@@ -8,6 +8,7 @@ use PHPQueue\Exception\BackendException;
 use PHPQueue\Interfaces\AtomicReadBuffer;
 use PHPQueue\Interfaces\KeyValueStore;
 use PHPQueue\Interfaces\FifoQueueStore;
+use PHPQueue\Json;
 
 /**
  * Wraps several styles of redis use:
@@ -199,7 +200,7 @@ class Predis
         $this->last_job_id = time();
         $this->afterGet();
 
-        return json_decode($data, true);
+        return Json::safe_decode($data);
     }
 
     public function popAtomic($callback) {
@@ -225,7 +226,7 @@ class Predis
             $tx->multi();
 
             $data = $tx->lpop($self->queue_name);
-            $data = json_decode($data, true);
+            $data = Json::safe_decode($data);
             if ($data !== null) {
                 call_user_func($callback, $data);
             }
@@ -280,7 +281,7 @@ class Predis
         $this->last_job_id = time();
         $this->afterGet();
 
-        return json_decode($data, true);
+        return Json::safe_decode($data);
     }
 
     public function release($jobId=null)
@@ -395,7 +396,7 @@ class Predis
         $this->beforeGet($key);
         if ($this->order_key) {
             $data = $this->getConnection()->get($key);
-            return json_decode($data, true);
+            return Json::safe_decode($data);
         }
         $type = $this->getConnection()->type($key);
         switch ($type) {
