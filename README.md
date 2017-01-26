@@ -7,7 +7,7 @@ A unified front-end for different queuing backends. Includes a REST server, CLI 
 
 ## Why PHP-Queue? ##
 
-The pains of implementing a queueing system (eg. Beanstalk, Amazon SQS, RabbitMQ) for your applciation:
+The pains of implementing a queueing system (eg. Beanstalk, Amazon SQS, RabbitMQ) for your application:
 
 * Which one is most efficient? Performant?
 * Learning curve to effectively implement the queue backend & the libraries.
