@@ -26,7 +26,7 @@
         "mrpoundsign/pheanstalk-5.3": "dev-master",
         "aws/aws-sdk-php": "dev-master",
         "amazonwebservices/aws-sdk-for-php": "dev-master",
-        "predis/predis": "v0.8.0",
+        "predis/predis": "1.*",
         "iron-io/iron_mq": "dev-master",
         "ext-memcache": "*",
         "microsoft/windowsazure": "dev-master"
