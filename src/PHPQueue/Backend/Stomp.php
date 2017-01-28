@@ -3,6 +3,7 @@ namespace PHPQueue\Backend;
 
 use FuseSource\Stomp\Stomp as FuseStomp;
 
+use BadMethodCallException;
 use PHPQueue\Exception\BackendException;
 use PHPQueue\Exception\JobNotFoundException;
 use PHPQueue\Interfaces\FifoQueueStore;
@@ -113,7 +114,10 @@ class Stomp
         if ($properties === null) {
             $properties = array('ack' => 'client');
         }
-        $this->getConnection()->subscribe($this->queue_name, $properties);
+        $result = $this->getConnection()->subscribe($this->queue_name, $properties);
+        if (!$result) {
+            throw new BackendException("No response when subscribing to queue {$this->queue_name}");
+        }
         if ($this->read_timeout) {
             $this->getConnection()->setReadTimeout($this->read_timeout);
         }
@@ -139,6 +143,6 @@ class Stomp
 
     public function clear($key=null)
     {
-        throw new Exception('Not implemented.');
+        throw new BadMethodCallException('Not implemented.');
     }
 }
