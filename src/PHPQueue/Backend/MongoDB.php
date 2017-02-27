@@ -5,11 +5,9 @@ use MongoClient;
 
 use PHPQueue\Exception\BackendException;
 use PHPQueue\Exception\JobNotFoundException;
-use PHPQueue\Interfaces\KeyValueStore;
 
 class MongoDB
     extends Base
-    implements KeyValueStore
 {
     public $server_uri;
     public $db_name;

@@ -3,11 +3,11 @@ namespace PHPQueue\Backend;
 
 use PHPQueue\Exception\BackendException;
 use PHPQueue\Exception\JobNotFoundException;
-use PHPQueue\Interfaces\IndexedFifoQueueStore;
+use PHPQueue\Interfaces\FifoQueueStore;
 
 class Beanstalkd
     extends Base
-    implements IndexedFifoQueueStore
+    implements FifoQueueStore
 {
     public $server_uri;
     public $tube;

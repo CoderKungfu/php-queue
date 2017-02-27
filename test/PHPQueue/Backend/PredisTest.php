@@ -1,5 +1,8 @@
 <?php
 namespace PHPQueue\Backend;
+
+use PHPQueue\Exception\JsonException;
+
 class PredisTest extends \PHPUnit_Framework_TestCase
 {
     private $object;
@@ -188,13 +191,18 @@ class PredisTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->object->pop());
     }
 
+    /**
+     * @expectedException PHPQueue\Exception\JsonException
+     */
     public function testPopBadJson()
     {
         // Bad JSON
-        $data = "{'a': u'Weezle-'" . mt_rand() . "'}";
+        $data = '{"a": bad "Weezle-' . mt_rand() . '"}';
         $this->object->getConnection()->rpush($this->object->queue_name, $data);
 
-        $this->assertNull($this->object->pop());
+        $this->object->pop();
+
+        $this->fail();
     }
 
     public function testPopEmpty()

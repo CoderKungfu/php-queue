@@ -2,11 +2,11 @@
 namespace PHPQueue\Backend;
 
 use PHPQueue\Exception\BackendException;
-use PHPQueue\Interfaces\IndexedFifoQueueStore;
+use PHPQueue\Interfaces\FifoQueueStore;
 
 class IronMQ
     extends Base
-    implements IndexedFifoQueueStore
+    implements FifoQueueStore
 {
     public $token = null;
     public $project_id = null;

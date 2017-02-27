@@ -4,15 +4,11 @@ namespace PHPQueue\Backend;
 use PHPQueue\Exception\BackendException;
 use PHPQueue\Interfaces\AtomicReadBuffer;
 use PHPQueue\Interfaces\FifoQueueStore;
-use PHPQueue\Interfaces\IndexedFifoQueueStore;
-use PHPQueue\Interfaces\KeyValueStore;
 
 class PDO
     extends Base
     implements AtomicReadBuffer,
-        FifoQueueStore,
-        IndexedFifoQueueStore,
-        KeyValueStore
+        FifoQueueStore
 {
     private $connection_string;
     private $db_user;

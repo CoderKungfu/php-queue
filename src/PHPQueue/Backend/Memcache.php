@@ -2,11 +2,9 @@
 namespace PHPQueue\Backend;
 
 use PHPQueue\Exception\BackendException;
-use PHPQueue\Interfaces\KeyValueStore;
 
 class Memcache
     extends Base
-    implements KeyValueStore
 {
     public $servers;
     public $is_persistent = false;
