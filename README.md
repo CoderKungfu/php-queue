@@ -191,16 +191,6 @@ The message will only be popped if churn() returns successfully.
 
 A first in first out queue accessed by push and pop.
 
-* IndexedFifoQueueStore
-
-Messages are indexed along one column as they are pushed into a FIFO queue,
-otherwise these behave like FifoQueueStore. clear() deletes records by index.
-There is no get() operation, you'll need a KeyValueStore for that.
-
-* KeyValueStore
-
-Jobs can be retrieved and deleted by their index.
-
 ---
 ## License ##
 
