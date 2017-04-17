@@ -185,7 +185,7 @@ To make it into a service that starts on boot-up.
 1. Add this to the top of your script:
 
 	```
-#!/usr/bin/php
+# !/usr/bin/php
 <?php
 #
 # BeanstalkSampleDaemon    Starts the PHP-Queue runner for BeanstalkSample
