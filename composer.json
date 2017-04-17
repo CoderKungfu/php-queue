@@ -1,5 +1,5 @@
 {
-    "name": "coderkungfu/php-queue",
+    "name": "andytruong/php-queue",
     "description": "A unified front-end for different queuing backends. Includes a REST server, CLI interface and daemon runners.",
     "keywords": ["queue", "transaction"],
     "homepage": "http://github.com/CoderKungfu/php-queue",
@@ -42,6 +42,9 @@
         "microsoft/windowsazure": "For Windows Azure Service Bus backend support",
         "Respect/Rest": "For a REST server to post job data",
         "fusesource/stomp-php": "For the STOMP backend"
+    },
+    "replace": {
+        "coderkungfu/php-queue": "1.0.*"
     },
     "autoload": {
         "psr-0": {"PHPQueue": "src/"}
