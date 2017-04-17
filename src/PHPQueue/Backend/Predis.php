@@ -1,31 +1,25 @@
 <?php
 namespace PHPQueue\Backend;
 
+use Predis\Response\ResponseInterface;
+use Predis\Transaction\MultiExec;
+
 use PHPQueue\Exception\BackendException;
-use PHPQueue\Interfaces\KeyValueStore;
+use PHPQueue\Interfaces\AtomicReadBuffer;
 use PHPQueue\Interfaces\FifoQueueStore;
+use PHPQueue\Json;
 
 /**
- * Wraps several styles of redis use:
- *     - If constructed with a "order_key" option, the data will be accessible
- *       as a key-value store, and will also provide pop and push using
- *       $data[$order_key] as the FIFO ordering.  If the ordering value is a
- *       timestamp, for example, then the queue will have real-world FIFO
- *       behavior over time, and even if the data comes in out of order, we will
- *       always pop the true oldest record.
- *       If you wish to push to this type of store, you'll also need to provide
- *       the "correlation_key" option so the random-access key can be
- *       extracted from data.
+ * Wraps redis use:
  *     - Pushing scalar data will store it as a queue under queue_name.
  *     - Setting scalar data will store it under the key.
  *     - If data is an array, setting will store it as a hash, under the key.
- *
- * TODO: The different behaviors should be modeled as several backends which
- * perhaps inherit from an AbstractPredis.
  */
 class Predis
     extends Base
-    implements FifoQueueStore, KeyValueStore
+    implements
+        AtomicReadBuffer,
+        FifoQueueStore
 {
     const TYPE_STRING='string';
     const TYPE_HASH='hash';
@@ -33,15 +27,10 @@ class Predis
     const TYPE_SET='set';
     const TYPE_NONE='none';
 
-    // Internal sub-key to hold the ordering.
-    const FIFO_INDEX = 'fifo';
-
     public $servers;
     public $redis_options = array();
     public $queue_name;
     public $expiry;
-    public $order_key;
-    public $correlation_key;
 
     public function __construct($options=array())
     {
@@ -57,13 +46,6 @@ class Predis
         }
         if (!empty($options['expiry'])) {
             $this->expiry = $options['expiry'];
-        }
-        if (!empty($options['order_key'])) {
-            $this->order_key = $options['order_key'];
-            $this->redis_options['prefix'] = $this->queue_name . ':';
-        }
-        if (!empty($options['correlation_key'])) {
-            $this->correlation_key = $options['correlation_key'];
         }
     }
 
@@ -92,23 +74,10 @@ class Predis
             throw new BackendException("No queue specified.");
         }
         $encoded_data = json_encode($data);
-        if ($this->order_key) {
-            if (!$this->correlation_key) {
-                throw new BackendException("Cannot push to indexed fifo queue without a correlation key.");
-            }
-            $key = $data[$this->correlation_key];
-            if (!$key) {
-                throw new BackendException("Cannot push to indexed fifo queue without correlation data.");
-            }
-            $status = $this->addToIndexedFifoQueue($key, $data);
-            if (!$status) {
-                throw new BackendException("Couldn't push to indexed fifo queue.");
-            }
-        } else {
-            // Note that we're ignoring the "new length" return value, cos I don't
-            // see how to make it useful.
-            $this->getConnection()->rpush($this->queue_name, $encoded_data);
-        }
+
+        // Note that we're ignoring the "new length" return value, cos I don't
+        // see how to make it useful.
+        $this->getConnection()->rpush($this->queue_name, $encoded_data);
     }
 
     /**
@@ -121,34 +90,63 @@ class Predis
         if (!$this->hasQueue()) {
             throw new BackendException("No queue specified.");
         }
-        if ($this->order_key) {
-            // Pop the first element.
-            //
-            // Adapted from https://github.com/nrk/predis/blob/v1.0/examples/transaction_using_cas.php
-            $options = array(
-                'cas' => true,
-                'watch' => self::FIFO_INDEX,
-                'retry' => 3,
-            );
-            $order_key = $this->order_key;
-            $this->getConnection()->transaction($options, function ($tx) use ($order_key, &$data) {
-                // Look up the first element in the FIFO ordering.
-                $values = $tx->zrange(self::FIFO_INDEX, 0, 0);
-                if ($values) {
-                    // Use that value as a key into the key-value block, to get the data.
-                    $key = $values[0];
-                    $data = $tx->get($key);
+        $data = $this->getConnection()->lpop($this->queue_name);
+        if (!$data) {
+            return null;
+        }
+        $this->last_job = $data;
+        $this->last_job_id = time();
+        $this->afterGet();
 
-                    // Begin transaction.
-                    $tx->multi();
+        return Json::safe_decode($data);
+    }
 
-                    // Remove from both indexes.
-                    $tx->zrem(self::FIFO_INDEX, $key);
-                    $tx->del($key);
-                }
-            });
+    public function popAtomic($callback) {
+        if (!$this->hasQueue()) {
+            throw new BackendException("No queue specified.");
+        }
+
+        // Pop and process the first element, erring on the side of
+        // at-least-once processing where the callback might get the same
+        // element before it's popped in the case of a race.
+        $options = array(
+            'cas' => true,
+            'watch' => $this->queue_name,
+            'retry' => 3,
+        );
+        $data = null;
+        $self = $this;
+        $this->getConnection()->transaction($options, function ($tx) use (&$data, $callback, $self) {
+            // Begin transaction.
+            $tx->multi();
+
+            $data = $tx->lpop($self->queue_name);
+            $data = Json::safe_decode($data);
+            if ($data !== null) {
+                call_user_func($callback, $data);
+            }
+        });
+        return $data;
+    }
+
+    /**
+     * Return the top element in the queue.
+     *
+     * @return array|null
+     */
+    public function peek()
+    {
+        $data = null;
+        $this->beforeGet();
+        if (!$this->hasQueue()) {
+            throw new BackendException("No queue specified.");
+        }
+        $data_range = $this->getConnection()->lrange($this->queue_name, 0, 0);
+        if (!$data_range) {
+            return null;
         } else {
-            $data = $this->getConnection()->lpop($this->queue_name);
+            // Unpack list.
+            $data = $data_range[0];
         }
         if (!$data) {
             return null;
@@ -157,7 +155,7 @@ class Predis
         $this->last_job_id = time();
         $this->afterGet();
 
-        return json_decode($data, true);
+        return Json::safe_decode($data);
     }
 
     public function release($jobId=null)
@@ -168,8 +166,8 @@ class Predis
         }
         $job_data = $this->open_items[$jobId];
         $status = $this->getConnection()->rpush($this->queue_name, $job_data);
-        if (!$status) {
-            throw new BackendException("Unable to save data.");
+        if (!is_int($status)) {
+            throw new BackendException('Unable to save data: ' . $status->getMessage());
         }
         $this->last_job_id = $jobId;
         $this->afterClearRelease();
@@ -185,9 +183,10 @@ class Predis
     /**
      * @param  string              $key
      * @param  array|string        $data
+     * @param  array               $properties
      * @throws \PHPQueue\Exception
      */
-    public function set($key, $data)
+    public function set($key, $data, $properties=array())
     {
         if (!$key || !is_string($key)) {
             throw new BackendException("Key is invalid.");
@@ -198,9 +197,7 @@ class Predis
         $this->beforeAdd();
         try {
             $status = false;
-            if ($this->order_key) {
-                $status = $this->addToIndexedFifoQueue($key, $data);
-            } elseif (is_array($data)) {
+            if (is_array($data)) {
                 // FIXME: Assert
                 $status = $this->getConnection()->hmset($key, $data);
             } elseif (is_string($data) || is_numeric($data)) {
@@ -210,41 +207,12 @@ class Predis
                     $status = $this->getConnection()->set($key, $data);
                 }
             }
-            if (!$status) {
-                throw new BackendException("Unable to save data.");
+            if (!self::boolStatus($status)) {
+                throw new BackendException('Unable to save data.: ' . $status->getMessage());
             }
         } catch (\Exception $ex) {
             throw new BackendException($ex->getMessage(), $ex->getCode());
         }
-    }
-
-    /**
-     * Store the data under its order and correlation keys
-     *
-     * @param string $key
-     * @param array $data
-     */
-    protected function addToIndexedFifoQueue($key, $data)
-    {
-        $options = array(
-            'cas' => true,
-            'watch' => self::FIFO_INDEX,
-            'retry' => 3,
-        );
-        $score = $data[$this->order_key];
-        $encoded_data = json_encode($data);
-        $status = false;
-        $expiry = $this->expiry;
-        $this->getConnection()->transaction($options, function ($tx) use ($key, $score, $encoded_data, $expiry, &$status) {
-            $tx->multi();
-            $tx->zadd(self::FIFO_INDEX, $score, $key);
-            if ($expiry) {
-                $status = $tx->setex($key, $expiry, $encoded_data);
-            } else {
-                $status = $tx->set($key, $encoded_data);
-            }
-        });
-        return $status;
     }
 
     /** @deprecated */
@@ -268,10 +236,6 @@ class Predis
             return null;
         }
         $this->beforeGet($key);
-        if ($this->order_key) {
-            $data = $this->getConnection()->get($key);
-            return json_decode($data, true);
-        }
         $type = $this->getConnection()->type($key);
         switch ($type) {
             case self::TYPE_STRING:
@@ -307,16 +271,7 @@ class Predis
     {
         $this->beforeClear($key);
 
-        if ($this->order_key) {
-            $result = $this->getConnection()->pipeline()
-                ->zrem(self::FIFO_INDEX, $key)
-                ->del($key)
-                ->execute();
-
-            $num_removed = $result[1];
-        } else {
-            $num_removed = $this->getConnection()->del($key);
-        }
+        $num_removed = $this->getConnection()->del($key);
 
         $this->afterClearRelease();
 
@@ -334,7 +289,7 @@ class Predis
             $status = $this->getConnection()->incrby($key, $count);
         }
 
-        return $status;
+        return is_int($status);
     }
 
     public function decrKey($key, $count=1)
@@ -348,7 +303,7 @@ class Predis
             $status = $this->getConnection()->decrby($key, $count);
         }
 
-        return $status;
+        return is_int($status);
     }
 
     public function keyExists($key)
@@ -360,5 +315,9 @@ class Predis
     public function hasQueue()
     {
         return !empty($this->queue_name);
+    }
+
+    protected static function boolStatus(ResponseInterface $status) {
+        return ($status == 'OK' || $status == 'QUEUED');
     }
 }

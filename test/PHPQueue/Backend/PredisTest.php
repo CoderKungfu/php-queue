@@ -1,5 +1,8 @@
 <?php
 namespace PHPQueue\Backend;
+
+use PHPQueue\Exception\JsonException;
+
 class PredisTest extends \PHPUnit_Framework_TestCase
 {
     private $object;
@@ -183,10 +186,38 @@ class PredisTest extends \PHPUnit_Framework_TestCase
         $this->object->push($data);
 
         $this->assertEquals($data, $this->object->pop());
+
+        // Check that we did remove the object.
+        $this->assertNull($this->object->pop());
+    }
+
+    /**
+     * @expectedException PHPQueue\Exception\JsonException
+     */
+    public function testPopBadJson()
+    {
+        // Bad JSON
+        $data = '{"a": bad "Weezle-' . mt_rand() . '"}';
+        $this->object->getConnection()->rpush($this->object->queue_name, $data);
+
+        $this->object->pop();
+
+        $this->fail();
     }
 
     public function testPopEmpty()
     {
         $this->assertNull($this->object->pop());
+    }
+
+    public function testPeek()
+    {
+        $data = 'Weezle-' . mt_rand();
+        $this->object->push($data);
+
+        $this->assertEquals($data, $this->object->peek());
+
+        // Check that we didn't remove the object by peeking.
+        $this->assertEquals($data, $this->object->pop());
     }
 }

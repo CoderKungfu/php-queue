@@ -2,11 +2,9 @@
 namespace PHPQueue\Backend;
 
 use PHPQueue\Exception\BackendException;
-use PHPQueue\Interfaces\KeyValueStore;
 
 class Memcache
     extends Base
-    implements KeyValueStore
 {
     public $servers;
     public $is_persistent = false;
@@ -65,11 +63,18 @@ class Memcache
     /**
      * @param  string              $key
      * @param  mixed               $data
-     * @param  int                 $expiry Deprecated param
+     * @param  array|int           $properties array is preferred, "expiry" is the only key used here.  Deprecated int argument will also be used as expiry.
      * @throws \PHPQueue\Exception
      */
-    public function set($key, $data, $expiry=null)
+    public function set($key, $data, $properties=array())
     {
+        if (is_array($properties) && isset($properties["expiry"])) {
+            $expiry = $properties["expiry"];
+        } else if (is_numeric($properties)) {
+            $expiry = $properties;
+        } else {
+            $expiry = $this->expiry;
+        }
         if (empty($key) && !is_string($key)) {
             throw new BackendException("Key is invalid.");
         }
@@ -77,9 +82,6 @@ class Memcache
             throw new BackendException("No data.");
         }
         $this->beforeAdd();
-        if (empty($expiry)) {
-            $expiry = $this->expiry;
-        }
         $status = $this->getConnection()->replace($key, json_encode($data), $this->use_compression, $expiry);
         if ($status == false) {
             $status = $this->getConnection()->set($key, json_encode($data), $this->use_compression, $expiry);

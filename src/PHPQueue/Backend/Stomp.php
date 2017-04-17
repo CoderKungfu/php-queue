@@ -7,7 +7,6 @@ use BadMethodCallException;
 use PHPQueue\Exception\BackendException;
 use PHPQueue\Exception\JobNotFoundException;
 use PHPQueue\Interfaces\FifoQueueStore;
-use PHPQueue\Interfaces\KeyValueStore;
 
 /**
  * Wrap a STOMP queue
@@ -18,7 +17,7 @@ use PHPQueue\Interfaces\KeyValueStore;
  */
 class Stomp
     extends Base
-    implements FifoQueueStore, KeyValueStore
+    implements FifoQueueStore
 {
     public $queue_name;
     public $uri;

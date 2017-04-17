@@ -9,15 +9,28 @@ class MemcacheTest extends \PHPUnit_Framework_TestCase
         parent::setUp();
         if (!class_exists('\Memcache')) {
             $this->markTestSkipped('Memcache not installed');
-        } else {
-            $options = array(
-                'servers' => array(
-                                    array('localhost', 11211)
-                            )
-                , 'expiry'  => 600
-            );
-            $this->object = new Memcache($options);
         }
+
+        $options = array(
+            'servers' => array(
+                array('localhost', 11211)
+            ),
+            'expiry' => 600,
+        );
+
+        // Try to connect to Memcache, skip test politely if unavailable.
+        try {
+            $connection = new \Memcache();
+            $connection->addserver($options['servers'][0][0], $options['servers'][0][1]);
+            $success = $connection->set('test' . mt_rand(), 'foo', 1);
+            if ( !$success ) {
+                throw new \Exception("Couldn't store to Memcache");
+            }
+        } catch (\Exception $ex) {
+            $this->markTestSkipped($ex->getMessage());
+        }
+
+        $this->object = new Memcache($options);
     }
 
     public function testAdd()
