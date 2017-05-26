@@ -26,13 +26,13 @@ The runner will check the queue for new jobs and work the jobs. After working on
 1. Create a new PHP file named "SimpleRunner.php" (no naming convention here).
 2. Include the config file:
 
-	```php
+```php
 require_once '/path/to/your/config.php';
 ```
 
 3. Create a new Runner class (extending `PHPQueue\Runner`). The queue name can be defined in the `$queue_name` attribute.
 
-	```php
+```php
 class SampleRunner extends PHPQueue\Runner
 {
     public $queue_name = 'Sample';
@@ -41,14 +41,14 @@ class SampleRunner extends PHPQueue\Runner
 
 4. Instantiate the class and call the `run()` method.
 
-	```php
+```php
 $runner = new SampleRunner();
 $runner->run();
 ```
 
 5. Run the Runner.
 
-	```
+```
 $ php SimpleRunner.php
 ```
 
@@ -92,8 +92,7 @@ $ php BeanstalkSampleStart.php
 $ php BeanstalkSampleStop.php
 ```
 
-***Note:***<br/>
-On CentOS, you will need to install `php-process` package: `sudo yum install php-process`
+*__Note:__ On CentOS, you will need to install `php-process` package: `sudo yum install php-process`*
 
 ### The Proper Way ###
 
@@ -109,7 +108,7 @@ You can make your PHP-Queue runner start the same way.
 
 1. Combine the start and stop scripts into 1 file. And use PHP's `$argv` ([reference](http://www.php.net/manual/en/reserved.variables.argv.php)) to switch between executing `start` or `stop`:
 
-	```php
+```php
 require_once '/path/to/your/config.php';
 $pid_file = '/path/to/process.pid';
 if (empty($argv[1]))
@@ -145,28 +144,28 @@ switch($argv[1])
 ?>
 ```
 
-	*__Note:__ Some `echo` statements were added to provide some on-screen feedback.*
+*__Note:__ Some `echo` statements were added to provide some on-screen feedback.*
 
 2. Make your runner executable by adding this to the first line of the PHP script:
 
-	```
+```
 #!/usr/bin/php
 ```
 	and make the file executable under linux:
 	
-	```
+```
 $ chmod a+x BeanstalkSampleDaemon.php
 ```
 
 	That way, you can call the script directly without involving PHP:
 	
-	```
+```
 $ ./BeanstalkSampleDaemon.php
 ```
 
 3. Move the file to `/etc/init.d/` folder.
 
-	```
+```
 $ mv BeanstalkSampleDaemon.php /etc/init.d/BeanstalkSampleDaemon
 ```
 
@@ -174,7 +173,7 @@ $ mv BeanstalkSampleDaemon.php /etc/init.d/BeanstalkSampleDaemon
 
 4. You can now run this script like a normal daemon:
 
-	```
+```
 $ /etc/init.d/BeanstalkSampleDaemon start
 ```
 
@@ -184,7 +183,7 @@ To make it into a service that starts on boot-up.
 
 1. Add this to the top of your script:
 
-	```
+```
 # !/usr/bin/php
 <?php
 #
@@ -196,17 +195,17 @@ To make it into a service that starts on boot-up.
 ...
 ```
 
-	*__Note:__ Customize to your specific script.*
+*__Note:__ Customize to your specific script.*
 
 2. Run this to add this to the boot up process:
 
-	```
+```
 $ chkconfig --levels 235 BeanstalkSampleDaemon on
 ```
 
 3. To delete it:
 
-	```
+```
 $ chkconfig --del BeanstalkSampleDaemon
 ```
 
