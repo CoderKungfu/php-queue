@@ -5,6 +5,7 @@
     "homepage": "http://github.com/CoderKungfu/php-queue",
     "type": "library",
     "license": "MIT",
+    "version": "1.0.0",
     "authors": [
         {
             "name": "Michael Cheng",
