@@ -1,5 +1,5 @@
 # PHP-Queue #
-[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/CoderKungfu/php-queue?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/CoderKungfu/php-queue?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 A unified front-end for different queuing backends. Includes a REST server, CLI interface and daemon runners.
 
@@ -57,12 +57,12 @@ PHP-Queue hopes to serve as an abstract layer between your application code and 
 
 2. Download and install Composer.
 
-	```
+```
 curl -s "http://getcomposer.org/installer" | php
 ```
 3. Install your dependencies.
 
-	```
+```
 php composer.phar install
 ```
 
@@ -70,7 +70,7 @@ php composer.phar install
 
 5. Require Composer's autoloader.
 
-	```php
+```php
 <?php
 require_once '/path/to/vendor/autoload.php';
 ?>
@@ -130,19 +130,19 @@ Copy the `htdocs` folder in the **Demo App** into your installation. The `index.
 
 1. Add new job.
 
-	```
+```
 # Form post
 curl -XPOST http://localhost/<QueueName>/ -d "var1=foo&var2=bar"
 ```
 
-	```
+```
 # JSON post
 curl -XPOST http://localhost/<QueueName>/ -H "Content-Type: application/json" -d '{"var1":"foo","var2":"bar"}'
 ```
 
 2. Trigger next job.
 
-	```
+```
 curl -XPUT http://localhost/<QueueName>/
 ```
 
@@ -154,13 +154,13 @@ Copy the `cli.php` file from the **Demo App** into your installation. This file 
 
 1. Add new job.
 
-	```
+```
 $ php cli.php <QueueName> add --data '{"boo":"bar","foo":"car"}'
 ```
 
 2. Trigger next job.
 
-	```
+```
 $ php cli.php <QueueName> work
 ```
 
