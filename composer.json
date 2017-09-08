@@ -30,7 +30,7 @@
         "predis/predis": "1.*",
         "iron-io/iron_mq": "dev-master",
         "ext-memcache": "*",
-        "microsoft/windowsazure": "dev-master"
+        "microsoft/windowsazure": ">=1.0"
     },
     "suggest": {
         "predis/predis": "For Redis backend support",
