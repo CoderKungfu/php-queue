@@ -29,5 +29,3 @@ before_script:
 
 script: phpunit --coverage-text -c phpunit.travis.xml
 
-after_script:
-  - "wget --quiet http://mauris.sg/bin/pdc.phar && php pdc.phar src"
