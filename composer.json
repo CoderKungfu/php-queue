@@ -25,7 +25,7 @@
     },
     "require-dev": {
         "mrpoundsign/pheanstalk-5.3": "dev-master",
-        "aws/aws-sdk-php": "dev-master",
+        "aws/aws-sdk-php": ">=2.8",
         "amazonwebservices/aws-sdk-for-php": "dev-master",
         "predis/predis": "1.*",
         "iron-io/iron_mq": "dev-master",
