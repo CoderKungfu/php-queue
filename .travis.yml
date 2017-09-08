@@ -24,6 +24,8 @@ mysql:
   username: root
   encoding: utf8
 
+before_install: echo "extension=memcache.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+
 before_script:
   - mysql -e 'create database phpqueuetest;'
   - composer self-update
