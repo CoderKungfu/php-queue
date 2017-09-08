@@ -4,16 +4,21 @@
 #
 
 language: php
-php:
-  - 5.3
-  - 5.4
-  - 5.5
-  - 5.6
-  - 7.0
-  - hhvm
+
+dist: trusty
  
 matrix:
+  include:
+    - php: 5.3
+      dist: precise
+    - php: 5.4
+    - php: 5.5
+    - php: 5.6
+    - php: 7.0
+    - php: hhvm
   allow_failures:
+    - php: 5.3
+      dist: precise
     - php: 7.0
     - php: hhvm
 
@@ -22,6 +27,8 @@ mysql:
   username: root
   encoding: utf8
 
+before_install: echo "extension=memcache.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+
 before_script:
   - mysql -e 'create database phpqueuetest;'
   - composer self-update
@@ -29,5 +36,3 @@ before_script:
 
 script: phpunit --coverage-text -c phpunit.travis.xml
 
-after_script:
-  - "wget --quiet http://mauris.sg/bin/pdc.phar && php pdc.phar src"

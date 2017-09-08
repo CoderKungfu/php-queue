@@ -5,6 +5,7 @@
     "homepage": "http://github.com/CoderKungfu/php-queue",
     "type": "library",
     "license": "MIT",
+    "version": "1.0.0",
     "authors": [
         {
             "name": "Michael Cheng",
@@ -24,12 +25,12 @@
     },
     "require-dev": {
         "mrpoundsign/pheanstalk-5.3": "dev-master",
-        "aws/aws-sdk-php": "dev-master",
+        "aws/aws-sdk-php": ">=2.8",
         "amazonwebservices/aws-sdk-for-php": "dev-master",
         "predis/predis": "1.*",
         "iron-io/iron_mq": "dev-master",
         "ext-memcache": "*",
-        "microsoft/windowsazure": "dev-master"
+        "microsoft/windowsazure": ">=0.4.0"
     },
     "suggest": {
         "predis/predis": "For Redis backend support",
