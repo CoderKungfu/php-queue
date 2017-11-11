@@ -1,9 +1,12 @@
 <?php
 namespace PHPQueue\Backend;
+
+use PHPUnit\Framework\TestCase;
+
 /**
  * @testdox To enable test: Save iron.json to ~/.iron.json in your home folder.
  */
-class IronMQTest extends \PHPUnit_Framework_TestCase
+class IronMQTest extends TestCase
 {
     private $object;
 

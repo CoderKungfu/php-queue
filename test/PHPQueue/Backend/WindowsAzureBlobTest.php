@@ -1,6 +1,9 @@
 <?php
 namespace PHPQueue\Backend;
-class WindowsAzureBlobTest extends \PHPUnit_Framework_TestCase
+
+use PHPUnit\Framework\TestCase;
+
+class WindowsAzureBlobTest extends TestCase
 {
     /**
      * @var \PHPQueue\Backend\WindowsAzureBlob

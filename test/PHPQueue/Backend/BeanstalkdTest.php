@@ -1,6 +1,9 @@
 <?php
 namespace PHPQueue\Backend;
-class BeanstalkdTest extends \PHPUnit_Framework_TestCase
+
+use PHPUnit\Framework\TestCase;
+
+class BeanstalkdTest extends TestCase
 {
     private $object;
 

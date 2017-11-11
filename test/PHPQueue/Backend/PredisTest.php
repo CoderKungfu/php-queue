@@ -2,8 +2,9 @@
 namespace PHPQueue\Backend;
 
 use PHPQueue\Exception\JsonException;
+use PHPUnit\Framework\TestCase;
 
-class PredisTest extends \PHPUnit_Framework_TestCase
+class PredisTest extends TestCase
 {
     private $object;
 

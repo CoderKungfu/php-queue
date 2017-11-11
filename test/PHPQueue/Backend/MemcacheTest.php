@@ -1,6 +1,9 @@
 <?php
 namespace PHPQueue\Backend;
-class MemcacheTest extends \PHPUnit_Framework_TestCase
+
+use PHPUnit\Framework\TestCase;
+
+class MemcacheTest extends TestCase
 {
     private $object;
 

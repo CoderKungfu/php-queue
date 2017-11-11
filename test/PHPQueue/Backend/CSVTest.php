@@ -1,6 +1,9 @@
 <?php
 namespace PHPQueue\Backend;
-class CSVTest extends \PHPUnit_Framework_TestCase
+
+use PHPUnit\Framework\TestCase;
+
+class CSVTest extends TestCase
 {
     private $object;
 

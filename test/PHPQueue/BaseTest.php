@@ -1,7 +1,9 @@
 <?php
 namespace PHPQueue;
 
-class BaseTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class BaseTest extends TestCase
 {
     public function __construct($name = NULL, array $data = array(), $dataName = '')
     {

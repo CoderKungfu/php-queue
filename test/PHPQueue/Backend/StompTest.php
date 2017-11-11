@@ -1,10 +1,10 @@
 <?php
 namespace PHPQueue\Backend;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use PHPQueue\Exception\JobNotFoundException;
 
-class StompTest extends PHPUnit_Framework_TestCase
+class StompTest extends TestCase
 {
     protected $object;
     protected $unique;

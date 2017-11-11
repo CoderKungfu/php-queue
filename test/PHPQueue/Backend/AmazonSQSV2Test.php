@@ -1,7 +1,9 @@
 <?php
 namespace PHPQueue\Backend;
 
-class AmazonSQSV2Test extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class AmazonSQSV2Test extends TestCase
 {
     private $object;
 
