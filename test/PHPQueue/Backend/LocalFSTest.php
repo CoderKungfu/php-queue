@@ -1,6 +1,8 @@
 <?php
 namespace PHPQueue\Backend;
 
+use PHPUnit\Framework\TestCase;
+
 class LocalFSMock extends LocalFS
 {
     public function getContainerPath($directory_name)
@@ -19,7 +21,7 @@ class LocalFSMock extends LocalFS
     }
 }
 
-class LocalFSTest extends \PHPUnit_Framework_TestCase
+class LocalFSTest extends TestCase
 {
     /**
      * @var \PHPQueue\Backend\LocalFSMock

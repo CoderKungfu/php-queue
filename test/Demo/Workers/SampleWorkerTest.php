@@ -1,5 +1,8 @@
 <?php
-class SampleWorkerTest extends \PHPUnit_Framework_TestCase
+
+use PHPUnit\Framework\TestCase;
+
+class SampleWorkerTest extends TestCase
 {
     private $object;
 

@@ -1,7 +1,9 @@
 <?php
 namespace PHPQueue\Backend;
 
-class AmazonS3V1Test extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class AmazonS3V1Test extends TestCase
 {
     /**
      * @var \PHPQueue\Backend\AmazonS3

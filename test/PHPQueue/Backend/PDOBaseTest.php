@@ -1,7 +1,9 @@
 <?php
 namespace PHPQueue\Backend;
 
-abstract class PDOBaseTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+abstract class PDOBaseTest extends TestCase
 {
     /**
      * @var PDO

@@ -1,6 +1,9 @@
 <?php
 namespace PHPQueue\Backend;
-class MongoDBTest extends \PHPUnit_Framework_TestCase
+
+use PHPUnit\Framework\TestCase;
+
+class MongoDBTest extends TestCase
 {
     private $object;
     private $ids = array();

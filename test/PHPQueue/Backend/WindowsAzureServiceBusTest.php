@@ -1,6 +1,9 @@
 <?php
 namespace PHPQueue\Backend;
-class WindowsAzureServiceBusTest extends \PHPUnit_Framework_TestCase
+
+use PHPUnit\Framework\TestCase;
+
+class WindowsAzureServiceBusTest extends TestCase
 {
     private $object;
 
