@@ -83,7 +83,7 @@ class Runner
         $this->current_log_check++;
         if ($this->current_log_check > $this->max_check_interval) {
             if ($this->current_date != date('Ymd')) {
-                $this->logger->addAlert("Cycling log file now.");
+                $this->logger->alert("Cycling log file now.");
                 $this->logger = Logger::cycleLog(
                       $this->queue_name
                     , $this->log_level
@@ -101,11 +101,11 @@ class Runner
         try {
             $newJob = Base::getJob($this->queue);
         } catch (\Exception $ex) {
-            $this->logger->addError($ex->getMessage());
+            $this->logger->error($ex->getMessage());
             $sleepTime = self::RUN_USLEEP * 5;
         }
         if (empty($newJob)) {
-            $this->logger->addNotice("No Job found.");
+            $this->logger->notice("No Job found.");
             $sleepTime = self::RUN_USLEEP * 10;
         } else {
             try {
@@ -115,7 +115,7 @@ class Runner
                 if (is_string($newJob->worker)) {
                     $result_data = $this->processWorker($newJob->worker, $newJob);
                 } elseif (is_array($newJob->worker)) {
-                    $this->logger->addInfo(sprintf("Running chained new job (%s) with workers", $newJob->job_id), $newJob->worker);
+                    $this->logger->info(sprintf("Running chained new job (%s) with workers", $newJob->job_id), $newJob->worker);
                     foreach ($newJob->worker as $worker_name) {
                         $result_data = $this->processWorker($worker_name, $newJob);
                         $newJob->data = $result_data;
@@ -124,22 +124,22 @@ class Runner
 
                 return Base::updateJob($this->queue, $newJob->job_id, $result_data);
             } catch (\Exception $ex) {
-                $this->logger->addError($ex->getMessage());
-                $this->logger->addInfo(sprintf('Releasing job (%s).', $newJob->job_id));
+                $this->logger->error($ex->getMessage());
+                $this->logger->info(sprintf('Releasing job (%s).', $newJob->job_id));
                 $this->queue->releaseJob($newJob->job_id);
                 $sleepTime = self::RUN_USLEEP * 5;
             }
         }
-        $this->logger->addInfo('Sleeping ' . ceil($sleepTime / 1000000) . ' seconds.');
+        $this->logger->info('Sleeping ' . ceil($sleepTime / 1000000) . ' seconds.');
         usleep($sleepTime);
     }
 
     protected function processWorker($worker_name, $new_job)
     {
-        $this->logger->addInfo(sprintf("Running new job (%s) with worker: %s", $new_job->job_id, $worker_name));
+        $this->logger->info(sprintf("Running new job (%s) with worker: %s", $new_job->job_id, $worker_name));
         $worker = Base::getWorker($worker_name);
         Base::workJob($worker, $new_job);
-        $this->logger->addInfo(sprintf('Worker is done. Updating job (%s). Result:', $new_job->job_id), $worker->result_data);
+        $this->logger->info(sprintf('Worker is done. Updating job (%s). Result:', $new_job->job_id), $worker->result_data);
 
         return $worker->result_data;
     }
