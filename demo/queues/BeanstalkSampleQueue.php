@@ -38,7 +38,7 @@ class BeanstalkSampleQueue extends PHPQueue\JobQueue
 
     public function updateJob($jobId = null, $resultData = null)
     {
-        $this->resultLog->addInfo('Result: ID='.$jobId, $resultData);
+        $this->resultLog->info('Result: ID='.$jobId, $resultData);
     }
 
     public function clearJob($jobId = null)
