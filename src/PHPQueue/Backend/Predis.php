@@ -117,11 +117,11 @@ class Predis
         $data = null;
         $self = $this;
         $this->getConnection()->transaction($options, function ($tx) use (&$data, $callback, $self) {
+			$data = $tx->lpop($self->queue_name);
+			$data = Json::safe_decode($data);
+
             // Begin transaction.
             $tx->multi();
-
-            $data = $tx->lpop($self->queue_name);
-            $data = Json::safe_decode($data);
             if ($data !== null) {
                 call_user_func($callback, $data);
             }
